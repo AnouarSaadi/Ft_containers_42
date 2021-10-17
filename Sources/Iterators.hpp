@@ -70,7 +70,7 @@ public:
 	ReverseIterator() : _it(nullptr) {}
 	ReverseIterator(iterator_type x) : _it(x) {}
 	ReverseIterator(const ReverseIterator& x) : _it(x._it) {}
-	iterator_type base() const { return this->_it; }
+	iterator_type base() const { return _it; }
 	reference operator*() const { return *_it; }
 	ReverseIterator operator+ (difference_type n) const { return ReverseIterator(this->_it - n); }
 	ReverseIterator & operator++() {
