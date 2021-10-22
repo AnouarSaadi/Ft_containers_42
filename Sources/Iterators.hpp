@@ -13,11 +13,11 @@ template <class Category,
 			>
 class Iterator
 {
-	typedef Category iterator_category;
 	typedef T value_type;
-	typedef Distance difference_type;
 	typedef Pointer pointer;
 	typedef Reference reference;
+	typedef Distance difference_type;
+	typedef Category iterator_category;
 };
 
 /* iterator_traits */
@@ -25,30 +25,30 @@ class Iterator
 template <class Iterator>
 class IteratorTraits
 {
-	typedef Iterator::difference_type difference_type;
 	typedef Iterator::value_type value_type;
 	typedef Iterator::pointer pointer;
 	typedef Iterator::reference reference;
+	typedef Iterator::difference_type difference_type;
 	typedef Iterator::iterator_category iterator_category;
 };
 
 template <class T>
 class IteratorTraits<T*>
 {
-	typedef ptrdiff_t difference_type;
 	typedef T value_type;
 	typedef T* pointer;
 	typedef T& reference;
+	typedef ptrdiff_t difference_type;
 	typedef std::random_access_iterator_tag iterator_category;
 };
 
 template <class T>
 class IteratorTraits<const T*>
 {
-	typedef ptrdiff_t difference_type;
 	typedef T value_type;
 	typedef const T* pointer;
 	typedef const T& reference;
+	typedef ptrdiff_t difference_type;
 	typedef std::random_access_iterator_tag iterator_category;
 };
 
@@ -58,11 +58,11 @@ template <class Iterator>
 class ReverseIterator
 {
 	typedef Iterator iterator_type;
-	typedef IteratorTraits<Iterator>::iterator_category iterator_category;
 	typedef IteratorTraits<Iterator>::value_type value_type;
-	typedef IteratorTraits<Iterator>::difference_type difference_type;
 	typedef IteratorTraits<Iterator>::pointer pointer;
 	typedef IteratorTraits<Iterator>::reference reference;
+	typedef IteratorTraits<Iterator>::difference_type difference_type;
+	typedef IteratorTraits<Iterator>::iterator_category iterator_category;
 private:
 	iterator_type _it;
 
@@ -87,7 +87,6 @@ public:
 		return *this;
 	}
 	ReverseIterator operator- (difference_type n) const { return ReverseIterator(this->_it + n); }
-
 	ReverseIterator & operator--() {
 		++(this->_it);
 		return *this;
@@ -97,15 +96,12 @@ public:
 		++(*this);
 		return temp;
 	}
-
 	ReverseIterator& operator-= (difference_type n) {
 		this->_it += n;
 		return *this;
 	}
-
 	pointer operator->() const { return &(operator*()); }
-
-	reference operator[] (difference_type n) const { return(base()[-n -1]); }
+	reference operator[] (difference_type n) const { return(base()[-n-1]); }
 };
 
 #endif
