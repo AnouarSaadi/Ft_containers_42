@@ -63,7 +63,7 @@ class ReverseIterator
 	typedef IteratorTraits<Iterator>::reference reference;
 	typedef IteratorTraits<Iterator>::difference_type difference_type;
 	typedef IteratorTraits<Iterator>::iterator_category iterator_category;
-private:
+protected:
 	iterator_type _it;
 
 public:
@@ -101,7 +101,7 @@ public:
 		return *this;
 	}
 	pointer operator->() const { return &(operator*()); }
-	reference operator[] (difference_type n) const { return(base()[-n-1]); }
+	reference operator[] (difference_type n) const { return(this->base()[-n-1]); }
 };
 
 #endif

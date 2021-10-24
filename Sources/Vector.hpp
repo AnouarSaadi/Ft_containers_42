@@ -1,24 +1,23 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
+# include <memory>
+# include "Iterators.hpp"
 
 template <class T>
-class Allocator
+class IteratorVector : public Iterator
 {
-	typedef T value_type;
-	typedef T* pointer;
-	typedef T& reference;
-	typedef const T* const_pointer;
-	typedef const T& const_reference;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
-
-	template <class Type> struct rebind {
-  		typedef Allocator<Type> other;
-	};
+	T _ptr;
+public:
+	IteratorVector() {}
+	IteratorVector(const IteratorVector& other) { this->_ptr = other._ptr; return; }
+	~IteratorVector() {};
+	IteratorVector& operator==(const IteratorVector& other) const { return this->_ptr == other._ptr; }
+	IteratorVector& operator!=(const IteratorVector& other) const { return this->_ptr != other._ptr; }
+	
 };
 
-template < class T, class Alloc = Allocator<T> >
-class vector : public Iterator
+template < class T, class Alloc = std::allocator<T> >
+class vector
 {
 	typedef T value_type;
 	typedef Alloc allocator_type;
@@ -26,7 +25,7 @@ class vector : public Iterator
 	typedef pointer allocator_type::pointer;
 	typedef const_reference allocator_type::const_reference;
 	typedef const_pointer allocator_type::const_pointer;
-	// typedef itera
+	typedef difference_type IteratorTraits<iterator>::difference_type;
 };
 
 #endif
