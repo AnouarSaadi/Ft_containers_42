@@ -128,8 +128,24 @@ namespace ft {
 		size_type m_Size;
 
 	public:
-		Vector (const allocator_type& alloc = allocator_type()) {};
-		Vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
+		// destructors
+			// default
+		Vector (const allocator_type& alloc = allocator_type()) 
+		{
+			m_Data = alloc.allocator();
+			m_Size = 0;
+		}
+			// fill
+		Vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) 
+		{
+			
+		}
+			// range
+		template <class Iterator> Vector (Iterator first, Iterator last, const allocator_type& alloc = allocator_type()) {}
+			// copy
+		Vector (const Vector& x) {}
+		// assign operator
+		Vector& operator= (const Vector& x) {}
 	};// end vector class
 }; // end namspace ft
 #endif
