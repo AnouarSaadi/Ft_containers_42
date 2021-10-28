@@ -3,26 +3,28 @@
 
 # include <memory> // std::allocator
 # include "Iterators.hpp"
-# include <vector> // vector
+class Iterator;
+// # include <vector> // vector
 namespace ft {
 	template <class Vector>
 	class VectorIterator : public Iterator
 	{ 
 	public:
-		typedef Vector::value_type	value_type;
-		typedef value_type*			pointer;
-		typedef value_type&			reference;
+		typedef typename Vector::value_type	value_type;
+		typedef value_type*					pointer;
+		typedef value_type&					reference;
+		typedef std::ptrdiff_t				difference_type; 
 	
 	private:
 		pointer m_Ptr;
 
 	public:
 		// Member functions
-		VectorIterator() {} // constructor
-		VectorIterator(const pointer ptr) : m_Ptr(ptr) {} // param constructor
-		VectorIterator(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return; } // copy constructor
-		VectorIterator& operator=(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return *this; }// assignment operator
-		~VectorIterator() {}; // destructor
+		VectorIterator<Vector>() {} // constructor
+		VectorIterator<Vector>(const pointer ptr) : m_Ptr(ptr) {} // param constructor
+		VectorIterator<Vector>(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return; } // copy constructor
+		VectorIterator<Vector>& operator=(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return *this; }// assignment operator
+		~VectorIterator<Vector>() {}; // destructor
 		// operator *
 		reference operator*() const { return *m_Ptr; }
 		// ->
@@ -30,32 +32,33 @@ namespace ft {
 		// reference operator=(difference_type off) const { *this = off; return *this; }
 
 		// +
-		VectorIterator operator+(difference_type off) { return VectorIterator(m_Ptr + off); }
-		VectorIterator& operator+= (difference_type off) {
+		VectorIterator<Vector> operator+(difference_type off) { return VectorIterator(m_Ptr + off); }
+		VectorIterator<Vector>& operator+= (difference_type off) {
 			m_Ptr += off;
 			return *this;
 		}
-		VectorIterator & operator++() {
+		VectorIterator<Vector> & operator++() {
 			m_Ptr++;
 			return *this;
 		}
-		VectorIterator operator++(int) {
-			VectorIterator tmp(*this);
+		VectorIterator<Vector> operator++(int) {
+			VectorIterator<Vector> tmp(*this);
 			++*this;
 			return tmp;
 		}
+
 		// -
-		VectorIterator operator-(difference_type off) { return VectorIterator(m_Ptr - off); }
-		VectorIterator& operator-= (difference_type off) {
+		VectorIterator<Vector> operator-(difference_type off) { return VectorIterator(m_Ptr - off); }
+		VectorIterator<Vector>& operator-= (difference_type off) {
 			m_Ptr -= off;
 			return *this;
 		}
-		VectorIterator& operator--() {
+		VectorIterator<Vector>& operator--() {
 			m_Ptr--;
 			return *this;
 		}
-		VectorIterator operator--(int) {
-			VectorIterator tmp(*this);
+		VectorIterator<Vector> operator--(int) {
+			VectorIterator<Vector> tmp(*this);
 			--*this;
 			return tmp;
 		}
@@ -70,41 +73,41 @@ namespace ft {
 	}; // end VectorIterator class
 	// Non-member function overloads
 	// operator ==
-	template <class Iterator>
-  	bool operator== (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs)
+	template <class Vector>
+  	bool operator== (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
 	{
 		return lhs.base() == rhs.base();
 	}
 	// operator !=
-	template <class Iterator>
-  	bool operator!= (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs)
+	template <class Vector>
+  	bool operator!= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
 	{
 		return !(lhs == rhs);
 	}
 	// operator +
-	template <class Iterator>
-	VectorIterator<Iterator> operator+ (typename VectorIterator<Iterator>::difference_type n, const VectorIterator<Iterator>& _it)
+	template <class Vector>
+	VectorIterator<Vector> operator+ (typename VectorIterator<Vector>::difference_type n, const VectorIterator<Vector>& _it)
 	{
-		return VectorIterator(_it + n);
+		return VectorIterator<Vector>(_it + n);
 	}
 	// operator -
-	template <class Iterator>
-	typename VectorIterator<Iterator>::difference_type operator- (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs)
+	template <class Vector>
+	typename VectorIterator<Vector>::difference_type operator- (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
 	{
 		return lhs.base() - rhs.base();
 	}
 	// operator <
-	template <class Iterator>
-	bool operator< (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs) { return lhs.base() < rhs.base(); }
+	template <class Vector>
+	bool operator< (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() < rhs.base(); }
 	// operator <=
-	template <class Iterator>
-	bool operator<= (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs) { return lhs.base() <= rhs.base(); }
+	template <class Vector>
+	bool operator<= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() <= rhs.base(); }
 	// operator >
-	template <class Iterator>
-	bool operator> (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs) { return lhs.base() > rhs.base(); }
+	template <class Vector>
+	bool operator> (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() > rhs.base(); }
 	// operator>=
-	template <class Iterator>
-	bool operator>= (const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs) { return lhs.base() >= rhs.base(); }
+	template <class Vector>
+	bool operator>= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() >= rhs.base(); }
 	
 	
 	// Vector Class
@@ -112,40 +115,49 @@ namespace ft {
 	class Vector
 	{
 	public:
-		typedef T											value_type;
-		typedef Alloc										allocator_type;
-		typedef allocator_type::reference					reference;
-		typedef allocator_type::pointer						pointer;
-		typedef allocator_type::const_reference				const_reference;
-		typedef allocator_type::const_pointer				const_pointer;
-		typedef IteratorTraits<iterator>::difference_type	difference_type;
-		typedef VectorIterator< Vector<T> >					iterator;
-		typedef ReverseIterator<iterator>					reverse_iterator;
-		typedef size_t										size_type;
+		typedef T													value_type;
+		typedef Alloc												allocator_type;
+		typedef typename allocator_type::reference					reference;
+		typedef typename allocator_type::pointer					pointer;
+		typedef typename allocator_type::const_reference			const_reference;
+		typedef typename allocator_type::const_pointer				const_pointer;
+		typedef VectorIterator< Vector<T> > 						iterator;
+		typedef typename IteratorTraits<iterator>::difference_type	difference_type;
+		typedef ReverseIterator<iterator>							reverse_iterator;
+		typedef size_t												size_type;
 	
 	private:
-		pointer m_Data;
-		size_type m_Size;
+		pointer		m_Data;
+		size_type	m_Size;
+		size_type	m_Capacity;
 
 	public:
 		// destructors
 			// default
-		Vector (const allocator_type& alloc = allocator_type()) 
+		Vector (const allocator_type& alloc = allocator_type()) : m_Data(nullptr), m_Size(0)
 		{
-			m_Data = alloc.allocator();
-			m_Size = 0;
+			(void)alloc;
 		}
 			// fill
-		Vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) 
+		Vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : m_Data(nullptr) , m_Size(0)
 		{
-			
+			m_Data = alloc.allocate(n, 0);
+			m_Size = n;
+			for (size_type i = 0; i < m_Size; ++i)
+				m_Data[i] = val;
 		}
 			// range
-		template <class Iterator> Vector (Iterator first, Iterator last, const allocator_type& alloc = allocator_type()) {}
+		template <class Iterator> Vector (Iterator first, Iterator last, const allocator_type& alloc = allocator_type()) : m_Data(nullptr), m_Size(0)
+		{
+			(void)last; (void)first; (void)alloc;
+		}
 			// copy
-		Vector (const Vector& x) {}
+		Vector (const Vector& x) { (void)x; }
 		// assign operator
-		Vector& operator= (const Vector& x) {}
+		Vector& operator= (const Vector& x) { (void)x; }
+
+		// operator []
+		reference operator[] (size_type n) { return m_Data[n]; };
 	};// end vector class
 }; // end namspace ft
 #endif
