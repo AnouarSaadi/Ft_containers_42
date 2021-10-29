@@ -3,14 +3,16 @@
 
 # include <memory> // std::allocator
 # include "Iterators.hpp"
+#include <iostream>
 class Iterator;
 // # include <vector> // vector
 namespace ft {
 	template <class Vector>
-	class VectorIterator : public Iterator
+	class VectorIterator
 	{ 
 	public:
-		typedef typename Vector::value_type	value_type;
+		// typedef typename Vector::value_type	value_type;
+		typedef typename ft::IteratorTraits<Vector>::value_type	value_type;
 		typedef value_type*					pointer;
 		typedef value_type&					reference;
 		typedef std::ptrdiff_t				difference_type; 
@@ -29,7 +31,6 @@ namespace ft {
 		reference operator*() const { return *m_Ptr; }
 		// ->
 		pointer operator->() const { return m_Ptr; }
-		// reference operator=(difference_type off) const { *this = off; return *this; }
 
 		// +
 		VectorIterator<Vector> operator+(difference_type off) { return VectorIterator(m_Ptr + off); }
@@ -68,7 +69,6 @@ namespace ft {
 
 		// base()
 		pointer base() const { return m_Ptr; }
-
 		
 	}; // end VectorIterator class
 	// Non-member function overloads
@@ -99,15 +99,15 @@ namespace ft {
 	// operator <
 	template <class Vector>
 	bool operator< (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() < rhs.base(); }
-	// operator <=
-	template <class Vector>
-	bool operator<= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() <= rhs.base(); }
 	// operator >
 	template <class Vector>
 	bool operator> (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() > rhs.base(); }
+	// operator <=
+	template <class Vector>
+	bool operator<= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return !(lhs > rhs); }
 	// operator>=
 	template <class Vector>
-	bool operator>= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() >= rhs.base(); }
+	bool operator>= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return !(lhs < rhs); }
 	
 	
 	// Vector Class
@@ -115,49 +115,60 @@ namespace ft {
 	class Vector
 	{
 	public:
-		typedef T													value_type;
-		typedef Alloc												allocator_type;
-		typedef typename allocator_type::reference					reference;
-		typedef typename allocator_type::pointer					pointer;
-		typedef typename allocator_type::const_reference			const_reference;
-		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef VectorIterator< Vector<T> > 						iterator;
-		typedef typename IteratorTraits<iterator>::difference_type	difference_type;
-		typedef ReverseIterator<iterator>							reverse_iterator;
-		typedef size_t												size_type;
+		typedef T												value_type;
+		typedef Alloc											allocator_type;
+		typedef std::size_t										size_type;
+		typedef std::ptrdiff_t									difference_type;
+		typedef typename Alloc::reference						reference;
+		typedef typename Alloc::const_reference					const_reference;
+		typedef typename Alloc::pointer							pointer;
+		typedef typename Alloc::const_pointer					const_pointer;
+		typedef typename ft::VectorIterator< Vector<T> > 		iterator;
+		typedef typename ft::VectorIterator< const Vector<T> >	const_iterator;
+		typedef typename ft::ReverseIterator<iterator>			reverse_iterator;
 	
 	private:
-		pointer		m_Data;
-		size_type	m_Size;
-		size_type	m_Capacity;
+		pointer			vecData;
+		size_type		vecSize;
+		size_type		vecCapacity;
+		allocator_type	vecAllocator;
 
 	public:
 		// destructors
 			// default
-		Vector (const allocator_type& alloc = allocator_type()) : m_Data(nullptr), m_Size(0)
+		Vector(const allocator_type& alloc = allocator_type()) : vecData(nullptr), vecSize(0)
 		{
-			(void)alloc;
+			vecAllocator = alloc;
+			std::cout << "Vector 0" << std::endl;
+			vecData = vecAllocator.allocator();
+			vecSize = 0;
+			vecCapacity = 0;
 		}
 			// fill
-		Vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : m_Data(nullptr) , m_Size(0)
+		Vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : vecData(nullptr) , vecSize(0)
 		{
-			m_Data = alloc.allocate(n, 0);
-			m_Size = n;
-			for (size_type i = 0; i < m_Size; ++i)
-				m_Data[i] = val;
+			vecAllocator = alloc;
+			std::cout << "Vector 1" << std::endl;
+			vecData = vecAllocator.allocate(1);
+			vecSize = n;
+			for (size_type i = 0; i < vecSize; ++i)
+				vecData[i] = val;
+			vecCapacity = vecSize;
 		}
 			// range
-		template <class Iterator> Vector (Iterator first, Iterator last, const allocator_type& alloc = allocator_type()) : m_Data(nullptr), m_Size(0)
-		{
-			(void)last; (void)first; (void)alloc;
-		}
+		// template <class InputIterator> 
+		// Vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : vecData(nullptr), vecSize(0)
+		// {
+		// 	std::cout << "Vector 2" << std::endl;
+		// 	(void)last; (void)first; (void)alloc;
+		// }
 			// copy
-		Vector (const Vector& x) { (void)x; }
+		Vector(const Vector& x) { (void)x; }
 		// assign operator
 		Vector& operator= (const Vector& x) { (void)x; }
 
 		// operator []
-		reference operator[] (size_type n) { return m_Data[n]; };
+		reference operator[] (size_type idx) { return vecData[idx]; };
 	};// end vector class
 }; // end namspace ft
 #endif

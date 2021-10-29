@@ -4,14 +4,14 @@
 
 int main()
 {
-	// std::vector<int> v;
+	// std::cout << "jbviudb" << std::endl;
+	ft::Vector<int> v(4, 7);
+	for (int i = 0; i < 4; ++i) {
+		std::cout << v[i] << std::endl;
+	}
 
-	// for (int i = 0; i < 5; i++)
-	// {v.push_back(i);}
-	// 	for (int i = 0; i < 5; i++)
-	// {std::cout << v[i] << std::endl;}
-	// std::vector<int>::iterator it;
-
-	ft::Vector<int> v;
+	// std::vector<int> v(4, 7, std::allocator<int>());
+	// for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+	// 	std::cout << *it << std::endl;
 	return 0;
 }

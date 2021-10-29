@@ -7,7 +7,8 @@ class Vector;
 namespace ft {
 	/* iterator */
 
-	template <class Category,
+	template <
+				class Category,
 				class T,
 				class Distance = std::ptrdiff_t,
 				class Pointer = T*,
@@ -16,11 +17,11 @@ namespace ft {
 	class Iterator
 	{
 	public:
+		typedef Category	iterator_category;
 		typedef T			value_type;
 		typedef Pointer		pointer;
 		typedef Reference	reference;
 		typedef Distance	difference_type;
-		typedef Category	iterator_category;
 	}; // end Iterator
 
 	/* iterator_traits */
@@ -29,12 +30,12 @@ namespace ft {
 	class IteratorTraits
 	{
 	public:
-		
 		typedef typename Iter::value_type			value_type;
 		typedef typename Iter::pointer				pointer;
 		typedef typename Iter::reference			reference;
 		typedef typename Iter::difference_type		difference_type;
 		typedef typename Iter::iterator_category	iterator_category;
+		typedef IteratorTraits iterator_traits;
 	}; // end class IteratorTraits
 
 	template <class T>
@@ -158,5 +159,10 @@ namespace ft {
 	{
 		return lhs.base() - rhs.base();
 	}
+
+
+	
+
+
 }; // end namespace ft
 #endif
