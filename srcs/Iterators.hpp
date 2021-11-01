@@ -2,7 +2,7 @@
 #	define ITERATORS_HPP
 #	include <iterator>
 #	include <cstddef>
-#include "Vector.hpp"
+#	include "Vector.hpp"
 class Vector;
 namespace ft {
 	/* iterator */
@@ -34,7 +34,6 @@ namespace ft {
 		typedef typename Iter::pointer				pointer;
 		typedef typename Iter::reference			reference;
 		typedef typename Iter::difference_type		difference_type;
-		typedef typename Iter::iterator_category	iterator_category;
 		typedef IteratorTraits iterator_traits;
 	}; // end class IteratorTraits
 
@@ -84,7 +83,9 @@ namespace ft {
 		iterator_type base() const { return _it; }
 		reference operator*() const { return *_it; }
 		// +
-		ReverseIterator<Iter> operator+ (difference_type off) const { return ReverseIterator<Iter>(_it - off); }
+		ReverseIterator<Iter> operator+ (difference_type off) const {
+			return ReverseIterator<Iter>(_it - off);
+		}
 		ReverseIterator<Iter> & operator++() {
 			_it--;
 			return *this;
@@ -99,7 +100,9 @@ namespace ft {
 			return *this;
 		}
 		// -
-		ReverseIterator<Iter> operator- (difference_type off) const { return ReverseIterator<Iter>(this->_it + off); }
+		ReverseIterator<Iter> operator- (difference_type off) const {
+			return ReverseIterator<Iter>(this->_it + off);
+		}
 		ReverseIterator<Iter> & operator--() {
 			_it++;
 			return *this;
@@ -116,60 +119,59 @@ namespace ft {
 		// ->
 		pointer operator->() const { return _it; }
 		// []
-		reference operator[] (typename ReverseIterator<Iter>::difference_type idx) const { return *(*this + idx); }
+		reference operator[] (typename ReverseIterator<Iter>::difference_type idx) const {
+			return *(*this + idx);
+		}
 	}; // end reverse_iterator class
 	// Non-member function overloads
 	template <class Iter>
-  	bool operator== (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+  		bool operator== (const ReverseIterator<Iter>& lhs,
+		  	const ReverseIterator<Iter>& rhs)
 	{
-		return (lhs.base() == rhs.base());
+		return lhs.base() == rhs.base();
 	}
 	template <class Iter>
-  	bool operator!= (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+  		bool operator!= (const ReverseIterator<Iter>& lhs,
+		  	const ReverseIterator<Iter>& rhs)
 	{
-		return !(lhs == rhs);
+		return lhs.base() != rhs.base();
 	}
 	template <class Iter>
-  	bool operator<  (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+  		bool operator<  (const ReverseIterator<Iter>& lhs,
+		  	const ReverseIterator<Iter>& rhs)
 	{
-		return (lhs.base() >= rhs.base());
+		return lhs.base() > rhs.base();
 	}
 	template <class Iter>
-  	bool operator<=  (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+  		bool operator<=  (const ReverseIterator<Iter>& lhs,
+		  	const ReverseIterator<Iter>& rhs)
 	{
-		return (lhs.base() > rhs.base());
+		return lhs.base() >= rhs.base();
 	}
 	template <class Iter>
-	bool operator>  (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+		bool operator>  (const ReverseIterator<Iter>& lhs,
+			const ReverseIterator<Iter>& rhs)
 	{
-		return (lhs.base() <= rhs.base());
+		return lhs.base() < rhs.base();
 	}
 	template <class Iter>
-	bool operator>=  (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+		bool operator>=  (const ReverseIterator<Iter>& lhs,
+			const ReverseIterator<Iter>& rhs)
 	{
-		return (lhs.base() < rhs.base());
+		return lhs.base() <= rhs.base();
 	}
 	template <class Iter>
-	ReverseIterator<Iter> operator+ (typename ReverseIterator<Iter>::difference_type off, const ReverseIterator<Iter>& rev_it)
+		ReverseIterator<Iter> operator+ (typename ReverseIterator<Iter>::difference_type off,
+			const ReverseIterator<Iter>& rev_it)
 	{
 		return ReverseIterator<Iter>(rev_it - off);
 	}
 	template <class Iter>
-	typename ReverseIterator<Iter>::difference_type operator- (const ReverseIterator<Iter>& lhs, const ReverseIterator<Iter>& rhs)
+		typename ReverseIterator<Iter>::difference_type operator- (const ReverseIterator<Iter>& lhs,
+			const ReverseIterator<Iter>& rhs)
 	{
 		return lhs.base() - rhs.base();
 	}
-	
-	// enable_if
-
-	// template <bool Cond, class T = void> class enable_if {
-	// public:
-	// };
-	
-	
-
-	// is_integral 
-	// template <class T> struct is_integral<
 
 }; // end namespace ft
 #endif
