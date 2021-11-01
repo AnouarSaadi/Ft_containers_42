@@ -2,8 +2,8 @@
 # define VECTOR_HPP
 
 # include <memory> // std::allocator
+#	include <iostream>
 # include "Iterators.hpp"
-#include <iostream>
 class Iterator;
 // # include <vector> // vector
 namespace ft {
@@ -139,7 +139,7 @@ namespace ft {
 		Vector(const allocator_type& alloc = allocator_type()) : vecData(nullptr), vecSize(0)
 		{
 			vecAllocator = alloc;
-			std::cout << "Vector 0" << std::endl;
+			std::cout << "default constructor" << std::endl;
 			vecData = vecAllocator.allocator();
 			vecSize = 0;
 			vecCapacity = 0;
@@ -148,27 +148,36 @@ namespace ft {
 		Vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : vecData(nullptr) , vecSize(0)
 		{
 			vecAllocator = alloc;
-			std::cout << "Vector 1" << std::endl;
+			std::cout << "fill constructor" << std::endl;
 			vecData = vecAllocator.allocate(1);
 			vecSize = n;
-			for (size_type i = 0; i < vecSize; ++i)
-				vecData[i] = val;
+			{ // assign 
+				for (size_type i = 0; i < vecSize; ++i)
+					vecData[i] = val;
+			}
 			vecCapacity = vecSize;
 		}
 			// range
-		// template <class InputIterator> 
-		// Vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : vecData(nullptr), vecSize(0)
-		// {
-		// 	std::cout << "Vector 2" << std::endl;
-		// 	(void)last; (void)first; (void)alloc;
-		// }
+		
+		template <class InputIterator>
+		
+		Vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : vecData(nullptr), vecSize(0)
+		{
+			std::cout << "range constructor" << std::endl;
+			(void)last; (void)first; (void)alloc;
+		}
 			// copy
-		Vector(const Vector& x) { (void)x; }
+		Vector(const Vector& x) { 
+			(void)x; 
+			std::cout << "copy constructor" << std::endl;
+		}
 		// assign operator
 		Vector& operator= (const Vector& x) { (void)x; }
 
 		// operator []
 		reference operator[] (size_type idx) { return vecData[idx]; };
+
 	};// end vector class
 }; // end namspace ft
 #endif
+ 

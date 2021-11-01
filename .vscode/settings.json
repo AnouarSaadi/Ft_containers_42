@@ -9,6 +9,14 @@
 		"functional": "cpp",
 		"string": "cpp",
 		"unordered_map": "cpp",
-		"vector": "cpp"
+		"vector": "cpp",
+		"__node_handle": "cpp",
+		"sstream": "cpp",
+		"algorithm": "cpp",
+		"atomic": "cpp",
+		"cmath": "cpp",
+		"complex": "cpp",
+		"type_traits": "cpp",
+		"utility": "cpp"
 	}
 }

@@ -159,10 +159,17 @@ namespace ft {
 	{
 		return lhs.base() - rhs.base();
 	}
+	
+	// enable_if
 
-
+	// template <bool Cond, class T = void> class enable_if {
+	// public:
+	// };
+	
 	
 
+	// is_integral 
+	// template <class T> struct is_integral<
 
 }; // end namespace ft
 #endif
