@@ -142,7 +142,7 @@ namespace ft {
 			Vector(const allocator_type& alloc = allocator_type()) :
 				vecData(nullptr), vecSize(0), vecAllocator(alloc)
 			{
-				vecData = vecAllocator.allocator();
+				vecData = nullptr;
 				vecSize = 0;
 				vecCapacity = 0;
 			}
@@ -169,7 +169,6 @@ namespace ft {
 				vecData = vecAllocator.allocate(size);
 				//assign
 				this->assign(first, last);
-				(void)last; (void)first;
 			}
 			// copy
 			Vector(const Vector& x) { *this = x; }
@@ -182,16 +181,16 @@ namespace ft {
 				vecCapacity = 0;
 			}
 			// assign operator
-			Vector& operator= (const Vector& x)
+			Vector& operator = (const Vector& x)
 			{
 				if (this != &x)
 				{
 					this->vecAllocator = x.vecAllocator;
 					this->vecSize = x.size();
-					this->vecCapacity = x.Capacity();
-					this->vecAllocator.destroy(vecData);
-					this->vecData = vecAllocator.allocate(vecCapacity);
-					this->vecData.assign(x.begin(), x.end());
+					this->vecCapacity = x.capacity();
+					this->vecAllocator.destroy(this->vecData);
+					this->vecData = vecAllocator.allocate(vecSize);
+					this->assign(x.begin(), x.end());
 				}
 				return *this;
 			}
@@ -234,19 +233,21 @@ namespace ft {
 			// reserve
 			void reserve (size_type n)
 			{
-				pointer tmp;
-				tmp = vecAllocator.allocate(n);
-				tmp.assign(vecData, vecData + size());
-				vecAllocator.destroy(vecData);
-				vecSize = n;
-				vecCapacity = vecSize;
-				vecData = tmp;
-				//vecAllocator.destroy(tmp); 
+				ft::Vector<value_type> tmp;
+				tmp.vecData = tmp.vecAllocator.allocate(n);
+				tmp.vecSize = n;
+				tmp.vecCapacity = this->vecCapacity;
+				if (n > tmp.vecCapacity)
+					tmp.vecCapacity = (tmp.vecCapacity * 2 >= n) ? tmp.vecCapacity * 2 : n;
+				tmp.assign(this->begin(), this->end());
+				*this = tmp;
+				tmp.~Vector();
 			}
 
 			/*********************** Element access **********************/
 			// operator []
 			reference operator[] (size_type idx) { return vecData[idx]; }
+
 			// at
 			reference at (size_type n) { return vecData[n]; }
 			const_reference at (size_type n) const { return vecData[n]; }
@@ -280,14 +281,11 @@ namespace ft {
 			// push_back
 			void push_back (const value_type& val)
 			{
-				if (this->size() >= this->capacity())
-				{
-					pointer tmp;
-					this->capacity = 2 * this->capacity;
-					tmp = vecAllocator.allocate(this->capacity);
-					
-				}
+				reserve(size() + 1);
+				vecData[vecSize - 1] = val;
 			}
+			// pop_back
+			void pop_back() { reserve(size() - 1); }
 		}; // end vector class
 }; // end namspace ft
 #endif
