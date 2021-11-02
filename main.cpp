@@ -6,19 +6,19 @@ class Vector;
 
 int main()
 {
-	// std::cout << "jbviudb" << std::endl;
 	ft::Vector<int> v(4, 7);
 	for (int i = 0; i < 4; ++i){
 		std::cout << v[i] << std::endl;
 	}
+	ft::Vector<int>::iterator i = v.begin();
 	v.at(3) = 0;
 	std::cout << v.back() << std::endl;
 	std::cout << v.capacity()  <<  std::endl;
 	std::cout << v.max_size()  <<  std::endl;
 
 	std::vector<int> v0(4, 7);
-		for (int i = 0; i < 4; ++i){
-		std::cout << v0[i] << std::endl;
+		for (; i != v.end(); ++i) {
+		std::cout << *i << std::endl;
 	}
 	v0.push_back(56);
 	v0.push_back(51);
@@ -33,6 +33,17 @@ int main()
 		std::cout << v1[i] << std::endl;
 	}
 	std::cout << v1.max_size()  <<  std::endl;
-	
 	return 0;
 }
+
+
+/* 
+
+	sie = 4
+	capacity = 4
+
+	reserve(s + 1);
+	cap * 2 > n
+		cap = cap * 2
+
+ */

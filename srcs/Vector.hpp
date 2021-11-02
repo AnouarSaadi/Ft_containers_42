@@ -142,7 +142,6 @@ namespace ft {
 			Vector(const allocator_type& alloc = allocator_type()) :
 				vecData(nullptr), vecSize(0), vecAllocator(alloc)
 			{
-				std::cout << "default constructor" << std::endl;
 				vecData = vecAllocator.allocator();
 				vecSize = 0;
 				vecCapacity = 0;
@@ -152,7 +151,6 @@ namespace ft {
 				const allocator_type& alloc = allocator_type()) :
 					vecData(nullptr) , vecSize(n), vecAllocator(alloc)
 			{
-				std::cout << "fill constructor" << std::endl;
 				vecData = vecAllocator.allocate(n);
 				this->assign(n, val);
 				vecCapacity = vecSize;
@@ -164,7 +162,6 @@ namespace ft {
 						typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :
 						vecData(nullptr), vecSize(0), vecAllocator(alloc)
 			{
-				std::cout << "range constructor" << std::endl;
 				int size = 0;
 				for (InputIterator it = first; it != last; ++it) { size++; }
 				vecSize = size;
@@ -175,11 +172,7 @@ namespace ft {
 				(void)last; (void)first;
 			}
 			// copy
-			Vector(const Vector& x)
-			{ 
-				std::cout << "copy constructor" << std::endl;
-				*this = x;
-			}
+			Vector(const Vector& x) { *this = x; }
 
 			// Destructor
 			~Vector()
@@ -269,13 +262,13 @@ namespace ft {
 			/*********************** Modifiers **********************/
 
 			// assign
-			// fill
+				// fill
 			void assign (size_type n, const value_type& val)
 			{
 				for (size_type i = 0; i < n; ++i)
 					vecData[i] = val;
 			}
-			// range
+				// range
 			template <class InputIterator>
 				void assign (InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
@@ -284,6 +277,17 @@ namespace ft {
 					for (InputIterator it = first; it != last; ++it)
 						vecData[i++] = *it;
 				}
+			// push_back
+			void push_back (const value_type& val)
+			{
+				if (this->size() >= this->capacity())
+				{
+					pointer tmp;
+					this->capacity = 2 * this->capacity;
+					tmp = vecAllocator.allocate(this->capacity);
+					
+				}
+			}
 		}; // end vector class
 }; // end namspace ft
 #endif
