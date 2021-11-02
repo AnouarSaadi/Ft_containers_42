@@ -286,6 +286,45 @@ namespace ft {
 			}
 			// pop_back
 			void pop_back() { reserve(size() - 1); }
+			// insert
+				// single element
+			iterator insert (iterator position, const value_type& val)
+			{
+				ft::Vector<value_type> tmp;
+				tmp.vecCapacity = this->capacity();
+				tmp.reserve(size() + 1);
+				int i = 0, j = 0;
+				for (iterator it = this->begin(); it != this->end() && (size_t)i < tmp.size(); it++)
+				{
+					if (it == position)
+						tmp.vecData[i++] = val;
+					tmp.vecData[i++] = this->vecData[j++];
+				}
+				*this = tmp;
+				tmp.~Vector();
+				*position = val;
+				return position.base();
+			}
+				// fill
+			void insert (iterator position, size_type n, const value_type& val)
+			{
+				ft::Vector<value_type> tmp;
+				tmp.vecCapacity = this->capacity();
+				tmp.reserve(size() + n);
+				int i = 0, j = 0;
+				for (iterator it = this->begin(); it != this->end() && (size_t)i < tmp.size(); it++)
+				{
+					if (it == position)
+					{
+						for(; (size_t)i < n;)
+							tmp.vecData[i++] = val;
+					}
+					tmp.vecData[i++] = this->vecData[j++];
+				}
+				*this = tmp;
+				tmp.~Vector();
+			}
+
 		}; // end vector class
 }; // end namspace ft
 #endif

@@ -21,8 +21,12 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
-		v.pop_back();
-		v.pop_back();
+		ft::Vector<int>::iterator itb = v.begin();
+		std::cout << "position " << *itb << std::endl;
+		ft::Vector<int>::iterator it = v.insert(v.begin(), 8);
+		std::cout << "insert " << *it << std::endl;
+		v.insert(v.begin() + 2, 8, 6);
+
 		for (int i = 0; (size_t)i < v.size(); i++){
 			std::cout << v[i] << std::endl;
 		}
@@ -43,9 +47,14 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
-		v.pop_back();
-		v.pop_back();
-		for (int i = 0; (size_t)i < v.size(); i++){
+		std::vector<int>::iterator itb = v.begin();
+		std::cout << "position " << *itb << std::endl;
+		std::vector<int>::iterator it = v.insert(v.begin(), 8);
+		std::cout << "insert " << *it << std::endl;
+		v.insert(v.begin() + 2, 8, 6);
+
+		for (int i = 0; (size_t)i < v.size(); i++)
+		{
 			std::cout << v[i] << std::endl;
 		}
 		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
