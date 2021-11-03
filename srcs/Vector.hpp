@@ -2,7 +2,7 @@
 # define VECTOR_HPP
 
 # include <memory> // std::allocator
-#	include <iostream>
+# include <iostream>
 # include "Iterators.hpp"
 # include "Utils.hpp"
 
@@ -167,7 +167,6 @@ namespace ft {
 				vecSize = size;
 				vecCapacity = size;
 				vecData = vecAllocator.allocate(size);
-				//assign
 				this->assign(first, last);
 			}
 			// copy
@@ -176,7 +175,7 @@ namespace ft {
 			// Destructor
 			~Vector()
 			{
-				vecAllocator.destroy(vecData);
+				delete [] vecData;
 				vecSize = 0;
 				vecCapacity = 0;
 			}
@@ -188,7 +187,7 @@ namespace ft {
 					this->vecAllocator = x.vecAllocator;
 					this->vecSize = x.size();
 					this->vecCapacity = x.capacity();
-					this->vecAllocator.destroy(this->vecData);
+					delete [] this->vecData;
 					this->vecData = vecAllocator.allocate(vecSize);
 					this->assign(x.begin(), x.end());
 				}
@@ -220,7 +219,7 @@ namespace ft {
 			// resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				vecAllocator.destroy(vecData);
+				delete [] vecData;
 				vecSize = n;
 				vecCapacity = vecSize;
 				vecData = vecAllocator.allocate(n);
@@ -233,15 +232,9 @@ namespace ft {
 			// reserve
 			void reserve (size_type n)
 			{
-				ft::Vector<value_type> tmp;
-				tmp.vecData = tmp.vecAllocator.allocate(n);
-				tmp.vecSize = n;
-				tmp.vecCapacity = this->vecCapacity;
-				if (n > tmp.vecCapacity)
-					tmp.vecCapacity = (tmp.vecCapacity * 2 >= n) ? tmp.vecCapacity * 2 : n;
-				tmp.assign(this->begin(), this->end());
-				*this = tmp;
-				tmp.~Vector();
+				this->vecData = this->vecAllocator.allocate(n);
+				if (n > this->vecCapacity)
+					this->vecCapacity = (this->vecCapacity * 2 >= n) ? this->vecCapacity * 2 : n;
 			}
 
 			/*********************** Element access **********************/
@@ -281,28 +274,38 @@ namespace ft {
 			// push_back
 			void push_back (const value_type& val)
 			{
-				reserve(size() + 1);
-				vecData[vecSize - 1] = val;
+				ft::Vector<value_type> tmp;
+				tmp.vecSize = this->vecSize;
+				tmp.vecCapacity = this->capacity();
+				tmp.reserve(this->size() + 1);
+				tmp.assign(this->begin(), this->end());
+				tmp.vecData[tmp.vecSize++] = val;
+				*this = tmp;
 			}
 			// pop_back
-			void pop_back() { reserve(size() - 1); }
+			void pop_back()
+			{
+				ft::Vector<value_type> tmp;
+				if (this->size() > 0)
+					tmp.reserve(this->size() - 1);
+				tmp.assign(this->begin(), this->end() - 1);
+				tmp.vecSize = this->vecSize - 1;
+				tmp.vecCapacity = this->capacity();
+				*this = tmp;
+			}
 			// insert
 				// single element
 			iterator insert (iterator position, const value_type& val)
 			{
 				ft::Vector<value_type> tmp;
 				tmp.vecCapacity = this->capacity();
+				tmp.vecSize = this->vecSize + 1;
 				tmp.reserve(size() + 1);
-				int i = 0, j = 0;
-				for (iterator it = this->begin(); it != this->end() && (size_t)i < tmp.size(); it++)
-				{
-					if (it == position)
-						tmp.vecData[i++] = val;
-					tmp.vecData[i++] = this->vecData[j++];
+				size_t i = 0, j = 0;
+				for (iterator it = this->begin(); i < tmp.size(); it++) {
+					tmp.vecData[i++] = (it == position) ? val : this->vecData[j++];
 				}
 				*this = tmp;
-				tmp.~Vector();
-				*position = val;
 				return position.base();
 			}
 				// fill
@@ -311,20 +314,24 @@ namespace ft {
 				ft::Vector<value_type> tmp;
 				tmp.vecCapacity = this->capacity();
 				tmp.reserve(size() + n);
-				int i = 0, j = 0;
-				for (iterator it = this->begin(); it != this->end() && (size_t)i < tmp.size(); it++)
+				tmp.vecSize = this->vecSize + n;
+				size_t i = 0, j = 0;
+				for (iterator it = this->begin(); i < tmp.size(); it++)
 				{
 					if (it == position)
 					{
-						for(; (size_t)i < n;)
-							tmp.vecData[i++] = val;
+						for (size_type k = i; k < i + n; ++k)
+							tmp.vecData[k] = val;
+						i += n;
 					}
-					tmp.vecData[i++] = this->vecData[j++];
+					else
+						tmp.vecData[i++] = this->vecData[j++];
 				}
 				*this = tmp;
-				tmp.~Vector();
 			}
-
+				// range
+				template <class InputIterator>
+    		void insert (iterator position, InputIterator first, InputIterator last) {}
 		}; // end vector class
 }; // end namspace ft
 #endif

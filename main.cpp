@@ -9,9 +9,6 @@ int main()
 	std::cout << "********************** My vector **********************" << std::endl;
 	{
 		ft::Vector<int> v(4, 7);
-		for (int i = 0; (size_t)i < v.size(); i++){
-			std::cout << v[i] << std::endl;
-		}
 		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
 		v.push_back(10);
 		v.push_back(11);
@@ -21,9 +18,12 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
+		for (int i = 0; (size_t)i < v.size(); i++){
+			std::cout << v[i] << std::endl;
+		}
 		ft::Vector<int>::iterator itb = v.begin();
 		std::cout << "position " << *itb << std::endl;
-		ft::Vector<int>::iterator it = v.insert(v.begin(), 8);
+		ft::Vector<int>::iterator it = v.insert(v.begin() + 2, 8);
 		std::cout << "insert " << *it << std::endl;
 		v.insert(v.begin() + 2, 8, 6);
 
@@ -35,9 +35,6 @@ int main()
 	std::cout << "********************** std::vector **********************" << std::endl;
 	{
 		std::vector<int> v(4, 7);
-		for (int i = 0; (size_t)i < v.size(); i++){
-			std::cout << v[i] << std::endl;
-		}
 		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
 		v.push_back(10);
 		v.push_back(11);
@@ -47,9 +44,12 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
+		for (int i = 0; (size_t)i < v.size(); i++){
+			std::cout << v[i] << std::endl;
+		}
 		std::vector<int>::iterator itb = v.begin();
 		std::cout << "position " << *itb << std::endl;
-		std::vector<int>::iterator it = v.insert(v.begin(), 8);
+		std::vector<int>::iterator it = v.insert(v.begin()+ 2, 8);
 		std::cout << "insert " << *it << std::endl;
 		v.insert(v.begin() + 2, 8, 6);
 
