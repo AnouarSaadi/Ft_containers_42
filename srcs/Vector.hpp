@@ -170,26 +170,28 @@ namespace ft {
 				this->assign(first, last);
 			}
 			// copy
-			Vector(const Vector& x) { *this = x; }
+			Vector(const Vector& x)  : vecData(nullptr), vecSize(0),
+				vecCapacity(0) , vecAllocator(x.vecAllocator)
+			{
+				*this = x;
+			}
 
 			// Destructor
 			~Vector()
 			{
-				delete [] vecData;
-				vecSize = 0;
-				vecCapacity = 0;
+				this->clear();
 			}
 			// assign operator
 			Vector& operator = (const Vector& x)
 			{
 				if (this != &x)
 				{
+					this->clear();
 					this->vecAllocator = x.vecAllocator;
 					this->vecSize = x.size();
 					this->vecCapacity = x.capacity();
-					delete [] this->vecData;
-					this->vecData = vecAllocator.allocate(vecSize);
-					this->assign(x.begin(), x.end());
+					this->vecData = vecAllocator.allocate(x.size());
+					for (size_type i = 0; i < x.size(); i++) { this->vecData[i] = x.vecData[i]; }
 				}
 				return *this;
 			}
@@ -219,7 +221,7 @@ namespace ft {
 			// resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				delete [] vecData;
+				if (this->size())  this->clear();
 				vecSize = n;
 				vecCapacity = vecSize;
 				vecData = vecAllocator.allocate(n);
@@ -228,13 +230,19 @@ namespace ft {
 			// capacity
 			size_type capacity() const { return vecCapacity; }
 			// empty
-			bool empty() const { return !vecSize ? true : false; }
+			bool empty() const { return vecSize > 0 ? false : true; }
 			// reserve
 			void reserve (size_type n)
 			{
-				this->vecData = this->vecAllocator.allocate(n);
-				if (n > this->vecCapacity)
-					this->vecCapacity = (this->vecCapacity * 2 >= n) ? this->vecCapacity * 2 : n;
+				ft::Vector<value_type> tmp;
+				tmp.vecData = tmp.vecAllocator.allocate(n);
+				tmp.vecCapacity = this->capacity();
+				if (n > tmp.vecCapacity)
+					tmp.vecCapacity = (tmp.vecCapacity * 2 >= n) ? tmp.vecCapacity * 2 : n;
+				tmp.vecAllocator.construct(tmp.vecData, n);
+				for (size_type i = 0; i < this->size(); i++) { tmp.vecData[i] = this->vecData[i]; }
+				tmp.vecSize = this->size();
+				*this = tmp;
 			}
 
 			/*********************** Element access **********************/
@@ -259,6 +267,7 @@ namespace ft {
 				// fill
 			void assign (size_type n, const value_type& val)
 			{
+				// reserve space
 				for (size_type i = 0; i < n; ++i)
 					vecData[i] = val;
 			}
@@ -267,41 +276,30 @@ namespace ft {
 				void assign (InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
+					// reserve space
 					int i = 0;
-					for (InputIterator it = first; it != last; ++it)
-						vecData[i++] = *it;
+					for (InputIterator it = first; it != last; ++it) { vecData[i++] = *it; }
 				}
 			// push_back
 			void push_back (const value_type& val)
 			{
-				ft::Vector<value_type> tmp;
-				tmp.vecSize = this->vecSize;
-				tmp.vecCapacity = this->capacity();
-				tmp.reserve(this->size() + 1);
-				tmp.assign(this->begin(), this->end());
-				tmp.vecData[tmp.vecSize++] = val;
-				*this = tmp;
+				this->reserve(this->size() + 1);
+				this->vecData[this->vecSize++] = val;
 			}
 			// pop_back
 			void pop_back()
 			{
-				ft::Vector<value_type> tmp;
-				if (this->size() > 0)
-					tmp.reserve(this->size() - 1);
-				tmp.assign(this->begin(), this->end() - 1);
-				tmp.vecSize = this->vecSize - 1;
-				tmp.vecCapacity = this->capacity();
-				*this = tmp;
+				this->vecAllocator.destroy(&this->vecData[size() - 1]);
+				this->vecSize -= 1;
 			}
 			// insert
 				// single element
 			iterator insert (iterator position, const value_type& val)
 			{
-				ft::Vector<value_type> tmp;
-				tmp.vecCapacity = this->capacity();
+				ft::Vector<value_type> tmp(*this);
 				tmp.vecSize = this->vecSize + 1;
-				tmp.reserve(size() + 1);
-				size_t i = 0, j = 0;
+				tmp.reserve(tmp.size());
+				size_type i = 0, j = 0;
 				for (iterator it = this->begin(); i < tmp.size(); it++) {
 					tmp.vecData[i++] = (it == position) ? val : this->vecData[j++];
 				}
@@ -311,17 +309,16 @@ namespace ft {
 				// fill
 			void insert (iterator position, size_type n, const value_type& val)
 			{
-				ft::Vector<value_type> tmp;
-				tmp.vecCapacity = this->capacity();
-				tmp.reserve(size() + n);
-				tmp.vecSize = this->vecSize + n;
-				size_t i = 0, j = 0;
+				ft::Vector<value_type> tmp(*this);
+				// tmp.vecCapacity = this->capacity();
+				tmp.vecSize = tmp.size() + n;
+				tmp.reserve(tmp.size());
+				size_type i = 0, j = 0;
 				for (iterator it = this->begin(); i < tmp.size(); it++)
 				{
 					if (it == position)
 					{
-						for (size_type k = i; k < i + n; ++k)
-							tmp.vecData[k] = val;
+						for (size_type k = i; k < i + n; ++k) { tmp.vecData[k] = val; }
 						i += n;
 					}
 					else
@@ -330,8 +327,84 @@ namespace ft {
 				*this = tmp;
 			}
 				// range
-				template <class InputIterator>
-    		void insert (iterator position, InputIterator first, InputIterator last) {}
+			template <class InputIterator>
+    			void insert (iterator position, InputIterator first, InputIterator last,
+					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
+				{
+					ft::Vector<value_type> tmp(*this);
+					size_type sizeRange = 0;
+					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
+					tmp.vecSize = this->size() + sizeRange;
+					tmp.reserve(tmp.size());
+					size_type i = 0, j = 0;
+					for (iterator it = this->begin(); i < tmp.size(); ++it)
+					{
+						if (it == position) {
+							for (;first != last; ++first) { tmp.vecData[i++] = *first; }
+						}
+						else
+							tmp.vecData[i++] = this->vecData[j++];
+					}
+					*this = tmp;
+				}
+			// erase
+			iterator erase (iterator position)
+			{
+				ft::Vector<value_type> tmp(*this);
+				iterator itRet;
+				tmp.reserve(tmp.vecSize - 1);
+				size_type i = 0, j = 0;
+				for (iterator it = this->begin(); it != this->end(); ++it)
+				{
+					if (it == position)
+					{
+						tmp.vecSize--;
+						j++;
+						itRet = it + 1;
+					}
+					else
+						tmp.vecData[i++] = this->vecData[j++];
+				}
+				*this = tmp;
+				return itRet.base();
+			}
+			iterator erase (iterator first, iterator last)
+			{
+				ft::Vector<value_type> tmp(*this);
+				iterator itRet;
+				size_type RangeSize = 0;
+				for(iterator it = first; it != last; ++it) { RangeSize++; }
+				tmp.reserve(tmp.size() - RangeSize);
+				size_type i = 0, j = 0;
+				for (iterator it = this->begin(); it != this->end(); ++it)
+				{
+					if (it == first)
+					{
+						for (;first != last; first++)
+						{
+							j++;
+							it++;
+							tmp.vecSize--;
+						}
+						itRet = last;
+					}
+					tmp.vecData[i++] = this->vecData[j++];
+				}
+				*this = tmp;
+				return itRet.base();
+			}
+			// swap
+			void swap (vector& x) { }
+			// clear
+			void clear() {
+				if (!empty())
+				{
+					vecAllocator.destroy(this->vecData);
+					vecAllocator.deallocate(this->vecData, this->size());
+					vecSize = 0;
+					vecCapacity = 0;
+				}
+			}
 		}; // end vector class
 }; // end namspace ft
 #endif

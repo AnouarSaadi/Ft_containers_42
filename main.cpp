@@ -18,7 +18,7 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
-		for (int i = 0; (size_t)i < v.size(); i++){
+		for (size_t i = 0; i < v.size(); i++){
 			std::cout << v[i] << std::endl;
 		}
 		ft::Vector<int>::iterator itb = v.begin();
@@ -26,8 +26,15 @@ int main()
 		ft::Vector<int>::iterator it = v.insert(v.begin() + 2, 8);
 		std::cout << "insert " << *it << std::endl;
 		v.insert(v.begin() + 2, 8, 6);
-
-		for (int i = 0; (size_t)i < v.size(); i++){
+		v.insert(v.begin() + 2,v.begin() + 13, v.begin() + 15);
+		itb = v.begin() + 3;
+		itb = v.erase(itb);
+		for (size_t i = 0; i < v.size(); i++){
+			std::cout << v[i] << std::endl;
+				}
+		itb = v.erase(v.begin() + 4, v.begin() + 12);
+		std::cout << "new postion  "<< *itb << std::endl;
+		for (size_t i = 0; i < v.size(); i++){
 			std::cout << v[i] << std::endl;
 		}
 		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
@@ -44,7 +51,7 @@ int main()
 		v.pop_back();
 		v.pop_back();
 		v.pop_back();
-		for (int i = 0; (size_t)i < v.size(); i++){
+		for (size_t i = 0; i < v.size(); i++){
 			std::cout << v[i] << std::endl;
 		}
 		std::vector<int>::iterator itb = v.begin();
@@ -52,9 +59,15 @@ int main()
 		std::vector<int>::iterator it = v.insert(v.begin()+ 2, 8);
 		std::cout << "insert " << *it << std::endl;
 		v.insert(v.begin() + 2, 8, 6);
-
-		for (int i = 0; (size_t)i < v.size(); i++)
-		{
+		v.insert(v.begin() + 2,v.begin() + 13, v.begin() + 15);
+		itb = v.begin() + 3;
+		itb = v.erase(itb);
+				for (size_t i = 0; i < v.size(); i++){
+			std::cout << v[i] << std::endl;
+		}
+		itb = v.erase(v.begin() + 4, v.begin() + 12);
+		std::cout << "new postion  "<< *itb << std::endl;
+		for (size_t i = 0; i < v.size(); i++) {
 			std::cout << v[i] << std::endl;
 		}
 		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
