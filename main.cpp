@@ -4,7 +4,6 @@ class Vector;
 #include <iostream>
 #include <vector>
 
-
 int main()
 {
 	std::cout << "********************** My vector **********************" << std::endl;
