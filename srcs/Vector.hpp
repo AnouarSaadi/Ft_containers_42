@@ -10,59 +10,59 @@ class Iterator;
 // vector
 namespace ft {
 	template <class Vector>
-		class VectorIterator : public Iterator<std::random_access_iterator_tag,
-			std::random_access_iterator_tag>
+		class WrapIter
 		{ 
 		public:
     		typedef Vector                                                    iterator_type;
-    		typedef typename IteratorTraits<iterator_type>::value_type        value_type;
-    		typedef typename IteratorTraits<iterator_type>::difference_type   difference_type;
-    		typedef typename IteratorTraits<iterator_type>::pointer           pointer;
-    		typedef typename IteratorTraits<iterator_type>::reference         reference;
+    		typedef typename iterator_traits<iterator_type>::value_type        value_type;
+    		typedef typename iterator_traits<iterator_type>::difference_type   difference_type;
+    		typedef typename iterator_traits<iterator_type>::pointer           pointer;
+    		typedef typename iterator_traits<iterator_type>::reference         reference;
+    		// typedef typename iterator_traits<iterator_type>::iterator_category iterator_category;
 		
 		private:
 			pointer m_Ptr;
 
 		public:
-			// Member functions
-			VectorIterator<Vector>() {} // constructor
-			VectorIterator<Vector>(const pointer ptr) : m_Ptr(ptr) {} // param constructor
-			VectorIterator<Vector>(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return; } // copy constructor
-			VectorIterator<Vector>& operator=(const VectorIterator& other) { this->m_Ptr = other.m_Ptr; return *this; }// assignment operator
-			~VectorIterator<Vector>() {}; // destructor
+			/* ######## FX Member functions ######## */
+			WrapIter<Vector>() {} // constructor
+			WrapIter<Vector>(const pointer ptr) : m_Ptr(ptr) {} // param constructor
+			WrapIter<Vector>(const WrapIter& other) { this->m_Ptr = other.m_Ptr; return; } // copy constructor
+			WrapIter<Vector>& operator=(const WrapIter& other) { this->m_Ptr = other.m_Ptr; return *this; }// assignment operator
+			~WrapIter<Vector>() {}; // destructor
 			// operator *
 			reference operator*() const { return *m_Ptr; }
 			// ->
 			pointer operator->() const { return m_Ptr; }
 
 			// +
-			VectorIterator<Vector> operator+(difference_type off) { return VectorIterator(m_Ptr + off); }
-			VectorIterator<Vector>& operator+= (difference_type off) {
+			WrapIter<Vector> operator+(difference_type off) { return WrapIter(m_Ptr + off); }
+			WrapIter<Vector>& operator+= (difference_type off) {
 				m_Ptr += off;
 				return *this;
 			}
-			VectorIterator<Vector> & operator++() {
+			WrapIter<Vector> & operator++() {
 				m_Ptr++;
 				return *this;
 			}
-			VectorIterator<Vector> operator++(int) {
-				VectorIterator<Vector> tmp(*this);
+			WrapIter<Vector> operator++(int) {
+				WrapIter<Vector> tmp(*this);
 				++*this;
 				return tmp;
 			}
 
 			// -
-			VectorIterator<Vector> operator-(difference_type off) { return VectorIterator(m_Ptr - off); }
-			VectorIterator<Vector>& operator-= (difference_type off) {
+			WrapIter<Vector> operator-(difference_type off) { return WrapIter(m_Ptr - off); }
+			WrapIter<Vector>& operator-= (difference_type off) {
 				m_Ptr -= off;
 				return *this;
 			}
-			VectorIterator<Vector>& operator--() {
+			WrapIter<Vector>& operator--() {
 				m_Ptr--;
 				return *this;
 			}
-			VectorIterator<Vector> operator--(int) {
-				VectorIterator<Vector> tmp(*this);
+			WrapIter<Vector> operator--(int) {
+				WrapIter<Vector> tmp(*this);
 				--*this;
 				return tmp;
 			}
@@ -73,48 +73,48 @@ namespace ft {
 			// base()
 			pointer base() const { return m_Ptr; }
 			
-		}; // end VectorIterator class
+		}; // end WrapIter class
 	// Non-member function overloads
 	// operator ==
 	template <class Vector>
-  	bool operator== (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
+  	bool operator== (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return lhs.base() == rhs.base();
 	}
 	// operator !=
 	template <class Vector>
-  	bool operator!= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
+  	bool operator!= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return !(lhs == rhs);
 	}
 	// operator +
 	template <class Vector>
-	VectorIterator<Vector> operator+ (typename VectorIterator<Vector>::difference_type n, const VectorIterator<Vector>& _it)
+	WrapIter<Vector> operator+ (typename WrapIter<Vector>::difference_type n, const WrapIter<Vector>& _it)
 	{
-		return VectorIterator<Vector>(_it + n);
+		return WrapIter<Vector>(_it + n);
 	}
 	// operator -
 	template <class Vector>
-	typename VectorIterator<Vector>::difference_type operator- (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs)
+	typename WrapIter<Vector>::difference_type operator- (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return lhs.base() - rhs.base();
 	}
 	// operator <
 	template <class Vector>
-	bool operator< (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() < rhs.base(); }
+	bool operator< (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() < rhs.base(); }
 	// operator >
 	template <class Vector>
-	bool operator> (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return lhs.base() > rhs.base(); }
+	bool operator> (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() > rhs.base(); }
 	// operator <=
 	template <class Vector>
-	bool operator<= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return !(lhs > rhs); }
+	bool operator<= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs > rhs); }
 	// operator>=
 	template <class Vector>
-	bool operator>= (const VectorIterator<Vector>& lhs, const VectorIterator<Vector>& rhs) { return !(lhs < rhs); }
+	bool operator>= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs < rhs); }
 	
-	// Vector Class
+	// vector Class
 	template < class T, class Alloc = std::allocator<T> >
-		class Vector
+		class vector
 		{
 		public:
 			typedef T												value_type;
@@ -125,10 +125,10 @@ namespace ft {
 			typedef typename Alloc::const_reference					const_reference;
 			typedef typename Alloc::pointer							pointer;
 			typedef typename Alloc::const_pointer					const_pointer;
-			typedef typename ft::VectorIterator< Vector<T> > 		iterator;
-			typedef typename ft::VectorIterator< const Vector<T> >	const_iterator;
-			typedef typename ft::ReverseIterator< iterator >		reverse_iterator;
-			typedef typename ft::ReverseIterator< const_iterator >	const_reverse_iterator;
+			typedef WrapIter< vector<T> > 							iterator;
+			typedef WrapIter< const vector<T> >						const_iterator;
+			typedef reverse_iterator< const_iterator >				const_reverse_iterator;
+			typedef reverse_iterator< iterator >					reverse_iterator;
 		
 		private:
 			pointer			vecData;
@@ -139,7 +139,7 @@ namespace ft {
 		public:
 			/*********************** Coplien form **********************/
 			// default
-			Vector(const allocator_type& alloc = allocator_type()) :
+			vector(const allocator_type& alloc = allocator_type()) :
 				vecData(nullptr), vecSize(0), vecAllocator(alloc)
 			{
 				vecData = nullptr;
@@ -147,7 +147,7 @@ namespace ft {
 				vecCapacity = 0;
 			}
 			// fill
-			Vector(size_type n, const value_type& val = value_type(),
+			vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) :
 					vecData(nullptr) , vecSize(n), vecAllocator(alloc)
 			{
@@ -157,7 +157,7 @@ namespace ft {
 			}
 			// range
 			template <class InputIterator>
-				Vector(InputIterator first, InputIterator last,
+				vector(InputIterator first, InputIterator last,
 					const allocator_type& alloc = allocator_type(),
 						typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :
 						vecData(nullptr), vecSize(0), vecAllocator(alloc)
@@ -170,19 +170,19 @@ namespace ft {
 				this->assign(first, last);
 			}
 			// copy
-			Vector(const Vector& x)  : vecData(nullptr), vecSize(0),
+			vector(const vector& x)  : vecData(nullptr), vecSize(0),
 				vecCapacity(0) , vecAllocator(x.vecAllocator)
 			{
 				*this = x;
 			}
 
 			// Destructor
-			~Vector()
+			~vector()
 			{
 				this->clear();
 			}
 			// assign operator
-			Vector& operator = (const Vector& x)
+			vector& operator = (const vector& x)
 			{
 				if (this != &x)
 				{
@@ -221,7 +221,7 @@ namespace ft {
 			// resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				if (this->size())  this->clear();
+				if (!empty())  this->clear();
 				vecSize = n;
 				vecCapacity = vecSize;
 				vecData = vecAllocator.allocate(n);
@@ -234,13 +234,14 @@ namespace ft {
 			// reserve
 			void reserve (size_type n)
 			{
-				ft::Vector<value_type> tmp;
+				vector<value_type> tmp;
+				tmp.vecAllocator = this->get_allocator();
 				tmp.vecData = tmp.vecAllocator.allocate(n);
 				tmp.vecCapacity = this->capacity();
 				if (n > tmp.vecCapacity)
 					tmp.vecCapacity = (tmp.vecCapacity * 2 >= n) ? tmp.vecCapacity * 2 : n;
 				tmp.vecAllocator.construct(tmp.vecData, n);
-				for (size_type i = 0; i < this->size(); i++) { tmp.vecData[i] = this->vecData[i]; }
+				for (size_type i = 0; i < this->size() && vecData; i++) { tmp.vecData[i] = this->vecData[i]; }
 				tmp.vecSize = this->size();
 				*this = tmp;
 			}
@@ -267,7 +268,9 @@ namespace ft {
 				// fill
 			void assign (size_type n, const value_type& val)
 			{
-				// reserve space
+				// reserve space !!!!
+				this->vecSize = n;
+				this->reserve(n);
 				for (size_type i = 0; i < n; ++i)
 					vecData[i] = val;
 			}
@@ -276,7 +279,11 @@ namespace ft {
 				void assign (InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
-					// reserve space
+					// reserve space !!!!
+					size_type sizeRange = 0;
+					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
+					this->vecSize = sizeRange;
+					this->reserve(sizeRange);
 					int i = 0;
 					for (InputIterator it = first; it != last; ++it) { vecData[i++] = *it; }
 				}
@@ -296,7 +303,7 @@ namespace ft {
 				// single element
 			iterator insert (iterator position, const value_type& val)
 			{
-				ft::Vector<value_type> tmp(*this);
+				vector<value_type> tmp(*this);
 				tmp.vecSize = this->vecSize + 1;
 				tmp.reserve(tmp.size());
 				size_type i = 0, j = 0;
@@ -309,8 +316,7 @@ namespace ft {
 				// fill
 			void insert (iterator position, size_type n, const value_type& val)
 			{
-				ft::Vector<value_type> tmp(*this);
-				// tmp.vecCapacity = this->capacity();
+				vector<value_type> tmp(*this);
 				tmp.vecSize = tmp.size() + n;
 				tmp.reserve(tmp.size());
 				size_type i = 0, j = 0;
@@ -331,7 +337,7 @@ namespace ft {
     			void insert (iterator position, InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
-					ft::Vector<value_type> tmp(*this);
+					vector<value_type> tmp(*this);
 					size_type sizeRange = 0;
 					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
 					tmp.vecSize = this->size() + sizeRange;
@@ -350,7 +356,7 @@ namespace ft {
 			// erase
 			iterator erase (iterator position)
 			{
-				ft::Vector<value_type> tmp(*this);
+				vector<value_type> tmp(*this);
 				iterator itRet;
 				tmp.reserve(tmp.vecSize - 1);
 				size_type i = 0, j = 0;
@@ -370,7 +376,7 @@ namespace ft {
 			}
 			iterator erase (iterator first, iterator last)
 			{
-				ft::Vector<value_type> tmp(*this);
+				vector<value_type> tmp(*this);
 				iterator itRet;
 				size_type RangeSize = 0;
 				for(iterator it = first; it != last; ++it) { RangeSize++; }
@@ -394,7 +400,12 @@ namespace ft {
 				return itRet.base();
 			}
 			// swap
-			void swap (vector& x) { }
+			void swap (vector& x)
+			{
+				vector<value_type> tmp = *this;
+				*this = x;
+				x = tmp;
+			}
 			// clear
 			void clear() {
 				if (!empty())
@@ -405,7 +416,17 @@ namespace ft {
 					vecCapacity = 0;
 				}
 			}
+			/*********************** Allocator **********************/
+			allocator_type get_allocator() const { return vecAllocator; }
 		}; // end vector class
+		/* ######## FX Non-member function overloads ######## */
+		template <class T, class Alloc>
+  			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			if (! (lhs.size() == rhs.size())) return false;
+			if (! (lhs.capacity() == rhs.capacity())) return false;
+			return true;
+		}
 }; // end namspace ft
 #endif
  
