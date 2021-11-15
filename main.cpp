@@ -53,8 +53,18 @@ int main()
 			std::cout << "\t\tva["<< i <<"] = " << va[i] << std::endl;
 		}
 		std::cout << v.size() << "|" << va.size() << "   ----   " << v.capacity() << "|" << va.capacity() << std::endl;
-		ft::vector<int> vcopy(v);
-		std::cout << (v == vcopy) << std::endl;
+		ft::vector<int> vcopy;
+		// vcopy = v;
+		vcopy.assign(bar.begin(), bar.end());
+		std::cout << (v > vcopy) << std::endl;
+		ft::vector<std::string> str(5, "string");
+		for (size_t i = 0; i < str.size(); i++)
+		{
+			std::cout << str[i] << std::endl;
+		}
+		ft::vector<std::string>::reverse_iterator rev_it = str.rbegin();
+		ft::vector<std::string>::iterator end = str.end();
+		std::cout << "end == " << *end << " rbegin == " << *rev_it << std::endl;
 	}
 	std::cout << "********************** std::vector **********************" << std::endl;
 	{
@@ -104,8 +114,19 @@ int main()
 			std::cout << "\t\tva["<< i <<"] = " << va[i] << std::endl;
 		}
 		std::cout << v.size() << "|" << va.size() << "   ----   " << v.capacity() << "|" << va.capacity() << std::endl;
-		std::vector<int> vcopy(v);
-		std::cout << (v == vcopy) << std::endl;
+		std::vector<int> vcopy;
+		// vcopy = v;
+		vcopy.assign(bar.begin(), bar.end());
+		std::cout << (v > vcopy) << std::endl;
+		std::vector<std::string> str;
+		for (int i = 0; i < 10; i++)
+		{
+			str.push_back("str" + std::to_string(i));
+			std::cout << str[i] << std::endl;
+		}
+		std::vector<std::string>::reverse_iterator rev_it = str.rbegin();
+		std::vector<std::string>::iterator end = str.end();
+		std::cout << "end == " << *end << " rbegin == " << *rev_it << std::endl;
 	}
 	return 0;
 }

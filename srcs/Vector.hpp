@@ -77,40 +77,40 @@ namespace ft {
 	// Non-member function overloads
 	// operator ==
 	template <class Vector>
-  	bool operator== (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+  	bool operator==(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return lhs.base() == rhs.base();
 	}
 	// operator !=
 	template <class Vector>
-  	bool operator!= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+  	bool operator!=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return !(lhs == rhs);
 	}
 	// operator +
 	template <class Vector>
-	WrapIter<Vector> operator+ (typename WrapIter<Vector>::difference_type n, const WrapIter<Vector>& _it)
+	WrapIter<Vector> operator+(typename WrapIter<Vector>::difference_type n, const WrapIter<Vector>& _it)
 	{
 		return WrapIter<Vector>(_it + n);
 	}
 	// operator -
 	template <class Vector>
-	typename WrapIter<Vector>::difference_type operator- (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	typename WrapIter<Vector>::difference_type operator-(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
 	{
 		return lhs.base() - rhs.base();
 	}
 	// operator <
 	template <class Vector>
-	bool operator< (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() < rhs.base(); }
+	bool operator<(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() < rhs.base(); }
 	// operator >
 	template <class Vector>
-	bool operator> (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() > rhs.base(); }
+	bool operator>(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return lhs.base() > rhs.base(); }
 	// operator <=
 	template <class Vector>
-	bool operator<= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs > rhs); }
+	bool operator<=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs > rhs); }
 	// operator>=
 	template <class Vector>
-	bool operator>= (const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs < rhs); }
+	bool operator>=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs) { return !(lhs < rhs); }
 	
 	// vector Class
 	template < class T, class Alloc = std::allocator<T> >
@@ -140,11 +140,8 @@ namespace ft {
 			/*********************** Coplien form **********************/
 			// default
 			vector(const allocator_type& alloc = allocator_type()) :
-				vecData(nullptr), vecSize(0), vecAllocator(alloc)
+				vecData(nullptr), vecSize(0), vecCapacity(0), vecAllocator(alloc)
 			{
-				vecData = nullptr;
-				vecSize = 0;
-				vecCapacity = 0;
 			}
 			// fill
 			vector(size_type n, const value_type& val = value_type(),
@@ -152,7 +149,11 @@ namespace ft {
 					vecData(nullptr) , vecSize(n), vecAllocator(alloc)
 			{
 				vecData = vecAllocator.allocate(n);
-				this->assign(n, val);
+				std::cout << (typeid(value_type).name() == typeid(std::string).name()) << std::endl;
+				for (size_type i = 0; i < n; i++)
+				{
+					vecData[i] = val;
+				}
 				vecCapacity = vecSize;
 			}
 			// range
@@ -167,7 +168,10 @@ namespace ft {
 				vecSize = size;
 				vecCapacity = size;
 				vecData = vecAllocator.allocate(size);
-				this->assign(first, last);
+				for (size_type i = 0; i < vecSize && first != last;)
+				{
+					vecData[i++] = *first++;
+				}
 			}
 			// copy
 			vector(const vector& x)  : vecData(nullptr), vecSize(0),
@@ -182,7 +186,7 @@ namespace ft {
 				this->clear();
 			}
 			// assign operator
-			vector& operator = (const vector& x)
+			vector& operator=(const vector& x)
 			{
 				if (this != &x)
 				{
@@ -206,12 +210,12 @@ namespace ft {
 			const_iterator end() const { return vecData + size(); }
 
 			// rbegin
-			reverse_iterator rbegin() { return end(); };
-			const_reverse_iterator rbegin() const { return end(); };
+			reverse_iterator rbegin() { return reverse_iterator(end()); };
+			const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); };
 
 			// rend
-			reverse_iterator rend() { return begin(); };
-			const_reverse_iterator rend() const { return begin(); };
+			reverse_iterator rend() { return reverse_iterator(begin()); };
+			const_reverse_iterator rend() const { return const_reverse_iterator(begin()); };
 
 			/*********************** Capacity **********************/
 			// size
@@ -219,7 +223,7 @@ namespace ft {
 			// max size
 			size_type max_size() const { return vecAllocator.max_size(); }
 			// resize
-			void resize (size_type n, value_type val = value_type())
+			void resize(size_type n, value_type val = value_type())
 			{
 				if (!empty())  this->clear();
 				vecSize = n;
@@ -232,7 +236,7 @@ namespace ft {
 			// empty
 			bool empty() const { return vecSize > 0 ? false : true; }
 			// reserve
-			void reserve (size_type n)
+			void reserve(size_type n)
 			{
 				vector<value_type> tmp;
 				tmp.vecAllocator = this->get_allocator();
@@ -248,10 +252,10 @@ namespace ft {
 
 			/*********************** Element access **********************/
 			// operator []
-			reference operator[] (size_type idx) { return vecData[idx]; }
+			reference operator[](size_type idx) { return vecData[idx]; }
 
 			// at
-			reference at (size_type n) { return vecData[n]; }
+			reference at(size_type n) { return vecData[n]; }
 			const_reference at (size_type n) const { return vecData[n]; }
 
 			// front
@@ -266,7 +270,7 @@ namespace ft {
 
 			// assign
 				// fill
-			void assign (size_type n, const value_type& val)
+			void assign(size_type n, const value_type& val)
 			{
 				// reserve space !!!!
 				this->vecSize = n;
@@ -276,7 +280,7 @@ namespace ft {
 			}
 				// range
 			template <class InputIterator>
-				void assign (InputIterator first, InputIterator last,
+				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
 					// reserve space !!!!
@@ -301,7 +305,7 @@ namespace ft {
 			}
 			// insert
 				// single element
-			iterator insert (iterator position, const value_type& val)
+			iterator insert(iterator position, const value_type& val)
 			{
 				vector<value_type> tmp(*this);
 				tmp.vecSize = this->vecSize + 1;
@@ -314,7 +318,7 @@ namespace ft {
 				return position.base();
 			}
 				// fill
-			void insert (iterator position, size_type n, const value_type& val)
+			void insert(iterator position, size_type n, const value_type& val)
 			{
 				vector<value_type> tmp(*this);
 				tmp.vecSize = tmp.size() + n;
@@ -334,7 +338,7 @@ namespace ft {
 			}
 				// range
 			template <class InputIterator>
-    			void insert (iterator position, InputIterator first, InputIterator last,
+    			void insert(iterator position, InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
 					vector<value_type> tmp(*this);
@@ -354,7 +358,7 @@ namespace ft {
 					*this = tmp;
 				}
 			// erase
-			iterator erase (iterator position)
+			iterator erase(iterator position)
 			{
 				vector<value_type> tmp(*this);
 				iterator itRet;
@@ -374,7 +378,7 @@ namespace ft {
 				*this = tmp;
 				return itRet.base();
 			}
-			iterator erase (iterator first, iterator last)
+			iterator erase(iterator first, iterator last)
 			{
 				vector<value_type> tmp(*this);
 				iterator itRet;
@@ -400,7 +404,7 @@ namespace ft {
 				return itRet.base();
 			}
 			// swap
-			void swap (vector& x)
+			void swap(vector& x)
 			{
 				vector<value_type> tmp = *this;
 				*this = x;
@@ -420,12 +424,47 @@ namespace ft {
 			allocator_type get_allocator() const { return vecAllocator; }
 		}; // end vector class
 		/* ######## FX Non-member function overloads ######## */
+		// operator ==
 		template <class T, class Alloc>
-  			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+  			bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 		{
-			if (! (lhs.size() == rhs.size())) return false;
-			if (! (lhs.capacity() == rhs.capacity())) return false;
-			return true;
+			return rhs.size() == lhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		}
+		// operator !=
+		template <class T, class Alloc>
+  			bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			return !(lhs == rhs);
+		}
+		// operator <
+		template <class T, class Alloc>
+  			bool operator<(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+		}
+		// operator >
+		template <class T, class Alloc>
+  			bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			return (rhs < lhs);
+		}
+		// operator <=
+		template <class T, class Alloc>
+  			bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			return !(lhs < rhs);
+		}
+		// operator >=
+		template <class T, class Alloc>
+  			bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			return !(rhs < lhs);
+		}
+		// swap
+		template <class T, class Alloc>
+  			void swap(vector<T,Alloc>& x, vector<T,Alloc>& y)
+		{
+			x.swap(y);
 		}
 }; // end namspace ft
 #endif
