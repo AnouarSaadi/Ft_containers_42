@@ -1,3 +1,4 @@
+
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
@@ -149,7 +150,6 @@ namespace ft {
 					vecData(nullptr) , vecSize(n), vecAllocator(alloc)
 			{
 				vecData = vecAllocator.allocate(n);
-				std::cout << (typeid(value_type).name() == typeid(std::string).name()) << std::endl;
 				for (size_type i = 0; i < n; i++)
 				{
 					vecData[i] = val;
@@ -164,14 +164,13 @@ namespace ft {
 						vecData(nullptr), vecSize(0), vecAllocator(alloc)
 			{
 				int size = 0;
-				for (InputIterator it = first; it != last; ++it) { size++; }
+				for (InputIterator it = first; it != last; ++it)
+					size++;
 				vecSize = size;
 				vecCapacity = size;
 				vecData = vecAllocator.allocate(size);
 				for (size_type i = 0; i < vecSize && first != last;)
-				{
 					vecData[i++] = *first++;
-				}
 			}
 			// copy
 			vector(const vector& x)  : vecData(nullptr), vecSize(0),
@@ -195,86 +194,143 @@ namespace ft {
 					this->vecSize = x.size();
 					this->vecCapacity = x.capacity();
 					this->vecData = vecAllocator.allocate(x.size());
-					for (size_type i = 0; i < x.size(); i++) { this->vecData[i] = x.vecData[i]; }
+					for (size_type i = 0; i < x.size(); i++)
+					{
+						this->vecData[i] = x.vecData[i];
+					}
 				}
 				return *this;
 			}
 
 			/*********************** Iterators **********************/
 			// begin
-			iterator begin() { return vecData; }
-			const_iterator begin() const { return vecData; }
-
+			iterator begin()
+			{
+				return vecData;
+			}
+			const_iterator begin() const
+			{
+				return vecData;
+			}
 			// end
-			iterator end() { return vecData + size(); }
-			const_iterator end() const { return vecData + size(); }
-
+			iterator end()
+			{
+				return vecData + size();
+			}
+			const_iterator end() const
+			{
+				return vecData + size();
+			}
 			// rbegin
-			reverse_iterator rbegin() { return reverse_iterator(end()); };
-			const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); };
+			reverse_iterator rbegin()
+			{
+				return reverse_iterator(end());
+			}
+			const_reverse_iterator rbegin() const
+			{
+				return const_reverse_iterator(end());
+			}
 
 			// rend
-			reverse_iterator rend() { return reverse_iterator(begin()); };
-			const_reverse_iterator rend() const { return const_reverse_iterator(begin()); };
+			reverse_iterator rend()
+			{
+				return reverse_iterator(begin());
+			}
+			const_reverse_iterator rend() const
+			{
+				return const_reverse_iterator(begin());
+			}
 
 			/*********************** Capacity **********************/
 			// size
-			size_type size() const { return vecSize; }
+			size_type size() const
+			{
+				 return vecSize;
+			}
 			// max size
-			size_type max_size() const { return vecAllocator.max_size(); }
+			size_type max_size() const
+			{
+				return vecAllocator.max_size();
+			}
 			// resize
 			void resize(size_type n, value_type val = value_type())
 			{
-				if (!empty())  this->clear();
+				if (!empty()) 
+					this->clear();
 				vecSize = n;
 				vecCapacity = vecSize;
 				vecData = vecAllocator.allocate(n);
 				this->assign(n, val);
 			}
 			// capacity
-			size_type capacity() const { return vecCapacity; }
+			size_type capacity() const
+			{
+				return vecCapacity;
+			}
 			// empty
-			bool empty() const { return vecSize > 0 ? false : true; }
+			bool empty() const
+			{
+				return vecSize != 0;
+			}
 			// reserve
 			void reserve(size_type n)
 			{
 				vector<value_type> tmp;
-				tmp.vecAllocator = this->get_allocator();
+				tmp.vecAllocator = this->vecAllocator;
 				tmp.vecData = tmp.vecAllocator.allocate(n);
 				tmp.vecCapacity = this->capacity();
 				if (n > tmp.vecCapacity)
 					tmp.vecCapacity = (tmp.vecCapacity * 2 >= n) ? tmp.vecCapacity * 2 : n;
-				tmp.vecAllocator.construct(tmp.vecData, n);
-				for (size_type i = 0; i < this->size() && vecData; i++) { tmp.vecData[i] = this->vecData[i]; }
+				// tmp.vecAllocator.construct(tmp.vecData, n);
+				for (size_type i = 0; i < this->size(); i++)
+				{
+					tmp.vecData[i] = this->vecData[i];
+				}
 				tmp.vecSize = this->size();
 				*this = tmp;
+				// this->vecSize = 0;
 			}
 
 			/*********************** Element access **********************/
 			// operator []
-			reference operator[](size_type idx) { return vecData[idx]; }
-
+			reference operator[](size_type idx)
+			{
+				return vecData[idx];
+			}
 			// at
-			reference at(size_type n) { return vecData[n]; }
-			const_reference at (size_type n) const { return vecData[n]; }
-
+			reference at(size_type n)
+			{
+				return vecData[n];
+			}
+			const_reference at (size_type n) const
+			{
+				return vecData[n];
+			}
 			// front
-			reference front() { return vecData[0];}
-			const_reference front() const { return vecData[0];}
-
+			reference front()
+			{
+				return vecData[0];
+			}
+			const_reference front() const
+			{
+				return vecData[0];
+			}
 			// back
-			reference back() { return vecData[size() - 1]; }
-			const_reference back() const { return vecData[size() - 1]; }
-
+			reference back()
+			{
+				return vecData[size() - 1];
+			}
+			const_reference back() const
+			{
+				return vecData[size() - 1];
+			}
 			/*********************** Modifiers **********************/
-
 			// assign
 				// fill
 			void assign(size_type n, const value_type& val)
 			{
-				// reserve space !!!!
-				this->vecSize = n;
 				this->reserve(n);
+				this->vecSize = n;
 				for (size_type i = 0; i < n; ++i)
 					vecData[i] = val;
 			}
@@ -282,19 +338,22 @@ namespace ft {
 			template <class InputIterator>
 				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
-				{
-					// reserve space !!!!
-					size_type sizeRange = 0;
-					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
-					this->vecSize = sizeRange;
-					this->reserve(sizeRange);
-					int i = 0;
-					for (InputIterator it = first; it != last; ++it) { vecData[i++] = *it; }
-				}
+			{
+				size_type sizeRange = 0;
+				for (InputIterator it = first; it != last; ++it)
+					sizeRange++;
+				this->reserve(sizeRange);
+				this->vecSize = sizeRange;
+				int i = 0;
+				for (InputIterator it = first; it != last; ++it)
+					vecData[i++] = *it;
+			}
 			// push_back
 			void push_back (const value_type& val)
 			{
+				size_type tmp = this->vecSize;
 				this->reserve(this->size() + 1);
+				this->vecSize = tmp;
 				this->vecData[this->vecSize++] = val;
 			}
 			// pop_back
@@ -308,10 +367,11 @@ namespace ft {
 			iterator insert(iterator position, const value_type& val)
 			{
 				vector<value_type> tmp(*this);
-				tmp.vecSize = this->vecSize + 1;
 				tmp.reserve(tmp.size());
+				tmp.vecSize = this->vecSize + 1;
 				size_type i = 0, j = 0;
-				for (iterator it = this->begin(); i < tmp.size(); it++) {
+				for (iterator it = this->begin(); i < tmp.size(); it++)
+				{
 					tmp.vecData[i++] = (it == position) ? val : this->vecData[j++];
 				}
 				*this = tmp;
@@ -321,8 +381,8 @@ namespace ft {
 			void insert(iterator position, size_type n, const value_type& val)
 			{
 				vector<value_type> tmp(*this);
-				tmp.vecSize = tmp.size() + n;
 				tmp.reserve(tmp.size());
+				tmp.vecSize = tmp.size() + n;
 				size_type i = 0, j = 0;
 				for (iterator it = this->begin(); i < tmp.size(); it++)
 				{
@@ -344,13 +404,15 @@ namespace ft {
 					vector<value_type> tmp(*this);
 					size_type sizeRange = 0;
 					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
+					tmp.reserve(this->size() + sizeRange);
 					tmp.vecSize = this->size() + sizeRange;
-					tmp.reserve(tmp.size());
 					size_type i = 0, j = 0;
 					for (iterator it = this->begin(); i < tmp.size(); ++it)
 					{
-						if (it == position) {
-							for (;first != last; ++first) { tmp.vecData[i++] = *first; }
+						if (it == position)
+						{
+							for (;first != last; ++first)
+								tmp.vecData[i++] = *first;
 						}
 						else
 							tmp.vecData[i++] = this->vecData[j++];
@@ -363,12 +425,12 @@ namespace ft {
 				vector<value_type> tmp(*this);
 				iterator itRet;
 				tmp.reserve(tmp.vecSize - 1);
+				tmp.vecSize = tmp.vecSize - 1;
 				size_type i = 0, j = 0;
 				for (iterator it = this->begin(); it != this->end(); ++it)
 				{
 					if (it == position)
 					{
-						tmp.vecSize--;
 						j++;
 						itRet = it + 1;
 					}
@@ -382,9 +444,10 @@ namespace ft {
 			{
 				vector<value_type> tmp(*this);
 				iterator itRet;
-				size_type RangeSize = 0;
-				for(iterator it = first; it != last; ++it) { RangeSize++; }
-				tmp.reserve(tmp.size() - RangeSize);
+				size_type rangeSize = 0;
+				for(iterator it = first; it != last; ++it) { rangeSize++; }
+				tmp.reserve(tmp.size() - rangeSize);
+				tmp.vecSize = tmp.size() - rangeSize;
 				size_type i = 0, j = 0;
 				for (iterator it = this->begin(); it != this->end(); ++it)
 				{
@@ -394,7 +457,6 @@ namespace ft {
 						{
 							j++;
 							it++;
-							tmp.vecSize--;
 						}
 						itRet = last;
 					}
@@ -414,6 +476,7 @@ namespace ft {
 			void clear() {
 				if (!empty())
 				{
+					std::cout << "check here " << this->size() << std::endl;
 					vecAllocator.destroy(this->vecData);
 					vecAllocator.deallocate(this->vecData, this->size());
 					vecSize = 0;

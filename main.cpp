@@ -9,7 +9,6 @@ int main()
 	std::cout << "********************** My vector **********************" << std::endl;
 	{
 		ft::vector<int> v(4, 7);
-		std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
 		v.push_back(10);
 		v.push_back(11);
 		v.push_back(12);
@@ -57,9 +56,11 @@ int main()
 		// vcopy = v;
 		vcopy.assign(bar.begin(), bar.end());
 		std::cout << (v > vcopy) << std::endl;
-		ft::vector<std::string> str(5, "string");
-		for (size_t i = 0; i < str.size(); i++)
+		ft::vector<std::string> str;
+		// solve the segmentation fault problem
+		for (int i = 0; i < 10; i++)
 		{
+			str.push_back("str" + std::to_string(i));
 			std::cout << str[i] << std::endl;
 		}
 		ft::vector<std::string>::reverse_iterator rev_it = str.rbegin();
