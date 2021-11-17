@@ -139,12 +139,12 @@ namespace ft {
 
 		public:
 			/*********************** Coplien form **********************/
-			// default
+			/* default */
 			vector(const allocator_type& alloc = allocator_type()) :
 				_vecData(NULL), _vecSize(0), _vecCapacity(0), _vecAlloc(alloc)
 			{
 			}
-			// fill
+			/* fill */
 			vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) :
 					_vecData(NULL) , _vecSize(n), _vecAlloc(alloc)
@@ -156,8 +156,8 @@ namespace ft {
 				}
 				_vecCapacity = _vecSize;
 			}
-			// range
-			template <class InputIterator>
+			/* range */
+		 	template <class InputIterator>
 				vector(InputIterator first, InputIterator last,
 					const allocator_type& alloc = allocator_type(),
 						typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :
@@ -172,19 +172,19 @@ namespace ft {
 				for (size_type i = 0; i < _vecSize && first != last;)
 						this->_vecAlloc.construct(&this->_vecData[i++], *first++);
 			}
-			// copy
+			/* copy */
 			vector(const vector& x)  : _vecData(NULL), _vecSize(0),
 				_vecCapacity(0) , _vecAlloc(x._vecAlloc)
 			{
 				*this = x;
 			}
 
-			// Destructor
+			/* Destructor */
 			~vector()
 			{
 				this->clear();
 			}
-			// assign operator
+			/* assign operator */
 			vector& operator=(const vector& x)
 			{
 				if (this != &x)
@@ -203,16 +203,16 @@ namespace ft {
 			}
 
 			/*********************** Iterators **********************/
-			// begin
+			/* begin */
 			iterator begin()
 			{
 				return iterator(_vecData);
 			}
 			const_iterator begin() const
 			{
-				return _vecData;
+				return const_iterator(_vecData);
 			}
-			// end
+			/* end */
 			iterator end()
 			{
 				return iterator(_vecData + size());
@@ -221,24 +221,24 @@ namespace ft {
 			{
 				return const_iterator(_vecData + size());
 			}
-			// rbegin
+			/* rbegin */
 			reverse_iterator rbegin()
 			{
-				return reverse_iterator(end());
+				return reverse_iterator(end() - 1);
 			}
 			const_reverse_iterator rbegin() const
 			{
-				return const_reverse_iterator(end());
+				return const_reverse_iterator(end() - 1);
 			}
 
-			// rend
+			/* rend */
 			reverse_iterator rend()
 			{
-				return reverse_iterator(begin());
+				return reverse_iterator(begin() - 1);
 			}
 			const_reverse_iterator rend() const
 			{
-				return const_reverse_iterator(begin());
+				return const_reverse_iterator(begin() - 1);
 			}
 
 			/*********************** Capacity **********************/
@@ -247,32 +247,40 @@ namespace ft {
 			{
 				 return _vecSize;
 			}
-			// max size
+			/* max size */
 			size_type max_size() const
 			{
 				return _vecAlloc.max_size();
 			}
-			// resize
+			/* resize */
 			void resize(size_type n, value_type val = value_type())
 			{
-				if (!empty()) 
-					this->clear();
-				_vecSize = n;
-				_vecCapacity = _vecSize;
-				_vecData = _vecAlloc.allocate(n);
-				this->assign(n, val);
+				size_type _sz = size();
+				if (_sz > n)
+				{
+					for (size_type i = n; i < _sz; i++)
+						_vecAlloc.destroy(&_vecData[i]);
+					_vecSize = n;
+				}
+				else if (_sz < n)
+				{
+					reserve(n);
+					_vecSize = n;
+					for (size_type i = _sz; i < n; i++)
+						_vecAlloc.construct(&_vecData[i], val);
+				}
 			}
-			// capacity
+			/* capacity */
 			size_type capacity() const
 			{
 				return _vecCapacity;
 			}
-			// empty
+			/* empty */
 			bool empty() const
 			{
 				return size() == 0;
 			}
-			// reserve
+			/* reserve */
 			void reserve(size_type n)
 			{
 				pointer arr = this->_vecAlloc.allocate(size());
@@ -296,12 +304,12 @@ namespace ft {
 			}
 
 			/*********************** Element access **********************/
-			// operator []
+			/* operator [] */
 			reference operator[](size_type idx)
 			{
 				return _vecData[idx];
 			}
-			// at
+			/* at */
 			reference at(size_type n)
 			{
 				return _vecData[n];
@@ -310,7 +318,7 @@ namespace ft {
 			{
 				return _vecData[n];
 			}
-			// front
+			/* front */
 			reference front()
 			{
 				return _vecData[0];
@@ -319,7 +327,7 @@ namespace ft {
 			{
 				return _vecData[0];
 			}
-			// back
+			/* back */
 			reference back()
 			{
 				return _vecData[size() - 1];
@@ -329,8 +337,8 @@ namespace ft {
 				return _vecData[size() - 1];
 			}
 			/*********************** Modifiers **********************/
-			// assign
-				// fill
+			/* assign */
+				/* fill */
 			void assign(size_type n, const value_type& val)
 			{
 				if (!n)
@@ -340,7 +348,7 @@ namespace ft {
 				for (size_type i = 0; i < n; ++i)
 					this->_vecAlloc.construct(&this->_vecData[i], val);
 			}
-				// range
+				/* range */
 			template <class InputIterator>
 				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
@@ -356,20 +364,20 @@ namespace ft {
 				for (InputIterator it = first; it != last; ++it)
 					this->_vecAlloc.construct(&this->_vecData[i++], *it);
 			}
-			// push_back
+			/* push_back */
 			void push_back (const value_type& val)
 			{
 				this->reserve(this->size() + 1);
 				this->_vecAlloc.construct(&this->_vecData[this->_vecSize++], val);
 			}
-			// pop_back
+			/* pop_back */
 			void pop_back()
 			{
 				this->_vecAlloc.destroy(&this->_vecData[size() - 1]);
 				_vecSize--;
 			}
-			// insert
-				// single element
+			/* insert */
+				/* single element */
 			iterator insert(iterator position, const value_type& val)
 			{
 				size_type idx = 0;
@@ -394,10 +402,11 @@ namespace ft {
 
 				return iterator(_vecData + idx);
 			}
-				// fill
+				/* fill */
 			void insert(iterator position, size_type n, const value_type& val)
 			{
-				if (!n) return;
+				if (!n)
+					return;
 				size_type idx = 0;
 				for (iterator iter = begin(); iter != end(); ++iter)
 				{
