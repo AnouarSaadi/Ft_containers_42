@@ -132,49 +132,49 @@ namespace ft {
 			typedef reverse_iterator< iterator >					reverse_iterator;
 		
 		private:
-			pointer			vecData;
-			size_type		vecSize;
-			size_type		vecCapacity;
-			allocator_type	vecAlloc;
+			pointer			_vecData;
+			size_type		_vecSize;
+			size_type		_vecCapacity;
+			allocator_type	_vecAlloc;
 
 		public:
 			/*********************** Coplien form **********************/
 			// default
 			vector(const allocator_type& alloc = allocator_type()) :
-				vecData(NULL), vecSize(0), vecCapacity(0), vecAlloc(alloc)
+				_vecData(NULL), _vecSize(0), _vecCapacity(0), _vecAlloc(alloc)
 			{
 			}
 			// fill
 			vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) :
-					vecData(NULL) , vecSize(n), vecAlloc(alloc)
+					_vecData(NULL) , _vecSize(n), _vecAlloc(alloc)
 			{
-				vecData = vecAlloc.allocate(n);
+				_vecData = _vecAlloc.allocate(n);
 				for (size_type i = 0; i < n; i++)
 				{
-					this->vecAlloc.construct(&this->vecData[i], val);
+					this->_vecAlloc.construct(&this->_vecData[i], val);
 				}
-				vecCapacity = vecSize;
+				_vecCapacity = _vecSize;
 			}
 			// range
 			template <class InputIterator>
 				vector(InputIterator first, InputIterator last,
 					const allocator_type& alloc = allocator_type(),
 						typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :
-						vecData(NULL), vecSize(0), vecAlloc(alloc)
+						_vecData(NULL), _vecSize(0), _vecAlloc(alloc)
 			{
 				int size = 0;
 				for (InputIterator it = first; it != last; ++it)
 					size++;
-				vecSize = size;
-				vecCapacity = size;
-				vecData = vecAlloc.allocate(size);
-				for (size_type i = 0; i < vecSize && first != last;)
-						this->vecAlloc.construct(&this->vecData[i++], *first++);
+				_vecSize = size;
+				_vecCapacity = size;
+				_vecData = _vecAlloc.allocate(size);
+				for (size_type i = 0; i < _vecSize && first != last;)
+						this->_vecAlloc.construct(&this->_vecData[i++], *first++);
 			}
 			// copy
-			vector(const vector& x)  : vecData(NULL), vecSize(0),
-				vecCapacity(0) , vecAlloc(x.vecAlloc)
+			vector(const vector& x)  : _vecData(NULL), _vecSize(0),
+				_vecCapacity(0) , _vecAlloc(x._vecAlloc)
 			{
 				*this = x;
 			}
@@ -190,13 +190,13 @@ namespace ft {
 				if (this != &x)
 				{
 					this->clear();
-					this->vecAlloc = x.vecAlloc;
-					this->vecSize = x.size();
-					this->vecCapacity = x.capacity();
-					this->vecData = vecAlloc.allocate(x.size());
+					this->_vecAlloc = x._vecAlloc;
+					this->_vecSize = x.size();
+					this->_vecCapacity = x.capacity();
+					this->_vecData = _vecAlloc.allocate(x.size());
 					for (size_type i = 0; i < x.size(); i++)
 					{
-						this->vecAlloc.construct(&this->vecData[i], x.vecData[i]);
+						this->_vecAlloc.construct(&this->_vecData[i], x._vecData[i]);
 					}
 				}
 				return *this;
@@ -206,20 +206,20 @@ namespace ft {
 			// begin
 			iterator begin()
 			{
-				return iterator(vecData);
+				return iterator(_vecData);
 			}
 			const_iterator begin() const
 			{
-				return vecData;
+				return _vecData;
 			}
 			// end
 			iterator end()
 			{
-				return vecData + size();
+				return iterator(_vecData + size());
 			}
 			const_iterator end() const
 			{
-				return vecData + size();
+				return const_iterator(_vecData + size());
 			}
 			// rbegin
 			reverse_iterator rbegin()
@@ -245,27 +245,27 @@ namespace ft {
 			// size
 			size_type size() const
 			{
-				 return vecSize;
+				 return _vecSize;
 			}
 			// max size
 			size_type max_size() const
 			{
-				return vecAlloc.max_size();
+				return _vecAlloc.max_size();
 			}
 			// resize
 			void resize(size_type n, value_type val = value_type())
 			{
 				if (!empty()) 
 					this->clear();
-				vecSize = n;
-				vecCapacity = vecSize;
-				vecData = vecAlloc.allocate(n);
+				_vecSize = n;
+				_vecCapacity = _vecSize;
+				_vecData = _vecAlloc.allocate(n);
 				this->assign(n, val);
 			}
 			// capacity
 			size_type capacity() const
 			{
-				return vecCapacity;
+				return _vecCapacity;
 			}
 			// empty
 			bool empty() const
@@ -275,229 +275,250 @@ namespace ft {
 			// reserve
 			void reserve(size_type n)
 			{
-				pointer arr = this->vecAlloc.allocate(size());
+				pointer arr = this->_vecAlloc.allocate(size());
 				for (size_type i = 0; i < size(); i++)
-					this->vecAlloc.construct(&arr[i], vecData[i]);
-				std::cout << "Debugging... Reserve " << n << std::endl;
+					this->_vecAlloc.construct(&arr[i], _vecData[i]);
+				// std::cout << "Debugging... Reserve " << n << std::endl;
 				if (!empty())
 				{
-					this->vecAlloc.destroy(this->vecData);
-					this->vecAlloc.deallocate(this->vecData, this->size());
+					this->_vecAlloc.destroy(this->_vecData);
+					this->_vecAlloc.deallocate(this->_vecData, this->size());
 				}
-				this->vecData = this->vecAlloc.allocate(n);
+				this->_vecData = this->_vecAlloc.allocate(n);
 				if (n > this->capacity())
-					this->vecCapacity = (this->vecCapacity * 2 >= n) ? this->vecCapacity * 2 : n;
+					this->_vecCapacity = (this->_vecCapacity * 2 >= n) ? this->_vecCapacity * 2 : n;
 				for (size_type i = 0; i < size(); i++)
 				{
-					this->vecAlloc.construct(&this->vecData[i], arr[i]);
+					this->_vecAlloc.construct(&this->_vecData[i], arr[i]);
 				}
-				this->vecAlloc.destroy(arr);
-				this->vecAlloc.deallocate(arr, n);
+				this->_vecAlloc.destroy(arr);
+				this->_vecAlloc.deallocate(arr, n);
 			}
 
 			/*********************** Element access **********************/
 			// operator []
 			reference operator[](size_type idx)
 			{
-				return vecData[idx];
+				return _vecData[idx];
 			}
 			// at
 			reference at(size_type n)
 			{
-				return vecData[n];
+				return _vecData[n];
 			}
 			const_reference at (size_type n) const
 			{
-				return vecData[n];
+				return _vecData[n];
 			}
 			// front
 			reference front()
 			{
-				return vecData[0];
+				return _vecData[0];
 			}
 			const_reference front() const
 			{
-				return vecData[0];
+				return _vecData[0];
 			}
 			// back
 			reference back()
 			{
-				return vecData[size() - 1];
+				return _vecData[size() - 1];
 			}
 			const_reference back() const
 			{
-				return vecData[size() - 1];
+				return _vecData[size() - 1];
 			}
 			/*********************** Modifiers **********************/
 			// assign
 				// fill
 			void assign(size_type n, const value_type& val)
 			{
+				if (!n)
+					return ;
 				this->reserve(n);
-				this->vecSize = n;
+				_vecSize = n;
 				for (size_type i = 0; i < n; ++i)
-					this->vecAlloc.construct(&this->vecData[i], val);
+					this->_vecAlloc.construct(&this->_vecData[i], val);
 			}
 				// range
 			template <class InputIterator>
 				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 			{
-				size_type sizeRange = 0;
+				size_type lenRange = 0;
 				for (InputIterator it = first; it != last; ++it)
-					sizeRange++;
-				this->reserve(sizeRange);
-				this->vecSize = sizeRange;
-				int i = 0;
+					lenRange++;
+				if (!lenRange)
+					return ;
+				this->reserve(lenRange);
+				_vecSize = lenRange;
+				size_type i = 0;
 				for (InputIterator it = first; it != last; ++it)
-					this->vecAlloc.construct(&this->vecData[i++], *it);
+					this->_vecAlloc.construct(&this->_vecData[i++], *it);
 			}
 			// push_back
 			void push_back (const value_type& val)
 			{
 				this->reserve(this->size() + 1);
-				this->vecAlloc.construct(&this->vecData[this->vecSize++], val);
+				this->_vecAlloc.construct(&this->_vecData[this->_vecSize++], val);
 			}
 			// pop_back
 			void pop_back()
 			{
-				this->vecAlloc.destroy(&this->vecData[size() - 1]);
-				vecSize--;
+				this->_vecAlloc.destroy(&this->_vecData[size() - 1]);
+				_vecSize--;
 			}
 			// insert
 				// single element
 			iterator insert(iterator position, const value_type& val)
 			{
-				std::cout << "debugging... " << size() << std::endl;
-				std::cout << "__begin  " << *(begin() + 2) << " " << *position << std::endl;
-				reserve(size() + 1);
-				std::cout << "__begin  " << *(begin() + 2) << " " << *position << std::endl;
-				vecSize++;
-				size_type i = size() - 1;
-				for (iterator it = end() - 1; it != begin(); it--)
+				size_type idx = 0;
+				for (iterator iter = begin(); iter != end(); ++iter)
 				{
-					std::cout << "debugging... " << *it << "  " << *position << std::endl;
-					if(it == position)
+					if (iter == position)
+						break ;
+					idx++;
+				}
+				reserve(size() + 1);
+				_vecSize++;
+				size_type i = size();
+				for (; i >= 0; i--)
+				{
+					if(i == idx)
 					{
-						this->vecAlloc.construct(&this->vecData[i], val);
+						this->_vecAlloc.construct(&this->_vecData[i], val);
 						break ;
 					}
-					else
-						this->vecAlloc.construct(&this->vecData[i], vecData[i - 1]);
-					i--;
+					this->_vecAlloc.construct(&this->_vecData[i], _vecData[i - 1]);
 				}
-				// *this = tmp;
-				return position.base();
+
+				return iterator(_vecData + idx);
 			}
 				// fill
 			void insert(iterator position, size_type n, const value_type& val)
 			{
-				vector<value_type> tmp(*this);
-				tmp.reserve(tmp.size());
-				tmp.vecSize = tmp.size() + n;
-				size_type i = 0, j = 0;
-				for (iterator it = this->begin(); i < tmp.size(); it++)
+				if (!n) return;
+				size_type idx = 0;
+				for (iterator iter = begin(); iter != end(); ++iter)
 				{
-					if (it == position)
-					{
-						for (size_type k = i; k < i + n; ++k) {
-							this->vecAlloc.construct(&tmp.vecData[k], val);
-						}
-						i += n;
-					}
-					else
-						this->vecAlloc.construct(&tmp.vecData[i++], this->vecData[j++]);
+					if (iter == position)
+						break ;
+					idx++;
 				}
-				*this = tmp;
+				reserve(size() + n);
+				_vecSize += n;
+				size_type i = size();
+				for (;i >= 0; --i)
+				{
+					if (i == (idx + n) - 1)
+					{
+						for (; i >= idx; i--)
+						{
+							this->_vecAlloc.construct(&_vecData[i], val);
+						}
+						break ;
+					}
+					this->_vecAlloc.construct(&_vecData[i], _vecData[i - n]);
+				}
 			}
 				// range
 			template <class InputIterator>
     			void insert(iterator position, InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 				{
-					vector<value_type> tmp(*this);
-					size_type sizeRange = 0;
-					for (InputIterator it = first; it != last; ++it) { sizeRange++; }
-					tmp.reserve(this->size() + sizeRange);
-					tmp.vecSize = this->size() + sizeRange;
-					size_type i = 0, j = 0;
-					for (iterator it = this->begin(); i < tmp.size(); ++it)
+					size_type idx = 0;
+					for (iterator iter = begin(); iter != end(); ++iter)
 					{
-						if (it == position)
-						{
-							for (;first != last; ++first)
-								this->vecAlloc.construct(&tmp.vecData[i++], *first);
-						}
-						else
-							this->vecAlloc.construct(&tmp.vecData[i++], this->vecData[j++]);
+						if (iter == position)
+							break ;
+						idx++;
 					}
-					*this = tmp;
+					size_type lenRange = 0;
+					for (InputIterator it = first; it != last; ++it)
+						lenRange++;
+					if (!lenRange) return;
+					reserve(size() + lenRange);
+					_vecSize += lenRange;
+					size_type i = size();
+					for (;i >= 0; i--)
+					{
+						if (i == (idx + lenRange) - 1)
+						{
+							for (;i >= idx ; i--)
+								this->_vecAlloc.construct(&_vecData[i], *--last);
+							break ;
+						}
+						this->_vecAlloc.construct(&_vecData[i], _vecData[i - lenRange]);
+					}
 				}
 			// erase
 			iterator erase(iterator position)
 			{
-				vector<value_type> tmp(*this);
-				iterator itRet;
-				tmp.reserve(tmp.vecSize - 1);
-				tmp.vecSize = tmp.vecSize - 1;
-				size_type i = 0, j = 0;
-				for (iterator it = this->begin(); it != this->end(); ++it)
+				size_type idx = 0;
+				for (iterator iter = begin(); iter != end(); ++iter)
 				{
-					if (it == position)
-					{
-						j++;
-						itRet = it + 1;
-					}
-					else
-						this->vecAlloc.construct(&tmp.vecData[i++], this->vecData[j++]);
+					if (iter == position)
+						break ;
+					idx++;
 				}
-				*this = tmp;
-				return itRet.base();
+				size_type i = 0, j = 0;
+				for (;i < size(); i++)
+				{
+					if (i == idx)
+					{
+						this->_vecAlloc.destroy(&_vecData[idx]);
+						i++;
+					}
+					this->_vecAlloc.construct(&_vecData[j++], _vecData[i]);
+				}
+				_vecSize--;
+				return iterator(_vecData + idx);
 			}
 			iterator erase(iterator first, iterator last)
 			{
-				vector<value_type> tmp(*this);
-				iterator itRet;
-				size_type rangeSize = 0;
-				for(iterator it = first; it != last; ++it) { rangeSize++; }
-				tmp.reserve(tmp.size() - rangeSize);
-				tmp.vecSize = tmp.size() - rangeSize;
-				size_type i = 0, j = 0;
-				for (iterator it = this->begin(); it != this->end(); ++it)
+				size_type idx = 0;
+				for (iterator iter = begin(); iter != end(); ++iter)
 				{
-					if (it == first)
+					if (iter == first)
+						break ;
+					idx++;
+				}
+				size_type rangeSize = 0;
+				size_type i = 0, j = 0;
+				for (; i < size(); i++)
+				{
+					if (i == idx)
 					{
 						for (;first != last; first++)
 						{
-							j++;
-							it++;
+							this->_vecAlloc.destroy(&_vecData[i++]);
+							rangeSize++;
 						}
-						itRet = last;
 					}
-					this->vecAlloc.construct(&tmp.vecData[i++], this->vecData[j++]);
+					this->_vecAlloc.construct(&_vecData[j++], _vecData[i]);
 				}
-				*this = tmp;
-				return itRet.base();
+				_vecSize -=rangeSize;
+				return iterator(_vecData + idx);
 			}
 			// swap
 			void swap(vector& x)
 			{
-				vector<value_type> tmp = *this;
+				vector<value_type> vecSwap = *this;
 				*this = x;
-				x = tmp;
+				x = vecSwap;
 			}
 			// clear
 			void clear() {
 				if (!this->empty())
 				{
-					vecAlloc.destroy(this->vecData);
-					vecAlloc.deallocate(this->vecData, this->size());
-					vecSize = 0;
-					vecCapacity = 0;
+					_vecAlloc.destroy(this->_vecData);
+					_vecAlloc.deallocate(this->_vecData, this->size());
+					_vecSize = 0;
+					_vecCapacity = 0;
 				}
 			}
 			/*********************** Allocator **********************/
-			allocator_type get_allocator() const { return vecAlloc; }
+			allocator_type get_allocator() const { return _vecAlloc; }
 		}; // end vector class
 		/* ######## FX Non-member function overloads ######## */
 		// operator ==
