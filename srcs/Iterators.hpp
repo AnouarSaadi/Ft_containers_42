@@ -4,9 +4,9 @@
 #	include <cstddef>
 #	include "Vector.hpp"
 class Vector;
+
 namespace ft {
 	/* iterator */
-
 	template <
 				class Category,
 				class T,
@@ -14,7 +14,7 @@ namespace ft {
 				class Pointer = T*,
 				class Reference = T&
 				>
-	class Iterator
+	class iterator_base
 	{
 	public:
 		typedef Category	iterator_category;
@@ -33,7 +33,7 @@ namespace ft {
 		typedef typename Iter::pointer				pointer;
 		typedef typename Iter::reference			reference;
 		typedef typename Iter::difference_type		difference_type;
-		// typedef typename Iter::iterator_category	iterator_category;
+		typedef typename Iter::iterator_category	iterator_category;
 	}; // end class iterator_traits
 
 	template <class T>
@@ -69,13 +69,13 @@ namespace ft {
 		typedef typename iterator_traits<Iter>::pointer				pointer;
 		typedef typename iterator_traits<Iter>::reference			reference;
 		typedef typename iterator_traits<Iter>::difference_type		difference_type;
-		// typedef typename iterator_traits<Iter>::iterator_category	iterator_category;
+		typedef typename iterator_traits<Iter>::iterator_category	iterator_category;
 	
 	protected:
 		iterator_type _it;
 
 	public:
-		// Member functions
+		/* Member functions */
 		reverse_iterator<Iter>() : _it(nullptr) {}
 		reverse_iterator<Iter>(iterator_type it) : _it(it) {}
 		reverse_iterator<Iter>(const reverse_iterator& oth) : _it(oth._it) {}

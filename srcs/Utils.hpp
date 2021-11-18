@@ -1,10 +1,9 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-// type_traits
-
+/* type_traits */
 namespace ft {
-	// enable_if
+	/* enable_if */
 	template<bool Cond, class T = void>
 	struct enable_if {};
 
@@ -13,106 +12,106 @@ namespace ft {
 	{
 		typedef T type;
 	};
-
-	// is_integral
+	
+	/* is_integral */
 	template <class T>
 	struct is_integral
 	{
 		static const bool value = false;
 	};
-		//bool
+	/* bool */
 	template <>
 	struct is_integral<bool>
 	{
 		static const bool value = true;
 	};
-		// char
+	/* char */
 	template <>
 	struct is_integral<char>
 	{
 		static const bool value = true;
 	};
-		// wchar_t
+	/* wchar_t */
 	template <>
 	struct is_integral<wchar_t>
 	{
 		static const bool value = true;
 	};
-		// char16_t
+	/* char16_t */
 	template <>
 	struct is_integral<char16_t>
 	{
 		static const bool value = true;
 	};
-		// char32_t
+	/* char32_t */
 	template <>
 	struct is_integral<char32_t>
 	{
 		static const bool value = true;
 	};
-		// signed char
+	/* signed char */
 	template <>
 	struct is_integral<signed char>
 	{
 		static const bool value = true;
 	};
-		// short int
+	/* short int */
 	template <>
 	struct is_integral<short int>
 	{
 		static const bool value = true;
 	};
-		// int
+	/* int */
 	template <>
 	struct is_integral<int>
 	{
 		static const bool value = true;
 	};
-		// long int
+	/* long int */
 	template <>
 	struct is_integral<long int>
 	{
 		static const bool value = true;
 	};
-		// long long int
+	/* long long int */
 	template <>
 	struct is_integral<long long int>
 	{
 		static const bool value = true;
 	};
-		// unsigned  char
+	/* unsigned  char */
 	template <>
 	struct is_integral<unsigned char>
 	{
 		static const bool value = true;
 	};
-		// unsigned short int
+	/* unsigned short int */
 	template <>
 	struct is_integral<unsigned short int>
 	{
 		static const bool value = true;
 	};
-		// unsigned int
+	/* unsigned int */
 	template <>
 	struct is_integral<unsigned int>
 	{
 		static const bool value = true;
 	};
-		// unsigned long int
+	/* unsigned long int */
 	template <>
 	struct is_integral<unsigned long int>
 	{
 		static const bool value = true;
 	};
-		// unsigned long long int
+	/* unsigned long long int */
 	template <>
 	struct is_integral<unsigned long long int>
 	{
 		static const bool value = true;
 	};
 
-	// equal function
-	 // equality
+	/* equal function */
+	/* equality */
 	template <class InputIterator1, class InputIterator2>
 		bool equal ( InputIterator1 first1, InputIterator1 last1, InputIterator2 first2 )
 	{
@@ -123,7 +122,7 @@ namespace ft {
 		}
 		return true;
 	}
-	 // predicate
+	/* predicate */
 	template <class InputIterator1, class InputIterator2, class BinaryPredicate>
   		bool equal (InputIterator1 first1, InputIterator1 last1,
             InputIterator2 first2, BinaryPredicate pred)
@@ -136,7 +135,7 @@ namespace ft {
 		return true;
 	}
 
-	// lexicographical compare
+	/* lexicographical compare */
 	template <class InputIterator1, class InputIterator2>
 		bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
             InputIterator2 first2, InputIterator2 last2)
