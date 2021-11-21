@@ -34,7 +34,7 @@ int main()
 		std::cout << "\t\tv["<< i <<"] = " << v[i] << " " << *(v.begin()) << "\t" << v.size() << std::endl;
 	}
 	v.insert(v.begin() + 2,v.begin() + 13, v.begin() + 15);
-	itb = v.begin() + 3;
+	itb = v.end() - 3;
 	itb = v.erase(itb);
 	for (size_t i = 0; i < v.size(); i++){
 		std::cout << "\t\tv["<< i <<"] = " << v[i] << " " << *(v.begin()) << "\t" << v.size() << std::endl;
@@ -78,7 +78,7 @@ int main()
 	for (size_t i = 0; i < bar.size(); i++) {
 		std::cout << "\t\tbar["<< i <<"] = " << bar[i] << "\t" << bar.size() <<'|'<<bar.capacity()<< std::endl;
 	}
-	NS::vector<int>::reverse_iterator rev_it = vcopy.rbegin() ;
+	NS::vector<int>::reverse_iterator rev_it = vcopy.rbegin() + 3; // ! solve the compiling error at reverse iterator
 	// std::cout << "Debugging... rev it   " << &(*rev_it) << " " << sizeof(rev_it) << std::endl; // ! check the size
 	std::cout << "rev :";
 	for (;rev_it != vcopy.rend(); ++rev_it)

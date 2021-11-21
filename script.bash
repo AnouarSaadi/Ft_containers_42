@@ -30,8 +30,8 @@ compile_and_run()
 tests="$1"
 
 if [ $# -ne 2 ] && [ $# -ne 1 ]; then
-	echo "Usage: [ ./run_tests.bash <tests_file.cpp> ]"
-	echo "Option: [ -r ~~ To Remove the objects and output files ]"
+	echo "Usage: [ ./script.bash <tests_file.cpp> ]"
+	echo "Option: [ -rm ~~ To Remove the objects and output files ]"
 	exit 1
 fi
 
@@ -40,7 +40,7 @@ if [ $# -eq 2 ]; then
 fi
 
 if ! ls $tests > /dev/null 2>&1 ; then
-	echo " $tests : file not found!"
+	echo " error: $tests: file not found!"
 	exit 2
 fi
 
@@ -67,7 +67,7 @@ else
 	printf "\n ############### SUCCESS ;) ###############\n\n"
 fi
 
-if [ $# -eq 2 ] && [ "$1" = "-r" ]; then
+if [ $# -eq 2 ] && [ "$1" = "-rm" ]; then
 	/bin/rm -rf ft_obj std_obj ft_out std_out > /dev/null 2>&1
 fi
 

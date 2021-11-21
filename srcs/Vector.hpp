@@ -5,152 +5,161 @@
 # include <iostream>
 # include "Iterators.hpp"
 # include "Utils.hpp"
-
 class Iterator;
+
 namespace ft {
 	/* vector: Wrap iterator template class */
-	template <class Vector>
-		class WrapIter : public iterator_base<std::random_access_iterator_tag, Vector>
+	template <class Iter>
+		class WrapIter
 		{ 
 		public:
-    		typedef Vector                                                   	iterator_type;
-    		typedef typename iterator_traits<iterator_type>::value_type       	value_type;
-    		typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
-    		typedef typename iterator_traits<iterator_type>::pointer			pointer;
-    		typedef typename iterator_traits<iterator_type>::reference			reference;
-    		typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
-		
-		private:
-			pointer m_Ptr;
-
+    		typedef Iter	                                                   	iterator_type;
+    		typedef typename iterator_traits<Iter>::value_type     			  	value_type;
+    		typedef typename iterator_traits<Iter>::difference_type				difference_type;
+    		typedef typename iterator_traits<Iter>::pointer						pointer;
+    		typedef typename iterator_traits<Iter>::reference					reference;
+    		typedef typename iterator_traits<Iter>::iterator_category			iterator_category;
+		protected:
+			iterator_type _it;
 		public:
 			/* ***** FX Member functions ***** */
-			WrapIter<Vector>() {} // constructor
-			WrapIter<Vector>(const pointer ptr) : m_Ptr(ptr) {} // param constructor
-			WrapIter<Vector>(const WrapIter& other)
+			WrapIter() : _it()
+			{
+			} // default constructor
+			WrapIter(const iterator_type x) : _it(x)
+			{
+			} // param constructor
+			WrapIter(const WrapIter& other)
 			{
 				*this = other;
 			} // copy constructor
 			/* assignment operator */
-			WrapIter<Vector>& operator=(const WrapIter& other)
+			WrapIter& operator=(const WrapIter& other)
 			{
-				this->m_Ptr = other.m_Ptr;
+				_it = other._it;
 				return *this;
 			}
-			~WrapIter<Vector>() {}; // destructor
+			~WrapIter()
+			{
+			} // destructor
 			/* operator * */
 			reference operator*() const
 			{
-				return *m_Ptr;
+				iterator_type cp = _it;
+				--cp;
+				return *cp;
 			}
 			/* operator -> */
 			pointer operator->() const
 			{
-				return m_Ptr;
+				iterator_type cp = _it;
+				--cp;
+				return cp;
 			}
 
 			/* operator += ++ */
-			WrapIter<Vector> operator+(difference_type off)
+			WrapIter operator+(difference_type off)
 			{
-				return WrapIter(m_Ptr + off);
+				return WrapIter(_it + off);
 			}
-			WrapIter<Vector>& operator+= (difference_type off)
+			WrapIter & operator+= (difference_type off)
 			{
-				m_Ptr += off;
+				_it += off;
 				return *this;
 			}
-			WrapIter<Vector> & operator++()
+			WrapIter & operator++()
 			{
-				m_Ptr++;
+				_it++;
 				return *this;
 			}
-			WrapIter<Vector> operator++(int)
+			WrapIter operator++(int)
 			{
-				WrapIter<Vector> tmp(*this);
-				++*this;
+				WrapIter tmp(*this);
+				++_it;
 				return tmp;
 			}
 
 			/* operator -= -- */
-			WrapIter<Vector> operator-(difference_type off)
+			WrapIter operator-(difference_type off)
 			{
-				return WrapIter(m_Ptr - off);
+				return WrapIter(_it - off);
 			}
-			WrapIter<Vector>& operator-= (difference_type off)
+			WrapIter & operator-= (difference_type off)
 			{
-				m_Ptr -= off;
+				_it -= off;
 				return *this;
 			}
-			WrapIter<Vector>& operator--()
+			WrapIter & operator--()
 			{
-				m_Ptr--;
+				_it--;
 				return *this;
 			}
-			WrapIter<Vector> operator--(int) {
-				WrapIter<Vector> tmp(*this);
-				--*this;
+			WrapIter operator--(int)
+			{
+				WrapIter tmp(*this);
+				--_it;
 				return tmp;
 			}
 			
 			/* operator [] */
 			reference operator[] (difference_type idx) const
 			{
-				return *(m_Ptr + idx);
+				return *(_it + idx);
 			}
 
 			/* base() */
 			pointer base() const
 			{
-				return m_Ptr;
+				return _it;
 			}
 			
 		}; // end WrapIter class
 	/* ***** Non-member function overloads ***** */
 	/* operator == */
-	template <class Vector>
-  	bool operator==(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+  	bool operator==(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return lhs.base() == rhs.base();
 	}
 	/* operator != */
-	template <class Vector>
-  	bool operator!=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+  	bool operator!=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return !(lhs == rhs);
 	}
 	/* operator + */
-	template <class Vector>
-	WrapIter<Vector> operator+(typename WrapIter<Vector>::difference_type n, const WrapIter<Vector>& _it)
+	template <class Iter>
+	WrapIter<Iter> operator+(typename WrapIter<Iter>::difference_type n, const WrapIter<Iter>& _it)
 	{
-		return WrapIter<Vector>(_it + n);
+		return WrapIter<Iter>(_it + n);
 	}
 	/* operator - */
-	template <class Vector>
-	typename WrapIter<Vector>::difference_type operator-(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+	typename WrapIter<Iter>::difference_type operator-(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return lhs.base() - rhs.base();
 	}
 	/* operator < */
-	template <class Vector>
-	bool operator<(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+	bool operator<(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return lhs.base() < rhs.base();
 	}
 	/* operator > */
-	template <class Vector>
-	bool operator>(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+	bool operator>(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return lhs.base() > rhs.base();
 	}
 	/* operator <= */
-	template <class Vector>
-	bool operator<=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+	bool operator<=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return !(lhs > rhs);
 	}
 	/* operator>= */
-	template <class Vector>
-	bool operator>=(const WrapIter<Vector>& lhs, const WrapIter<Vector>& rhs)
+	template <class Iter>
+	bool operator>=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
 	{
 		return !(lhs < rhs);
 	}
@@ -168,10 +177,10 @@ namespace ft {
 			typedef typename Alloc::const_reference					const_reference;
 			typedef typename Alloc::pointer							pointer;
 			typedef typename Alloc::const_pointer					const_pointer;
-			typedef WrapIter< pointer > 							iterator;
-			typedef WrapIter< const_pointer >						const_iterator;
-			typedef reverse_iterator< const_iterator >				const_reverse_iterator;
-			typedef reverse_iterator< iterator >					reverse_iterator;
+			typedef WrapIter<pointer> 								iterator;
+			typedef WrapIter<const_pointer>							const_iterator;
+			typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
+			typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		
 		private:
 			pointer			_vecData;
