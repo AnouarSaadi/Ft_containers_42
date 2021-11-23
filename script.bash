@@ -68,7 +68,7 @@ else
 fi
 
 if [ $# -eq 2 ] && [ "$1" = "-rm" ]; then
-	/bin/rm -rf ft_obj std_obj ft_out std_out > /dev/null 2>&1
+	/bin/rm -rf ft_obj std_obj ft_out std_out differrence.txt > /dev/null 2>&1
 fi
 
 exit 0

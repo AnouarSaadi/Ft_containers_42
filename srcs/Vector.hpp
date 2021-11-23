@@ -29,14 +29,16 @@ namespace ft {
 			WrapIter(const iterator_type x) : _it(x)
 			{
 			} // param constructor
-			WrapIter(const WrapIter& other)
+			template <class OthIter>
+				WrapIter(const WrapIter<OthIter>& other)
 			{
-				*this = other;
+				this->_it = other._it;
 			} // copy constructor
 			/* assignment operator */
-			WrapIter& operator=(const WrapIter& other)
+			template <class OthIter>
+				WrapIter& operator=(const WrapIter<OthIter>& other)
 			{
-				_it = other._it;
+				this->_it = other._it;
 				return *this;
 			}
 			~WrapIter()
@@ -58,7 +60,7 @@ namespace ft {
 			}
 
 			/* operator += ++ */
-			WrapIter operator+(difference_type off)
+			WrapIter operator+(difference_type off) const
 			{
 				return WrapIter(_it + off);
 			}
@@ -80,7 +82,7 @@ namespace ft {
 			}
 
 			/* operator -= -- */
-			WrapIter operator-(difference_type off)
+			WrapIter operator-(difference_type off) const
 			{
 				return WrapIter(_it - off);
 			}
@@ -104,7 +106,7 @@ namespace ft {
 			/* operator [] */
 			reference operator[] (difference_type idx) const
 			{
-				return *(_it + idx);
+				return *(*this + idx);
 			}
 
 			/* base() */
@@ -200,9 +202,15 @@ namespace ft {
 				const allocator_type& alloc = allocator_type()) :
 					_vecData(nullptr) , _vecSize(n), _vecAlloc(alloc)
 			{
+				if (!n)
+					return;
+				// this->assign(n, val);
 				_vecData = _vecAlloc.allocate(n);
-				for (size_type i = 0; i < n; i++)
+				for (size_type i = 0; i < n; ++i)
+				{
 					this->_vecAlloc.construct(&this->_vecData[i], val);
+					std::cout << "__vecData["<<i<<"]__ " << _vecData[i] << " ±± " << *begin() << std::endl;
+				}
 				_vecCapacity = _vecSize;
 			}
 			/* range */
@@ -256,20 +264,20 @@ namespace ft {
 			/* begin */
 			iterator begin()
 			{
-				return iterator(_vecData);
+				return _vecData;
 			}
 			const_iterator begin() const
 			{
-				return const_iterator(_vecData);
+				return _vecData;
 			}
 			/* end */
 			iterator end()
 			{
-				return iterator(_vecData + size());
+				return _vecData + _vecSize;
 			}
 			const_iterator end() const
 			{
-				return const_iterator(_vecData + size());
+				return _vecData + _vecSize;
 			}
 			/* rbegin */
 			reverse_iterator rbegin()
@@ -402,13 +410,13 @@ namespace ft {
 				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 			{
-				size_type lenRange = 0;
+				size_type rngLen = 0;
 				for (InputIterator it = first; it != last; ++it)
-					lenRange++;
-				if (!lenRange)
+					rngLen++;
+				if (!rngLen)
 					return ;
-				this->reserve(lenRange);
-				_vecSize = lenRange;
+				this->reserve(rngLen);
+				_vecSize = rngLen;
 				size_type i = 0;
 				for (InputIterator it = first; it != last; ++it)
 					this->_vecAlloc.construct(&this->_vecData[i++], *it);
@@ -491,22 +499,22 @@ namespace ft {
 							break ;
 						idx++;
 					}
-					size_type lenRange = 0;
+					size_type rngLen = 0;
 					for (InputIterator it = first; it != last; ++it)
-						lenRange++;
-					if (!lenRange) return;
-					reserve(size() + lenRange);
-					_vecSize += lenRange;
+						rngLen++;
+					if (!rngLen) return;
+					reserve(size() + rngLen);
+					_vecSize += rngLen;
 					size_type i = size();
 					for (;i >= 0; i--)
 					{
-						if (i == (idx + lenRange) - 1)
+						if (i == (idx + rngLen) - 1)
 						{
 							for (;i >= idx ; i--)
 								this->_vecAlloc.construct(&_vecData[i], *--last);
 							break ;
 						}
-						this->_vecAlloc.construct(&_vecData[i], _vecData[i - lenRange]);
+						this->_vecAlloc.construct(&_vecData[i], _vecData[i - rngLen]);
 					}
 				}
 			/* erase */
@@ -541,7 +549,7 @@ namespace ft {
 						break ;
 					idx++;
 				}
-				size_type rangeSize = 0;
+				size_type rngLen = 0;
 				size_type i = 0, j = 0;
 				for (; i < size(); i++)
 				{
@@ -550,12 +558,12 @@ namespace ft {
 						for (;first != last; first++)
 						{
 							this->_vecAlloc.destroy(&_vecData[i++]);
-							rangeSize++;
+							rngLen++;
 						}
 					}
 					this->_vecAlloc.construct(&_vecData[j++], _vecData[i]);
 				}
-				_vecSize -=rangeSize;
+				_vecSize -=rngLen;
 				return iterator(_vecData + idx);
 			}
 			/* swap */

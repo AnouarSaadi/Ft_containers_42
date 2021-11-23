@@ -84,7 +84,7 @@ namespace ft {
 		{
 		}
 		template <class OthIter>
-			reverse_iterator (const reverse_iterator<OthIter>& rev_it) : _it(rev_it.base())
+			reverse_iterator(const reverse_iterator<OthIter>& rev_it) : _it(rev_it.base())
 		{
 		}
 		iterator_type base() const
@@ -93,9 +93,9 @@ namespace ft {
 		}
 		reference operator*() const
 		{
-			iterator_type copy = _it.base();
-			--copy;
-			return *copy;
+			iterator_type cp = _it;
+			--cp;
+			return *cp;
 		}
 		// +
 		reverse_iterator operator+(difference_type off) const
