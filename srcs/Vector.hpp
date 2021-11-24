@@ -3,170 +3,12 @@
 
 # include <memory> // std::allocator
 # include <iostream>
-# include "Iterators.hpp"
+# include "Iterator.hpp"
 # include "Utils.hpp"
 class Iterator;
 
-namespace ft {
-	/* vector: Wrap iterator template class */
-	template <class Iter>
-		class WrapIter
-		{ 
-		public:
-    		typedef Iter	                                                   	iterator_type;
-    		typedef typename iterator_traits<Iter>::value_type     			  	value_type;
-    		typedef typename iterator_traits<Iter>::difference_type				difference_type;
-    		typedef typename iterator_traits<Iter>::pointer						pointer;
-    		typedef typename iterator_traits<Iter>::reference					reference;
-    		typedef typename iterator_traits<Iter>::iterator_category			iterator_category;
-		protected:
-			iterator_type _it;
-		public:
-			/* ***** FX Member functions ***** */
-			WrapIter() : _it()
-			{
-			} // default constructor
-			WrapIter(const iterator_type x) : _it(x)
-			{
-			} // param constructor
-			template <class OthIter>
-				WrapIter(const WrapIter<OthIter>& other)
-			{
-				this->_it = other._it;
-			} // copy constructor
-			/* assignment operator */
-			template <class OthIter>
-				WrapIter& operator=(const WrapIter<OthIter>& other)
-			{
-				this->_it = other._it;
-				return *this;
-			}
-			~WrapIter()
-			{
-			} // destructor
-			/* operator * */
-			reference operator*() const
-			{
-				iterator_type cp = _it;
-				--cp;
-				return *cp;
-			}
-			/* operator -> */
-			pointer operator->() const
-			{
-				iterator_type cp = _it;
-				--cp;
-				return cp;
-			}
-
-			/* operator += ++ */
-			WrapIter operator+(difference_type off) const
-			{
-				return WrapIter(_it + off);
-			}
-			WrapIter & operator+= (difference_type off)
-			{
-				_it += off;
-				return *this;
-			}
-			WrapIter & operator++()
-			{
-				_it++;
-				return *this;
-			}
-			WrapIter operator++(int)
-			{
-				WrapIter tmp(*this);
-				++_it;
-				return tmp;
-			}
-
-			/* operator -= -- */
-			WrapIter operator-(difference_type off) const
-			{
-				return WrapIter(_it - off);
-			}
-			WrapIter & operator-= (difference_type off)
-			{
-				_it -= off;
-				return *this;
-			}
-			WrapIter & operator--()
-			{
-				_it--;
-				return *this;
-			}
-			WrapIter operator--(int)
-			{
-				WrapIter tmp(*this);
-				--_it;
-				return tmp;
-			}
-			
-			/* operator [] */
-			reference operator[] (difference_type idx) const
-			{
-				return *(*this + idx);
-			}
-
-			/* base() */
-			pointer base() const
-			{
-				return _it;
-			}
-			
-		}; // end WrapIter class
-	/* ***** Non-member function overloads ***** */
-	/* operator == */
-	template <class Iter>
-  	bool operator==(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return lhs.base() == rhs.base();
-	}
-	/* operator != */
-	template <class Iter>
-  	bool operator!=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return !(lhs == rhs);
-	}
-	/* operator + */
-	template <class Iter>
-	WrapIter<Iter> operator+(typename WrapIter<Iter>::difference_type n, const WrapIter<Iter>& _it)
-	{
-		return WrapIter<Iter>(_it + n);
-	}
-	/* operator - */
-	template <class Iter>
-	typename WrapIter<Iter>::difference_type operator-(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return lhs.base() - rhs.base();
-	}
-	/* operator < */
-	template <class Iter>
-	bool operator<(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return lhs.base() < rhs.base();
-	}
-	/* operator > */
-	template <class Iter>
-	bool operator>(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return lhs.base() > rhs.base();
-	}
-	/* operator <= */
-	template <class Iter>
-	bool operator<=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return !(lhs > rhs);
-	}
-	/* operator>= */
-	template <class Iter>
-	bool operator>=(const WrapIter<Iter>& lhs, const WrapIter<Iter>& rhs)
-	{
-		return !(lhs < rhs);
-	}
-	
 	/*************************** vector: Template class *********************/
+namespace ft {
 	template < class T, class Alloc = std::allocator<T> >
 		class vector
 		{
@@ -179,8 +21,8 @@ namespace ft {
 			typedef typename Alloc::const_reference					const_reference;
 			typedef typename Alloc::pointer							pointer;
 			typedef typename Alloc::const_pointer					const_pointer;
-			typedef WrapIter<pointer> 								iterator;
-			typedef WrapIter<const_pointer>							const_iterator;
+			typedef vector_iter<pointer> 							iterator;
+			typedef vector_iter<const_pointer>						const_iterator;
 			typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		private:
@@ -198,33 +40,22 @@ namespace ft {
 			/* fill */
 			vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) :
-					_vecData(nullptr) , _vecSize(n), _vecAlloc(alloc)
+					_vecData(nullptr) , _vecSize(0), _vecCapacity(0),_vecAlloc(alloc)
 			{
 				if (!n)
-					return;
-				this->_vecData = this->_vecAlloc.allocate(n);
-				for (size_type i = 0; i < n; ++i)
-				{
-					this->_vecAlloc.construct(&this->_vecData[i], val);
-					std::cout << "__vecData["<<i<<"]__ " << _vecData[i] << " ±± " << *begin() << std::endl;
-				}
-				this->_vecCapacity = this->_vecSize;
+					return ;
+				this->assign(n, val);
 			}
 			/* range */
 		 	template <class InputIterator>
 				vector(InputIterator first, InputIterator last,
 					const allocator_type& alloc = allocator_type(),
 						typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :
-						_vecData(nullptr), _vecSize(0), _vecAlloc(alloc)
+						_vecData(nullptr), _vecSize(0), _vecCapacity(0), _vecAlloc(alloc)
 			{
-				int size = 0;
-				for (InputIterator it = first; it != last; ++it)
-					size++;
-				this->_vecSize = size;
-				this->_vecCapacity = size;
-				this->_vecData = this->_vecAlloc.allocate(size);
-				for (size_type i = 0; i < this->_vecSize && first != last;)
-						this->_vecAlloc.construct(&this->_vecData[i++], *first++);
+				if (first == last)
+					return ;
+				this->assign(first, last);
 			}
 			/* copy */
 			vector(const vector& x)  : _vecData(nullptr), _vecSize(0),
@@ -246,7 +77,7 @@ namespace ft {
 				if (this != &x)
 				{
 					this->clear();
-					this->_vecAlloc.deallocate(this->_vecData, capacity());
+					this->_vecAlloc.deallocate(this->_vecData, this->capacity());
 					this->_vecAlloc = x._vecAlloc;
 					this->_vecSize = x.size();
 					this->_vecCapacity = x.capacity();
@@ -256,7 +87,6 @@ namespace ft {
 				}
 				return (*this);
 			}
-
 			/*********************** Iterators **********************/
 			/* begin */
 			iterator begin()
@@ -294,7 +124,6 @@ namespace ft {
 			{
 				return (const_reverse_iterator(this->begin()));
 			}
-
 			/*********************** Capacity **********************/
 			/* size */
 			size_type size() const
@@ -318,7 +147,7 @@ namespace ft {
 				}
 				else if (_sz < n)
 				{
-					reserve(n);
+					this->reserve(n);
 					this->_vecSize = n;
 					for (size_type i = _sz; i < n; i++)
 						this->_vecAlloc.construct(&this->_vecData[i], val);
@@ -337,7 +166,7 @@ namespace ft {
 			/* reserve */
 			void reserve(size_type n)
 			{
-				pointer _data = this->_vecAlloc.allocate(size());
+				pointer _data = this->_vecAlloc.allocate(this->size());
 				for (size_type i = 0; i < size(); i++)
 					this->_vecAlloc.construct(&_data[i], _vecData[i]);
 				if (!this->empty())
@@ -355,7 +184,6 @@ namespace ft {
 				this->_vecAlloc.destroy(_data);
 				this->_vecAlloc.deallocate(_data, n);
 			}
-
 			/*********************** Element access **********************/
 			/* operator [] */
 			reference operator[](size_type idx)
@@ -406,11 +234,11 @@ namespace ft {
 				void assign(InputIterator first, InputIterator last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 			{
+				if (first == last)
+					return ;
 				size_type rngLen = 0;
 				for (InputIterator it = first; it != last; ++it)
 					rngLen++;
-				if (!rngLen)
-					return ;
 				this->reserve(rngLen);
 				this->_vecSize = rngLen;
 				size_type i = 0;
@@ -453,7 +281,7 @@ namespace ft {
 					this->_vecAlloc.construct(&this->_vecData[i], this->_vecData[i - 1]);
 				}
 
-				return (iterator(_vecData + idx));
+				return (iterator(this->_vecData + idx));
 			}
 				/* fill */
 			void insert(iterator position, size_type n, const value_type& val)
@@ -467,8 +295,8 @@ namespace ft {
 						break ;
 					idx++;
 				}
-				reserve(size() + n);
-				_vecSize += n;
+				this->reserve(size() + n);
+				this->_vecSize += n;
 				size_type i = size();
 				for (;i >= 0; --i)
 				{
@@ -476,11 +304,11 @@ namespace ft {
 					{
 						for (; i >= idx; i--)
 						{
-							this->_vecAlloc.construct(&_vecData[i], val);
+							this->_vecAlloc.construct(&this->_vecData[i], val);
 						}
 						break ;
 					}
-					this->_vecAlloc.construct(&_vecData[i], _vecData[i - n]);
+					this->_vecAlloc.construct(&this->_vecData[i], this->_vecData[i - n]);
 				}
 			}
 				// range
@@ -499,18 +327,18 @@ namespace ft {
 					for (InputIterator it = first; it != last; ++it)
 						rngLen++;
 					if (!rngLen) return;
-					reserve(size() + rngLen);
-					_vecSize += rngLen;
+					this->reserve(size() + rngLen);
+					this->_vecSize += rngLen;
 					size_type i = size();
 					for (;i >= 0; i--)
 					{
 						if (i == (idx + rngLen) - 1)
 						{
 							for (;i >= idx ; i--)
-								this->_vecAlloc.construct(&_vecData[i], *--last);
+								this->_vecAlloc.construct(&this->_vecData[i], *--last);
 							break ;
 						}
-						this->_vecAlloc.construct(&_vecData[i], _vecData[i - rngLen]);
+						this->_vecAlloc.construct(&this->_vecData[i], this->_vecData[i - rngLen]);
 					}
 				}
 			/* erase */
@@ -528,13 +356,13 @@ namespace ft {
 				{
 					if (i == idx)
 					{
-						this->_vecAlloc.destroy(&_vecData[idx]);
+						this->_vecAlloc.destroy(&this->_vecData[idx]);
 						i++;
 					}
-					this->_vecAlloc.construct(&_vecData[j++], _vecData[i]);
+					this->_vecAlloc.construct(&this->_vecData[j++], this->_vecData[i]);
 				}
-				_vecSize--;
-				return iterator(_vecData + idx);
+				this->_vecSize--;
+				return (iterator(this->_vecData + idx));
 			}
 			iterator erase(iterator first, iterator last)
 			{
@@ -553,14 +381,14 @@ namespace ft {
 					{
 						for (;first != last; first++)
 						{
-							this->_vecAlloc.destroy(&_vecData[i++]);
+							this->_vecAlloc.destroy(&this->_vecData[i++]);
 							rngLen++;
 						}
 					}
-					this->_vecAlloc.construct(&_vecData[j++], _vecData[i]);
+					this->_vecAlloc.construct(&this->_vecData[j++], this->_vecData[i]);
 				}
-				_vecSize -=rngLen;
-				return iterator(_vecData + idx);
+				this->_vecSize -=rngLen;
+				return (iterator(this->_vecData + idx));
 			}
 			/* swap */
 			void swap(vector& x)
@@ -573,17 +401,17 @@ namespace ft {
 			/* clear */
 			void clear()
 			{
-				if (_vecData != nullptr && this->size())
+				if (!this->empty())
 				{
 					for (size_type i = 0; i < this->size(); i++)
-						_vecAlloc.destroy(&this->_vecData[i]);
-					_vecSize = 0;
+						this->_vecAlloc.destroy(&this->_vecData[i]);
+					this->_vecSize = 0;
 				}
 			}
 			/*********************** Allocator **********************/
 			allocator_type get_allocator() const
 			{
-				return _vecAlloc;
+				return (this->_vecAlloc);
 			}
 		}; // end vector class
 		/* ######## FX Non-member function overloads ######## */

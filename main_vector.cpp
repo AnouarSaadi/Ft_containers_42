@@ -1,6 +1,5 @@
 #include "srcs/Vector.hpp"
 class Vector;
-// #include "srcs/Utils.hpp"
 #include <iostream>
 #include <vector>
 #include <unistd.h>
@@ -15,21 +14,27 @@ int main()
 	NS::vector<int> v(4, 7);
 	std::cout << v.size() << "   ----   " << v.capacity() << std::endl;
 	// TODO: Solving the iterator problem
-	std::cout << "___begin__ " << *(v.begin()) << std::endl;
-	v.push_back(10);
-	v.push_back(11);
-	v.push_back(12);
-	v.push_back(13);
-	v.push_back(14);
-	v.pop_back();
-	v.pop_back();
-	v.pop_back();
-	size_t in = 0;
-	for (NS::vector<int>::iterator i = v.begin(); i != v.end(); i++){
-		std::cout << "\t\tv["<< in++ <<"] = " << *i << std::endl;
-	}
-	NS::vector<int>::iterator itb = v.begin();
-	std::cout << "position " << *itb << std::endl;
+	// std::cout << "___begin__ " << *(v.begin()) << std::endl;
+	// v.push_back(10);
+	// v.push_back(11);
+	// v.push_back(12);
+	// v.push_back(13);
+	// v.push_back(14);
+	// v.pop_back();
+	// v.pop_back();
+	// v.pop_back();
+	// NS::vector<int> l;
+	// l = v;
+	// std::cout << " ___compare__ " << (l == v) << std::endl;
+	NS::vector<int>::iterator _begin_(v.begin());
+	std::cout << "____begin__ " << *_begin_ << std::endl;
+	// NS::vector<int>::iterator _end_ = v.end();
+	// size_t in = 0;
+	// for (; _begin_ != _end_; _begin_++){
+	// 	std::cout << "\t\tv["<< in++ <<"] = " << *_begin_ << std::endl;
+	// }
+	// NS::vector<int>::iterator itb = v.begin();
+	// std::cout << "position " << *itb << std::endl;
 	// NS::vector<int>::iterator it = v.insert(v.begin() + 2, 8);
 	// std::cout << "insert " << *it << std::endl;
 	// v.insert(v.begin() + 2, 8, 6);
@@ -81,7 +86,7 @@ int main()
 	// for (size_t i = 0; i < bar.size(); i++) {
 	// 	std::cout << "\t\tbar["<< i <<"] = " << bar[i] << "\t" << bar.size() <<'|'<<bar.capacity()<< std::endl;
 	// }
-	// NS::vector<int>::reverse_iterator rev_it = vcopy.rbegin() + 3; // ? solving the compiling error at reverse iterator
+	// NS::vector<int>::reverse_iterator rev_it = vcopy.rbegin() + 3;
 	// // std::cout << "Debugging... rev it   " << &(*rev_it) << " " << sizeof(rev_it) << std::endl; // ! check the size
 	// std::cout << "rev :";
 	// for (;rev_it != vcopy.rend(); ++rev_it)
