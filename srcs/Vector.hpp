@@ -183,13 +183,11 @@ namespace ft {
 			typedef WrapIter<const_pointer>							const_iterator;
 			typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-		
 		private:
 			pointer			_vecData;
 			size_type		_vecSize;
 			size_type		_vecCapacity;
 			allocator_type	_vecAlloc;
-
 		public:
 			/*********************** Coplien form **********************/
 			/* default */
@@ -204,14 +202,13 @@ namespace ft {
 			{
 				if (!n)
 					return;
-				// this->assign(n, val);
-				_vecData = _vecAlloc.allocate(n);
+				this->_vecData = this->_vecAlloc.allocate(n);
 				for (size_type i = 0; i < n; ++i)
 				{
 					this->_vecAlloc.construct(&this->_vecData[i], val);
 					std::cout << "__vecData["<<i<<"]__ " << _vecData[i] << " ±± " << *begin() << std::endl;
 				}
-				_vecCapacity = _vecSize;
+				this->_vecCapacity = this->_vecSize;
 			}
 			/* range */
 		 	template <class InputIterator>
@@ -223,10 +220,10 @@ namespace ft {
 				int size = 0;
 				for (InputIterator it = first; it != last; ++it)
 					size++;
-				_vecSize = size;
-				_vecCapacity = size;
-				_vecData = _vecAlloc.allocate(size);
-				for (size_type i = 0; i < _vecSize && first != last;)
+				this->_vecSize = size;
+				this->_vecCapacity = size;
+				this->_vecData = this->_vecAlloc.allocate(size);
+				for (size_type i = 0; i < this->_vecSize && first != last;)
 						this->_vecAlloc.construct(&this->_vecData[i++], *first++);
 			}
 			/* copy */
@@ -240,8 +237,8 @@ namespace ft {
 			~vector()
 			{
 				this->clear();
-				_vecAlloc.deallocate(this->_vecData, capacity());
-				_vecSize = 0;
+				this->_vecAlloc.deallocate(this->_vecData, this->capacity());
+				this->_vecCapacity = 0;
 			}
 			/* assign operator */
 			vector& operator=(const vector& x)
@@ -257,58 +254,57 @@ namespace ft {
 					for (size_type i = 0; i < x.size(); i++)
 						this->_vecAlloc.construct(&this->_vecData[i], x._vecData[i]);
 				}
-				return *this;
+				return (*this);
 			}
 
 			/*********************** Iterators **********************/
 			/* begin */
 			iterator begin()
 			{
-				return _vecData;
+				return (iterator(this->_vecData));
 			}
 			const_iterator begin() const
 			{
-				return _vecData;
+				return (const_iterator(this->_vecData));
 			}
 			/* end */
 			iterator end()
 			{
-				return _vecData + _vecSize;
+				return (iterator(this->_vecData + this->_vecSize));
 			}
 			const_iterator end() const
 			{
-				return _vecData + _vecSize;
+				return (const_iterator(this->_vecData + this->_vecSize));
 			}
 			/* rbegin */
 			reverse_iterator rbegin()
 			{
-				return reverse_iterator(end() - 1);
+				return (reverse_iterator(this->end()));
 			}
 			const_reverse_iterator rbegin() const
 			{
-				return const_reverse_iterator(end() - 1);
+				return (const_reverse_iterator(this->end()));
 			}
-
 			/* rend */
 			reverse_iterator rend()
 			{
-				return reverse_iterator(begin() - 1);
+				return (reverse_iterator(this->begin()));
 			}
 			const_reverse_iterator rend() const
 			{
-				return const_reverse_iterator(begin() - 1);
+				return (const_reverse_iterator(this->begin()));
 			}
 
 			/*********************** Capacity **********************/
 			/* size */
 			size_type size() const
 			{
-				 return _vecSize;
+				 return (this->_vecSize);
 			}
 			/* max size */
 			size_type max_size() const
 			{
-				return _vecAlloc.max_size();
+				return (this->_vecAlloc.max_size());
 			}
 			/* resize */
 			void resize(size_type n, value_type val = value_type())
@@ -317,26 +313,26 @@ namespace ft {
 				if (_sz > n)
 				{
 					for (size_type i = n; i < _sz; i++)
-						_vecAlloc.destroy(&_vecData[i]);
-					_vecSize = n;
+						this->_vecAlloc.destroy(&this->_vecData[i]);
+					this->_vecSize = n;
 				}
 				else if (_sz < n)
 				{
 					reserve(n);
-					_vecSize = n;
+					this->_vecSize = n;
 					for (size_type i = _sz; i < n; i++)
-						_vecAlloc.construct(&_vecData[i], val);
+						this->_vecAlloc.construct(&this->_vecData[i], val);
 				}
 			}
 			/* capacity */
 			size_type capacity() const
 			{
-				return _vecCapacity;
+				return (this->_vecCapacity);
 			}
 			/* empty */
 			bool empty() const
 			{
-				return size() == 0;
+				return (this->size() == 0);
 			}
 			/* reserve */
 			void reserve(size_type n)
@@ -344,7 +340,7 @@ namespace ft {
 				pointer _data = this->_vecAlloc.allocate(size());
 				for (size_type i = 0; i < size(); i++)
 					this->_vecAlloc.construct(&_data[i], _vecData[i]);
-				if (!empty())
+				if (!this->empty())
 				{
 					this->_vecAlloc.destroy(this->_vecData);
 					this->_vecAlloc.deallocate(this->_vecData, this->capacity());
@@ -364,34 +360,34 @@ namespace ft {
 			/* operator [] */
 			reference operator[](size_type idx)
 			{
-				return _vecData[idx];
+				return (this->_vecData[idx]);
 			}
 			/* at */
 			reference at(size_type n)
 			{
-				return _vecData[n];
+				return (this->_vecData[n]);
 			}
 			const_reference at (size_type n) const
 			{
-				return _vecData[n];
+				return (this->_vecData[n]);
 			}
 			/* front */
 			reference front()
 			{
-				return _vecData[0];
+				return (this->_vecData[0]);
 			}
 			const_reference front() const
 			{
-				return _vecData[0];
+				return (this->_vecData[0]);
 			}
 			/* back */
 			reference back()
 			{
-				return _vecData[size() - 1];
+				return (this->_vecData[this->_vecSize - 1]);
 			}
 			const_reference back() const
 			{
-				return _vecData[size() - 1];
+				return (this->_vecData[this->_vecSize - 1]);
 			}
 			/*********************** Modifiers **********************/
 			/* assign */
@@ -401,7 +397,7 @@ namespace ft {
 				if (!n)
 					return ;
 				this->reserve(n);
-				_vecSize = n;
+				this->_vecSize = n;
 				for (size_type i = 0; i < n; ++i)
 					this->_vecAlloc.construct(&this->_vecData[i], val);
 			}
@@ -416,7 +412,7 @@ namespace ft {
 				if (!rngLen)
 					return ;
 				this->reserve(rngLen);
-				_vecSize = rngLen;
+				this->_vecSize = rngLen;
 				size_type i = 0;
 				for (InputIterator it = first; it != last; ++it)
 					this->_vecAlloc.construct(&this->_vecData[i++], *it);
@@ -431,7 +427,7 @@ namespace ft {
 			void pop_back()
 			{
 				this->_vecAlloc.destroy(&this->_vecData[size() - 1]);
-				_vecSize--;
+				this->_vecSize--;
 			}
 			/* insert */
 				/* single element */
@@ -444,8 +440,8 @@ namespace ft {
 						break ;
 					idx++;
 				}
-				reserve(size() + 1);
-				_vecSize++;
+				this->reserve(this->_vecSize + 1);
+				this->_vecSize++;
 				size_type i = size();
 				for (; i >= 0; i--)
 				{
@@ -454,10 +450,10 @@ namespace ft {
 						this->_vecAlloc.construct(&this->_vecData[i], val);
 						break ;
 					}
-					this->_vecAlloc.construct(&this->_vecData[i], _vecData[i - 1]);
+					this->_vecAlloc.construct(&this->_vecData[i], this->_vecData[i - 1]);
 				}
 
-				return iterator(_vecData + idx);
+				return (iterator(_vecData + idx));
 			}
 				/* fill */
 			void insert(iterator position, size_type n, const value_type& val)
@@ -577,9 +573,9 @@ namespace ft {
 			/* clear */
 			void clear()
 			{
-				if (_vecData != nullptr)
+				if (_vecData != nullptr && this->size())
 				{
-					for (size_type i = 0; i  < size(); i++)
+					for (size_type i = 0; i < this->size(); i++)
 						_vecAlloc.destroy(&this->_vecData[i]);
 					_vecSize = 0;
 				}
