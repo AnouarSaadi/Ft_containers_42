@@ -1,9 +1,5 @@
 #ifndef ITERATOR_HPP
 # define ITERATOR_HPP
-// #	include <iterator>
-// #	include <cstddef>
-# include "Vector.hpp"
-class Vector;
 
 namespace ft {
 	/* iterator */
@@ -72,8 +68,8 @@ namespace ft {
 	private:
 		iterator_type _it;
 	public:
-		/****** Member functions ******/
-		vector_iter() : _it(iterator_type())
+		/*		Member functions		*/
+		vector_iter() : _it(nullptr)
 		{
 		} // default constructor
 		vector_iter(iterator_type x) : _it(x)
@@ -156,7 +152,7 @@ namespace ft {
 		{
 			return (this->_it);
 		}
-		}; // end vector_iter class
+	}; // end vector_iter class
 
 	/****** Non-member function overloads ******/
 	/*  operator == */
@@ -226,7 +222,7 @@ namespace ft {
 		iterator_type _it;
 	public:
 		/* Member functions */
-		reverse_iterator() : _it()
+		reverse_iterator() : _it(nullptr)
 		{
 		}
 		reverse_iterator(iterator_type x) : _it(x)

@@ -2,13 +2,13 @@
 # define VECTOR_HPP
 
 # include <memory> // std::allocator
-# include <iostream>
 # include "Iterator.hpp"
-# include "Utils.hpp"
-class Iterator;
+# include "Algorithm.hpp"
+# include "Type_traits.hpp"
 
 	/*************************** vector: Template class *********************/
-namespace ft {
+namespace ft
+{
 	template < class T, class Alloc = std::allocator<T> >
 		class vector
 		{
