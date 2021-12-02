@@ -27,25 +27,24 @@ _Node* searchRecursicve(_Node* &root, int key)
 		return (searchRecursicve(root->right, key));
 }
 
-_Node* searchIterative(_Node* root, int key, _Node* &parent)
+_Node* searchIterative(_Node* root, int key)
 {
 	_Node * x = root;
 	while (x && x->key != key)
 	{
-		parent = x;
 		if (key < x->key)
 			x = x->left;
 		else
 			x = x->right;
 	}
-	if (x == NULL)
-		std::cout << "_____here_____"  << std::endl;
 	return (x);
 }
 
-// Insertion
-void insertNode(_Node * &root, _Node *_new)
+/* Insertion of the given node _new into the BST tree roo t*/
+void insertNode(_Node * &root, _Node *&_new)
 {
+	if (searchIterative(root, _new->key))
+		return ;
 	_Node *y = NULL;
 	_Node *x = root;
 	while (x != NULL)
@@ -64,7 +63,7 @@ void insertNode(_Node * &root, _Node *_new)
 		y->right = _new;
 }
 
-// Deletion
+/* Getting the Maximun of the given node */
 _Node *treeMax(_Node *x)
 {
 	while(x->right)
@@ -72,6 +71,7 @@ _Node *treeMax(_Node *x)
 	return (x);
 }
 
+/* Getting the minimun of the given node */
 _Node *treeMin(_Node *x)
 {
 	while(x->left)
@@ -79,75 +79,86 @@ _Node *treeMin(_Node *x)
 	return (x);
 }
 
-_Node * treeSuccessor(_Node * x)
+/* The findParent function used to find the parent of the given node */
+void findParent(_Node * &root, _Node * &_node, _Node * &parent)
 {
-	std::cout << "___TreeSuccessor___" << std::endl;
+	if (!searchIterative(root, _node->key) || root == _node)
+		return ;
+	parent = root;
+	if (parent->left == _node || parent->right == _node)
+		return ;
+	if (parent->key > _node->key)
+		findParent(parent->left, _node, parent);
+	if (parent->key < _node->key)
+		findParent(parent->right, _node, parent);
+}
+
+/* treeSuccessor used to determine the successor of given node (The smallest node in node in Right subtree) */
+_Node * treeSuccessor(_Node *root,_Node * x)
+{
 	if (x->right)
 		return (treeMin(x->right));
-	_Node *y = x;
-	while(y && y->right)
+	_Node * xparent = nullptr;
+	findParent(root, x, xparent);
+	_Node *y = xparent;
+	_Node *yparent = nullptr;
+	findParent(root, y, yparent);
+	while(y != nullptr && x == y->right)
+	{
 		x = y;
+		y = yparent;
+	}
 	return (y);
 }
 
-
-// void deleteNode(_Node* &root, _Node *_node)
-// { 
-// 	_Node *parent = nullptr;
-// 	_Node *curr = searchIterative(root, _node->key, parent);
-// 	if (curr == nullptr)
-// 		return ;
-// 	// Node has no child
-// 	if (_node->left == nullptr && _node->right == nullptr)
-// 	{
-// 		if (_node != root)
-// 		{
-// 			if (parent->left == _node->left)
-// 				parent->left = NULL;
-// 			else
-// 				parent->right = NULL;
-// 		}
-// 		else
-// 			root = NULL;
-// 	}
-// 	else if (_node->right && _node->left)
-// 	{
-// 		_Node *successor = treeSuccessor(curr);
-// 		std::cout << " _____Successor____ " << successor->key << std::endl;
-// 		if (curr->key == successor->key)
-// 			std::cout << " _____Successor == Curr____ " << successor->key << std::endl;
-// 	}
-// 	std::cout << "_____Curr______	" << curr->key << " " << curr << " | " << curr->left << " | " << curr->right << std::endl;
-// 	std::cout << "_____Parent____	" << parent->key << " | " << parent->left << " | " << parent->right << std::endl;
-// 	free(_node);
-// 	// curr = NULL;
-	
-// }
-
-void getParent(_Node * &root, int key,_Node * &parent)
+/* Replacing the node1 with the node2 */
+void replaceNodes(_Node * &root, _Node * &_node1, _Node * &_node2)
 {
-	if (root == NULL)
-		return ;
-	
-}
-
-void shift(_Node * &root, _Node * &x, _Node * &y)
-{
-
+	// get the parents
+	_Node *parent1 = nullptr;
+	findParent(root, _node1, parent1);
+	if (parent1 == nullptr)
+		root = _node2;
+	else if (_node1 == parent1->left)
+		parent1->left = _node2;
+	else
+		parent1->right = _node2;
 }
 
 void deleteNode(_Node* &root, _Node *&_node)
 {
-	if (!root)
+	if (!searchIterative(root, _node->key) || (!root))
 		return ;
-	if (_node->left == nullptr)
-		shift(root, )
+	if (!(_node->left))
+		replaceNodes(root, _node, _node->right);
+	else if (!(_node->right))
+		replaceNodes(root, _node, _node->left);
+	else
+	{
+		_Node * successor = treeSuccessor(root, _node);
+		_Node * succPar = nullptr;
+		findParent(root, successor, succPar);
+		if (succPar != _node)
+		{
+			replaceNodes(root, successor, successor->right);
+			successor->right = _node->right;
+			_Node *succRP = nullptr;
+			findParent(root, successor->right, succRP);
+			succRP = successor;
+		}
+		replaceNodes(root, _node, successor);
+		successor->left = _node->left;
+		_Node *succLP = nullptr;
+		findParent(root, successor->left, succLP);
+		succLP = successor;
+	}
+	delete _node;
 }
 
 
 int main()
 {
-	_Node *root = NULL;
+	_Node *root = nullptr;
 	_Node *x[10];
 	x[0] = newNode(49);
 	x[1] = newNode(51);
@@ -161,20 +172,13 @@ int main()
 	x[9] = newNode(99);
 	for (size_t i = 0; i < 10; i++)
 		insertNode(root, x[i]);
-	deleteNode(root, x[9]);
-	// deleteNode(root, x[8]);
-	// deleteNode(root, x[6]);
-	// deleteNode(root, x[1]);
-	// deleteNode(root, x[5]);
-	// deleteNode(root, x[7]);
-	// deleteNode(root, x[3]);
-	// deleteNode(root, x[4]);
-	// deleteNode(root, x[2]);
-	// deleteNode(root, x[0]);
-	// _Node *successor = treeSuccessor(x[2]);
-	// std::cout << " _____Successor____ " << successor->key << std::endl;
-	_Node *par;
-	_Node *srIter = searchIterative(root, x[9]->key, par);
+		
+	for (size_t i = 0; i < 10; i++)
+		deleteNode(root, x[i]);
+		 
+
+	std::cout << "_____Root_____" << root << std::endl;
+	_Node *srIter = searchIterative(root, x[0]->key);
 	if (srIter)
 		std::cout << " ____Search___ " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
 	else
