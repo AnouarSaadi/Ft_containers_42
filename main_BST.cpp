@@ -16,6 +16,17 @@ _Node * newNode(int key)
 	_new->left = NULL;
 	return (_new);
 }
+
+/* Height function use for determining the height of the given node */
+size_t treeHeight(_Node * x)
+{
+	if (x == NULL)
+		return (0);
+	size_t leftHeight = treeHeight(x->left);
+	size_t rightHeight = treeHeight(x->right);
+	return (std::max(rightHeight, leftHeight) + 1);
+}
+
 // Searching
 _Node* searchRecursicve(_Node* &root, int key)
 {
@@ -170,11 +181,12 @@ int main()
 	x[7] = newNode(11);
 	x[8] = newNode(72);
 	x[9] = newNode(99);
+
 	for (size_t i = 0; i < 10; i++)
 		insertNode(root, x[i]);
-		
 	for (size_t i = 0; i < 10; i++)
 		deleteNode(root, x[i]);
+	std::cout << "____Height____ " << treeHeight(root) << std::endl;
 		 
 
 	std::cout << "_____Root_____" << root << std::endl;
@@ -183,19 +195,4 @@ int main()
 		std::cout << " ____Search___ " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
 	else
 		std::cout << " ____Node not found ____" << std::endl;
-	// std::cout << " ____New______ " << x->key << " | " << x->left << " | " << x->right << std::endl;
-	// insertNode(&root, x);
-	// std::cout << " ____Root_____ " << root->key << " | " << root->left << " | " << root->right << std::endl;
-	// _Node *x1 = newNode(5);
-	// insertNode(&root, x1);
-	// std::cout << " ____Root_____ " << root->key << " | " << root->left << " | " << root->right << std::endl;
-	// _Node *x2 = newNode(20);
-	// insertNode(&root, x2);
-	// std::cout << " ____Root_____ " << root->key << " | " << root->left << " | " << root->right << std::endl;
-	// _Node *x3 = newNode(15);
-	// insertNode(&root, x3);
-	// std::cout << " ____Root_____ " << root->key << " | " << root->left << " | " << root->right << std::endl;
-	// _Node *sr = searchRecursicve(root, x1->key);
-	// std::cout << " ____Search___ " << sr->key << " | " << sr->left << " | " << sr->right << std::endl;
-	
 }
