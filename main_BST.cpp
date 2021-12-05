@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <iostream>
 
-
 typedef struct node {
 	int key;
 	struct node *right;
@@ -20,7 +19,7 @@ _Node * newNode(int key)
 /* Height function use for determining the height of the given node */
 size_t treeHeight(_Node * x)
 {
-	if (x == NULL)
+	if (!x)
 		return (0);
 	size_t leftHeight = treeHeight(x->left);
 	size_t rightHeight = treeHeight(x->right);
@@ -91,17 +90,19 @@ _Node *treeMin(_Node *x)
 }
 
 /* The findParent function used to find the parent of the given node */
-void findParent(_Node * &root, _Node * &_node, _Node * &parent)
+_Node*  findParent(_Node * &root, _Node * &_node)
 {
+	_Node * parent = NULL;
 	if (!searchIterative(root, _node->key) || root == _node)
-		return ;
+		return (parent);
 	parent = root;
 	if (parent->left == _node || parent->right == _node)
-		return ;
+		return (parent);
 	if (parent->key > _node->key)
-		findParent(parent->left, _node, parent);
+		parent = findParent(parent->left, _node);
 	if (parent->key < _node->key)
-		findParent(parent->right, _node, parent);
+		parent = findParent(parent->right, _node);
+	return (parent);
 }
 
 /* treeSuccessor used to determine the successor of given node (The smallest node in node in Right subtree) */
@@ -109,12 +110,10 @@ _Node * treeSuccessor(_Node *root,_Node * x)
 {
 	if (x->right)
 		return (treeMin(x->right));
-	_Node * xparent = nullptr;
-	findParent(root, x, xparent);
+	_Node * xparent = findParent(root, x);
 	_Node *y = xparent;
-	_Node *yparent = nullptr;
-	findParent(root, y, yparent);
-	while(y != nullptr && x == y->right)
+	_Node *yparent = findParent(root, y);
+	while(y != NULL && x == y->right)
 	{
 		x = y;
 		y = yparent;
@@ -126,9 +125,8 @@ _Node * treeSuccessor(_Node *root,_Node * x)
 void replaceNodes(_Node * &root, _Node * &_node1, _Node * &_node2)
 {
 	// get the parents
-	_Node *parent1 = nullptr;
-	findParent(root, _node1, parent1);
-	if (parent1 == nullptr)
+	_Node *parent1 = findParent(root, _node1);
+	if (parent1 == NULL)
 		root = _node2;
 	else if (_node1 == parent1->left)
 		parent1->left = _node2;
@@ -147,52 +145,46 @@ void deleteNode(_Node* &root, _Node *&_node)
 	else
 	{
 		_Node * successor = treeSuccessor(root, _node);
-		_Node * succPar = nullptr;
-		findParent(root, successor, succPar);
+		_Node * succPar = findParent(root, successor);
 		if (succPar != _node)
 		{
 			replaceNodes(root, successor, successor->right);
 			successor->right = _node->right;
-			_Node *succRP = nullptr;
-			findParent(root, successor->right, succRP);
+			_Node *succRP = findParent(root, successor->right);
 			succRP = successor;
 		}
 		replaceNodes(root, _node, successor);
 		successor->left = _node->left;
-		_Node *succLP = nullptr;
-		findParent(root, successor->left, succLP);
+		_Node *succLP = findParent(root, successor->left);
 		succLP = successor;
 	}
 	delete _node;
 }
 
+// int main()
+// {
+// 	_Node *root = NULL;
+// 	_Node *x[10];
+// 	x[0] = newNode(49);
+// 	x[1] = newNode(51);
+// 	x[2] = newNode(29);
+// 	x[3] = newNode(42);
+// 	x[4] = newNode(5);
+// 	x[5] = newNode(37);
+// 	x[6] = newNode(95);
+// 	x[7] = newNode(11);
+// 	x[8] = newNode(72);
+// 	x[9] = newNode(99);
 
-int main()
-{
-	_Node *root = nullptr;
-	_Node *x[10];
-	x[0] = newNode(49);
-	x[1] = newNode(51);
-	x[2] = newNode(29);
-	x[3] = newNode(42);
-	x[4] = newNode(5);
-	x[5] = newNode(37);
-	x[6] = newNode(95);
-	x[7] = newNode(11);
-	x[8] = newNode(72);
-	x[9] = newNode(99);
-
-	for (size_t i = 0; i < 10; i++)
-		insertNode(root, x[i]);
-	for (size_t i = 0; i < 10; i++)
-		deleteNode(root, x[i]);
-	std::cout << "____Height____ " << treeHeight(root) << std::endl;
-		 
-
-	std::cout << "_____Root_____" << root << std::endl;
-	_Node *srIter = searchIterative(root, x[0]->key);
-	if (srIter)
-		std::cout << " ____Search___ " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
-	else
-		std::cout << " ____Node not found ____" << std::endl;
-}
+// 	for (size_t i = 0; i < 10; i++)
+// 		insertNode(root, x[i]);
+// 	for (size_t i = 0; i < 10; i++)
+// 		deleteNode(root, x[i]);
+// 	// std::cout << "____Height____ " << treeHeight(root) << std::endl;
+// 	std::cout << "_____Root_____" << root << std::endl;
+// 	_Node *srIter = searchIterative(root, x[0]->key);
+// 	if (srIter)
+// 		std::cout << " ____Search___ " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
+// 	else
+// 		std::cout << " ____Node not found ____" << std::endl;
+// }
