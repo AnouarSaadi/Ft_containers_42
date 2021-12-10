@@ -9,7 +9,7 @@ typedef struct node {
 
 _Node * newNode(int key)
 {
-	_Node * _new = (_Node *) malloc(sizeof(_Node));
+	_Node * _new = new _Node();
 	_new->key = key;
 	_new->right = NULL;
 	_new->left = NULL;
@@ -94,7 +94,7 @@ _Node*  findParent(_Node * &root, _Node * &_node)
 {
 	_Node * parent = NULL;
 	if (!searchIterative(root, _node->key) || root == _node)
-		return (parent);
+		return (root);
 	parent = root;
 	if (parent->left == _node || parent->right == _node)
 		return (parent);
@@ -124,7 +124,6 @@ _Node * treeSuccessor(_Node *root,_Node * x)
 /* Replacing the node1 with the node2 */
 void replaceNodes(_Node * &root, _Node * &_node1, _Node * &_node2)
 {
-	// get the parents
 	_Node *parent1 = findParent(root, _node1);
 	if (parent1 == NULL)
 		root = _node2;

@@ -27,32 +27,58 @@ _Node* findParent(_Node * &root, _Node * &_node);
 
 */
 
-void leftRotation(_Node *&root,_Node* &x)
+void leftRotation(_Node * &root, _Node * &x)
 {
-// ! Let Q be P's right child.
-// ! Set P's right child to be Q's left child.
-// ! [Set Q's left-child's parent to P]
-// ! Set Q's left child to be P.
-// ! [Set P's parent to Q]
-	(void) root;
-	_Node *tmp = x->right;
-	x->right = tmp->left;
-	_Node *parent = findParent(root, tmp);
-	if (!parent)
-		parent = root;
-	parent->left = x;
-	std::cout << "_____parent: " << parent << std::endl;
-	_Node *xparent = findParent(root, x);
-	xparent = tmp;
-	
+	_Node *y = x->right;
+	std::cout << "_____x: " << x << " | " << x->right << " | " << x->left << std::endl;
+	std::cout << "_____y: " << y << " | " << y->right << " | " << y->left << std::endl;
+	x->right = y->left;
+	if (!(y->left))
+	{
+	std::cout << "_____Debug00: " << y->left <<std::endl;
+		_Node *yleftPar = findParent(root, y->left);
+		yleftPar = x;
+	}
+	// _Node *yPar = findParent(root, y);
+	// _Node *xPar = findParent(root, x);
+	// xPar = yPar;
+	// if (!xPar)
+	// 	root = y;
+	// else if (x == xPar->left)
+	// 	xPar->left = y;
+	// else
+	// 	xPar->right = y;
+	// y->left = x;
+	// xPar = y;
+	// (void)root;
+	// _Node *y = x->right;
+	// _Node *tmp = y->left;
+	// std::cout << "_____x: " << x << " | " << x->right << " | " << x->left << std::endl;
+	// std::cout << "_____y: " << y << " | " << y->right << " | " << y->left << std::endl;
+	// std::cout << "_____tmp: " << tmp << std::endl;//<< " | " << tmp->right << " | " << tmp->left << std::endl;
+	// y->left = x;
+	// x->right = tmp;
+	// std::cout << "_____x: " << x << " | " << x->right << " | " << x->left << std::endl;
+	// std::cout << "_____y: " << y << " | " << y->right << " | " << y->left << std::endl;
+	// std::cout << "_____tmp: " << tmp << std::endl;
 
+}
+
+_Node * rightRotation(_Node* &x)
+{
+	_Node *y = x->left;
+	_Node *tmp = y->right;
+
+	y->right = x;
+	x->left = tmp;
+	return (y);
 }
 
 void insertNodeAVL(_Node * &root, _Node *&_new)
 {
 	if (searchIterative(root, _new->key))
 		return ;
-	_Node *y = NULL;
+	_Node *y = root;
 	_Node *x = root;
 	while (x != NULL)
 	{
@@ -64,33 +90,39 @@ void insertNodeAVL(_Node * &root, _Node *&_new)
 	}
 	if (!y)
 	{
-		y = _new;
-		root = y;
+		root = _new;
+		y = root;
 	}
 	else if (_new->key < y->key)
 		y->left = _new;
 	else
 		y->right = _new;
-	// ! Calculing the Height
-	_Node *yParent = findParent(root, y);
-	if (!yParent)
-		yParent = root;
-	int _BF = treeHeight(yParent->right) - treeHeight(yParent->left);
-	std::cout << "_____BF(Y) = " << _BF << std::endl;
-	if (_BF > 1 || _BF < -1) // ? the balance factor has been out of the range [-1, 1]
-	{
-		std::cout << "_____Unbalanced" << std::endl;
-		if (_BF < 1)
-			std::cout << "_____Rotation to right" << std::endl;
-		else
+	// std::cout << "_____Here: " << y->key << std::endl;
+	// for(;;)
+	// {
+	// _Node *parent = findParent(root, y);
+	// std::cout << " " << parent->key << y->key << std::endl;
+		int _BF = treeHeight(root->right) - treeHeight(root->left);
+		std::cout << "_____BF(Y) = " << _BF << std::endl;
+		if (_BF >= -1 && _BF <= 1)
+			std::cout << "____Balanced" << std::endl;
+			// break ;
+		else // ? the balance factor has been out of the range [-1, 1]
 		{
-			std::cout << "_____LeftRotation" << std::endl;
-			std::cout << "_____Address: " << yParent << " | " << y << std::endl;
-			leftRotation(root, yParent);
-			std::cout << "_____Address: " << yParent << " | " << y << std::endl;
+			if (_BF < 1)
+			{
+				// y = rightRotation(y);
+				std::cout << "_____rightRotation" << std::endl;
+			}
+			else
+			{
+				std::cout << "_____LeftRotation" << std::endl;
+				// std::cout << "_____Address: " << " | " << y << std::endl;
+				leftRotation(root, y);
+				// std::cout << "_____Address: " << " | " << y << std::endl;
+			}
 		}
-		// ! Add the rotation functions
-	}
+	// }
 }
 
 int main()
@@ -113,6 +145,7 @@ int main()
 	insertNodeAVL(root, x[1]);
 	insertNodeAVL(root, x[6]);
 	// insertNodeAVL(root, x[9]);
+	// insertNodeAVL(root, x[9]);
 	
 	// for (int i = 0; i < 10; i++)
 	// 	deleteNode(root, x[i]);
@@ -120,9 +153,9 @@ int main()
 		 
 
 	std::cout << "_____Root_____" << root << std::endl;
-	_Node *srIter = searchIterative(root, x[0]->key);
+	_Node *srIter = searchIterative(root, x[1]->key);
 	if (srIter)
 		std::cout << " ____Search: " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
 	else
-		std::cout << " ____Search: Node not found" << std::endl;
+		std::cout << "_____Search: Node not found" << std::endl;
 }
