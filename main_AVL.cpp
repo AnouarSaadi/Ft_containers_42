@@ -40,7 +40,7 @@ _Node * leftRotation(_Node * node)
 	return pivot;
 }
 
-_Node * rightRotation(_Node* &x)
+_Node * rightRotation(_Node* node)
 {
 	_Node *y = x->left;
 	_Node *tmp = y->right;
@@ -103,12 +103,12 @@ int main()
 {
 	_Node *root = NULL;
 	_Node *x[10];
-	x[0] = newNode(49);
-	x[1] = newNode(51);
-	x[2] = newNode(29);
-	x[3] = newNode(42);
-	x[4] = newNode(5);
-	x[5] = newNode(37);
+	x[0] = newNode(10);
+	x[1] = newNode(20);
+	x[2] = newNode(30);
+	x[3] = newNode(40);
+	x[4] = newNode(50);
+	x[5] = newNode(60);
 	x[6] = newNode(95);
 	x[7] = newNode(11);
 	x[8] = newNode(101);
@@ -119,20 +119,20 @@ int main()
 	root = insertNodeAVL(root, x[0]);
 	std::cout << "____x[1]: " << x[1] << std::endl;
 	root = insertNodeAVL(root, x[1]);
-	std::cout << "____x[6]: " << x[6] << std::endl;
-	root = insertNodeAVL(root, x[6]);
-	std::cout << "____x[9]: " << x[9] << std::endl;
-	root = insertNodeAVL(root, x[9]);
-	std::cout << "____x[8]: " << x[8] << std::endl;
-	root = insertNodeAVL(root, x[8]);
+	std::cout << "____x[6]: " << x[2] << std::endl;
+	root = insertNodeAVL(root, x[2]);
+	std::cout << "____x[9]: " << x[3] << std::endl;
+	root = insertNodeAVL(root, x[3]);
+	std::cout << "____x[8]: " << x[4] << std::endl;
+	root = insertNodeAVL(root, x[4]);
 	
 	// for (int i = 0; i < 10; i++)
 	// 	deleteNode(root, x[i]);
 	// std::cout << "____Height____ " << treeHeight(root) << std::endl;
 		 
 
-	std::cout << "_____Root_____" << root << " | " << root->left << " | " << root->right << std::endl;
-	_Node *srIter = searchIterative(root, x[9]->key);
+	std::cout << "_____Root_____" << root->key << " | " << root->left << " | " << root->right << std::endl;
+	_Node *srIter = searchIterative(root, x[3]->key);
 	if (srIter)
-		std::cout << " ____Search: " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
+		std::cout << " ____Search: " << srIter->key << " | " << srIter->left->key << " | " << srIter->right->key << std::endl;
 }
