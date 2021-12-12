@@ -27,17 +27,16 @@ _Node* findParent(_Node * &root, _Node * &_node);
 
 */
 
-_Node *leftRotation(_Node * &root, _Node * &pivot)
+void leftRotation(_Node * &root, _Node * &pivot)
 {
 	std::cout << "_____root of pivot: " << root << " # " << root->left << " # " << root->right << std::endl;
 	std::cout << "_____pivot: " << pivot << " # " << pivot->left << " # " << pivot->right << std::endl;
-	_Node *leftpivot = pivot->left;
-	// std::cout << pivot->left << std::endl;
+	pivot = root->right;
+	root->right = pivot->left;
 	pivot->left = root;
-	// std::cout << pivot->left << std::endl;
-	root->right = leftpivot;
+	root = pivot;
+	std::cout << "_____root of pivot: " << root << " # " << root->left << " # " << root->right << std::endl;
 	std::cout << "_____pivot: " << pivot << " # " << pivot->left << " # " << pivot->right << std::endl;
-	return (pivot);
 }
 
 _Node * rightRotation(_Node* &x)
@@ -73,7 +72,6 @@ void insertNodeAVL(_Node * &root, _Node *&_new)
 		y->left = _new;
 	else
 		y->right = _new;
-	// std::cout << "_____Here: " << y->key << std::endl;
 	// for(;;)
 	// {
 	// _Node *parent = findParent(root, y);
@@ -93,14 +91,8 @@ void insertNodeAVL(_Node * &root, _Node *&_new)
 			else
 			{
 				std::cout << "\t_____LeftRotation" << std::endl;
-				// std::cout << "_____Address: " << " | " << y << std::endl;
-				_Node *yPar = findParent(root, y);
-				if (root == yPar)
-					root = leftRotation(root, y);
-				else
-					yPar = leftRotation(yPar, y);
-				// std::cout << yPar << std::endl;
-				// std::cout << "_____Address: " << " | " << y << std::endl;
+				// _Node *yPar = findParent(root, y);
+				leftRotation(root, y);
 			}
 		}
 	// }
@@ -128,10 +120,10 @@ int main()
 	insertNodeAVL(root, x[1]);
 	std::cout << "____x[6]: " << x[6] << std::endl;
 	insertNodeAVL(root, x[6]);
-	std::cout << "____x[9]: " << x[9] << std::endl;
-	insertNodeAVL(root, x[9]);
-	std::cout << "____x[8]: " << x[8] << std::endl;
-	insertNodeAVL(root, x[8]);
+	// std::cout << "____x[9]: " << x[9] << std::endl;
+	// insertNodeAVL(root, x[9]);
+	// std::cout << "____x[8]: " << x[8] << std::endl;
+	// insertNodeAVL(root, x[8]);
 	
 	// for (int i = 0; i < 10; i++)
 	// 	deleteNode(root, x[i]);
@@ -139,7 +131,7 @@ int main()
 		 
 
 	std::cout << "_____Root_____" << root << " | " << root->left << " | " << root->right << std::endl;
-	_Node *srIter = searchIterative(root, x[9]->key);
+	_Node *srIter = searchIterative(root, x[1]->key);
 	if (srIter)
 		std::cout << " ____Search: " << srIter->key << " | " << srIter->left << " | " << srIter->right << std::endl;
 	else
