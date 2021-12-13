@@ -17,9 +17,9 @@ _Node * newNode(int key)
 }
 
 /* Height function use for determining the height of the given node */
-size_t treeHeight(_Node *x)
+size_t treeHeight(_Node *&x)
 {
-	if (x == NULL)
+	if (!x)
 		return (0);
 	size_t leftHeight = treeHeight(x->left);
 	size_t rightHeight = treeHeight(x->right);
