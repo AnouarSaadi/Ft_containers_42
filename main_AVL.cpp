@@ -103,6 +103,7 @@ _Node * insertNodeAVL(_Node * &root, _Node *&_new)
 	return (root);
 }
 
+
 // Deletion
 _Node * treeSuc(_Node * x)
 {
@@ -113,40 +114,47 @@ _Node * treeSuc(_Node * x)
 
 _Node * treePre(_Node * x)
 {
-	while (x->left)
-		x = x->left;
-	return (x);
+	_Node *y = x;
+	while (y->left)
+		y = y->left;
+	return (y);
 }
 
 _Node * deleteNodeAVL(_Node * root, _Node *_node)
 {
-	// Recursive deletion
-	if (root->left == NULL && root->right == NULL)
-	{
-		delete root;
-		return NULL;
-	}
+	_Node *tmp = NULL;
+
+	if (!root)
+		return (NULL);
 	if (_node->key < root->key)
-	{
 		root->left = deleteNodeAVL(root->left, _node);
-	}
 	else if (_node->key >root->key)
-	{
 		root->right = deleteNodeAVL(root->right, _node);
-	}
 	else
 	{
-		if (root->left)
+		if (root->left == NULL || root->right == NULL)
 		{
-			_Node *tmp = treePre(root->left);
-			root->key = tmp->key;
-			root->left = deleteNodeAVL(root->left, _node);
+			tmp = (root->right) ? root->right : root->left;
+			if (tmp == NULL)
+			{
+				std::cout << "_Content of root1: " << root <<" : "/*<< root->key << " : "<< root->left << " : " << root->right */<< std::endl;
+				tmp = root;
+				root = NULL;
+				std::cout << "_Content of root1: " << root <<" : "/*<< root->key << " : "<< root->left << " : " << root->right */<< std::endl;
+			}
+			else
+			{
+				std::cout << "_Content of root: " << root <<" : "<< root->key << " : "<< root->left << " : " << root->right << std::endl;
+				*root = *tmp;
+				std::cout << "_Content of root: " << root <<" : "<< root->key << " : "<< root->left << " : " << root->right << std::endl;
+			}
+			free(tmp);
 		}
 		else
 		{
-			_Node *tmp = treeSuc(root->right);
+			tmp = treePre(root->right);
 			root->key = tmp->key;
-			root->right = deleteNodeAVL(root->right, _node);
+			root->right = deleteNodeAVL(root->right, tmp);
 		}
 	}
 	return root;
@@ -180,6 +188,7 @@ void postorder(_Node *x)
 		std::cout << "__#__POSTORDER: " << x->key << " : " << x << " : " << x->left <<" : "<< x->right << std::endl;
 	}
 }
+		#include <unistd.h>
 
 
 int main()
@@ -199,16 +208,17 @@ int main()
 	for (int i = 0; i < 10; i++)
 		root = insertNodeAVL(root, x[i]);
 	inorder(root);
-	// for (int i = 0; i < 10; i++)
-	// 	root = deleteNodeAVL(root, x[i]);
-	// root = deleteNodeAVL(root, x[3]);
-	// deleteNodeAVL(root, x[3]);
-	// deleteNodeAVL(root, x[5]);
-	// deleteNodeAVL(root, x[1]);
-	// deleteNodeAVL(root, x[6]);
-	// deleteNodeAVL(root, x[2]);
+	for (int i = 0; i < 10; i++)
+	{
+		usleep(2000);
+		std::cout << " !!!!!!!!BRFORE!!!!!!!! " << i << " \\ " << x[i] << std::endl;
+		root = deleteNodeAVL(root, x[i]);
+		std::cout << " !!!!!!!!AFTER!!!!!!!! " << std::endl;
+		inorder(root);
+	}
+	// root = deleteNodeAVL(root, x[8]);
+	// inorder(root);
 	std::cout << "_#_#_#_#_# bf = " << std::setw(2) << balanceFactor(root) << std::endl;
-	inorder(root);
 
 	std::cout << "_____Root  : " << root->key << " : " << root <<" | " << root->left << " | " << root->right << std::endl;
 	_Node *srIter = searchIterative(root, x[3]->key);
