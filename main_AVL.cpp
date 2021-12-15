@@ -79,7 +79,7 @@ _Node * insertNodeAVL(_Node * &root, _Node *&_new)
 	else if (_new->key > root->key)
 		root->right = insertNodeAVL(root->right, _new);
 	int bf = balanceFactor(root);
-	std::cout << " bf = [ " << std::setw(2) << bf << " ] " << std::endl;
+	std::cout << "^^^Insertion bf = [ " << std::setw(2) << bf << " ] " << std::endl;
 	// Left
 	if (bf < -1 && _new->key < root->left->key)
 		root = rightRotation(root);
@@ -104,35 +104,52 @@ _Node * insertNodeAVL(_Node * &root, _Node *&_new)
 }
 
 // Deletion
-void replaceNodes(_Node * &root, _Node * &_node1, _Node * &_node2);
-_Node * treeSuccessor(_Node *root,_Node * x);
-
-_Node * deleteNodeAVL(_Node * &root, _Node *_node)
+_Node * treeSuc(_Node * x)
 {
-	if (!searchIterative(root, _node->key) || (!root))
-		return ;
-	if (!(_node->left))
-		replaceNodes(root, _node, _node->right);
-	else if (!(_node->right))
-		replaceNodes(root, _node, _node->left);
+	while (x->right)
+		x = x->right;
+	return (x);
+}
+
+_Node * treePre(_Node * x)
+{
+	while (x->left)
+		x = x->left;
+	return (x);
+}
+
+_Node * deleteNodeAVL(_Node * root, _Node *_node)
+{
+	// Recursive deletion
+	if (root->left == NULL && root->right == NULL)
+	{
+		delete root;
+		return NULL;
+	}
+	if (_node->key < root->key)
+	{
+		root->left = deleteNodeAVL(root->left, _node);
+	}
+	else if (_node->key >root->key)
+	{
+		root->right = deleteNodeAVL(root->right, _node);
+	}
 	else
 	{
-		_Node * successor = treeSuccessor(root, _node);
-		_Node * succPar = findParent(root, successor);
-		if (succPar != _node)
+		if (root->left)
 		{
-			replaceNodes(root, successor, successor->right);
-			successor->right = _node->right;
-			_Node *succRP = findParent(root, successor->right);
-			succRP = successor;
+			_Node *tmp = treePre(root->left);
+			root->key = tmp->key;
+			root->left = deleteNodeAVL(root->left, _node);
 		}
-		replaceNodes(root, _node, successor);
-		successor->left = _node->left;
-		_Node *succLP = findParent(root, successor->left);
-		succLP = successor;
+		else
+		{
+			_Node *tmp = treeSuc(root->right);
+			root->key = tmp->key;
+			root->right = deleteNodeAVL(root->right, _node);
+		}
 	}
-	delete _node;
-	
+	return root;
 }
 
 void inorder(_Node *x)
@@ -181,23 +198,18 @@ int main()
 	x[9] = newNode(97);
 	for (int i = 0; i < 10; i++)
 		root = insertNodeAVL(root, x[i]);
-	// std::cout << "____x[0]: " << x[0] << std::endl;
-	// root = insertNodeAVL(root, x[0]);
-	// std::cout << "____x[1]: " << x[1] << std::endl;
-	// root = insertNodeAVL(root, x[1]);
-	// std::cout << "____x[2]: " << x[2] << std::endl;
-	// root = insertNodeAVL(root, x[2]);
-	// std::cout << "____x[3]: " << x[3] << std::endl;
-	// root = insertNodeAVL(root, x[3]);
-	// std::cout << "____x[4]: " << x[4] << std::endl;
-	// root = insertNodeAVL(root, x[4]);
-	// std::cout << "____x[5]: " << x[5] << std::endl;
-	// root = insertNodeAVL(root, x[5]);
 	inorder(root);
-	// std::cout << "Height: " << treeHeight(root) << std::endl;
 	// for (int i = 0; i < 10; i++)
-	// 	deleteNode(root, x[i]);
-	// std::cout << "____Height____ " << treeHeight(root) << std::endl;
+	// 	root = deleteNodeAVL(root, x[i]);
+	// root = deleteNodeAVL(root, x[3]);
+	// deleteNodeAVL(root, x[3]);
+	// deleteNodeAVL(root, x[5]);
+	// deleteNodeAVL(root, x[1]);
+	// deleteNodeAVL(root, x[6]);
+	// deleteNodeAVL(root, x[2]);
+	std::cout << "_#_#_#_#_# bf = " << std::setw(2) << balanceFactor(root) << std::endl;
+	inorder(root);
+
 	std::cout << "_____Root  : " << root->key << " : " << root <<" | " << root->left << " | " << root->right << std::endl;
 	_Node *srIter = searchIterative(root, x[3]->key);
 	if (srIter)

@@ -65,6 +65,8 @@
 		"__bits": "cpp",
 		"clocale": "cpp",
 		"map": "cpp",
-		"__tree": "cpp"
+		"__tree": "cpp",
+		"stack": "cpp",
+		"iomanip": "cpp"
 	}
 }
