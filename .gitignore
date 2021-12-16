@@ -1,2 +1,7 @@
 .vscode
-.a.out
+a.out
+a.out.dSYM
+cmake-build-debug
+.idea
+CMakeLists.txt
+README.md
