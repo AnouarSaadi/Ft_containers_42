@@ -136,28 +136,37 @@ _Node * insertNodeAVL(_Node * &root, int data)
 		root->right->parent = root;
 	}
 	root->height = 1 + std::max(nodeHeight(root->right), nodeHeight(root->left));
+	std::cout << "Height: " << root->height << std::endl;
 	int bf = balanceFactor(root);
-	std::cout << "Insertion bf = [ " << std::setw(2) << bf << " ] " << std::endl;
-	// Left
-	if (bf < -1 && data < root->left->data)
-		root = rightRotate(root);
-	// Right
-	else if (bf > 1 && data > root->right->data)
-		root = leftRotate(root);
-	// Left Right
-	else if (bf < -1 && data > root->left->data)
+	std::cout << "Balance factor before balancing = [ " << std::setw(2) << bf << " ] " << std::endl;
+	if (bf < -1)
 	{
-		// the node added into the right of root
-		root->left = leftRotate(root->left);
-		root = rightRotate(root);
+		// Left Right
+		if (data > root->left->data)
+		{
+			// the node added into the right of root
+			root->left = leftRotation(root->left);
+			root = rightRotation(root);
+		}
+		// Left
+		else
+			root = rightRotation(root);
 	}
-	// Right Left
-	else if (bf > 1 && data < root->right->data)
+	else if (bf > 1)
 	{
-		// the node added into the left of root
-		root->right = rightRotate(root->right);
-		root = leftRotate(root);
+		// Right Left
+		if (data < root->right->data)
+		{
+			// the node added into the left of root
+			root->right = rightRotation(root->right);
+			root = leftRotation(root);
+		}
+		// Right
+		else
+			root = leftRotation(root);
 	}
+	bf = balanceFactor(root);
+	std::cout << "Balance factor after balancing = [ " << std::setw(2) << bf << " ] " << std::endl;
 	return (root);
 	// ITERATIVE
 	/*
