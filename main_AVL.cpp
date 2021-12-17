@@ -19,87 +19,51 @@ _Node* searchIterative(_Node* root, int data);
 
 _Node* findParent(_Node * &root, _Node * &_node);
 
-/* Rotations algorithm */
-/*
-
- ? Pivot = Root.OS
- ? Root.OS = Pivot.RS
- ? Pivot.RS = Root
- ? Root = Pivot
-
-*/
-
-_Node * leftRotation(_Node * root)
-{
-	std::cout << "---> Left Rotation" << std::endl;
-	_Node *pivot;
-	_Node *tmp;
-
-	pivot = root->right;
-	tmp = pivot->left;
-	pivot->left = root;
-	root->right = tmp;
-    root->height = std::max(nodeHeight(root->right), nodeHeight(root->left)) + 1;
-    pivot->height = std::max(nodeHeight(pivot->right), nodeHeight(pivot->left)) + 1;
-	return (pivot); // new root of the rotated subtree
-}
-
-// Let Q be P's right child.
-// Set P's right child to be Q's left child.
-// [Set Q's left-child's parent to P]
-// Set Q's left child to be P.
-// [Set P's parent to Q]
 _Node* leftRotate(_Node *x)
 {
 	std::cout << "---> Left Rotate" << std::endl;
 
 	_Node *y = x->right;
-	x->right = y->left;
-	if (y->left != NULL)
+	_Node *tmp = y->left;
+	if (y->left != nullptr)
 		y->left->parent = x;
+	y->parent = x->parent;
+	if (x->parent != nullptr)
+	{
+		if (x == x->parent->left)
+			x->parent->left = y;
+		else
+			x->parent->right = y;
+	}
 	y->left = x;
+	x->right = tmp;
 	x->parent = y;
-	if (y != NULL)
-		y->height = std::max(nodeHeight(y->right), nodeHeight(y->left));
-	if (x != NULL)
-		x->height = std::max(nodeHeight(x->right), nodeHeight(x->left));
-	return (y);
+	x->height = std::max(nodeHeight(x->right), nodeHeight(x->left)) + 1;
+	y->height = std::max(nodeHeight(y->right), nodeHeight(y->left)) + 1;
+ 	return (y); // new root of the rotated subtree
 }
 
-// Let P be Q's left child.
-// Set Q's left child to be P's right child.
-// [Set P's right-child's parent to Q]
-// Set P's right child to be Q.
-// [Set Q's parent to P]
 _Node* rightRotate(_Node *x)
 {
 	std::cout << "---> Right Rotate" << std::endl;
 	_Node *y = x->left;
-	x->left = y->right;
-	if (y->right != NULL)
+	_Node *tmp = y->right;
+	if (y->right != nullptr)
 		y->right->parent = x;
+	y->parent = x->parent;
+	if (x->parent != nullptr)
+	{
+		if (x == x->parent->right)
+			x->parent->right = y;
+		else
+			x->parent->right = y;
+	}
 	y->right = x;
+	x->left = tmp;
 	x->parent = y;
-	if (y != NULL)
-		y->height = std::max(nodeHeight(y->right), nodeHeight(y->left));
-	if (x != NULL)
-		x->height = std::max(nodeHeight(x->right), nodeHeight(x->left));
-	return (y);
-}
-
-_Node * rightRotation(_Node* root)
-{
-	std::cout << "---> Right Rotation" << std::endl;
-	_Node *pivot;
-	_Node *tmp;
-
-	pivot = root->left;
-	tmp = pivot->right;
-	pivot->right = root;
-	root->left = tmp;
-	root->height = std::max(nodeHeight(root->right), nodeHeight(root->left)) + 1;
-    pivot->height = std::max(nodeHeight(pivot->right), nodeHeight(pivot->left)) + 1;
-	return (pivot); // new root of the rotated subtree
+	x->height = std::max(nodeHeight(x->right), nodeHeight(x->left)) + 1;
+	y->height = std::max(nodeHeight(y->right), nodeHeight(y->left)) + 1;
+	return (y); // new root of the rotated subtree
 }
 
 int balanceFactor(_Node *node)
@@ -108,9 +72,9 @@ int balanceFactor(_Node *node)
 		return (0);
 	if (node->right && node->left)
 		return (node->right->height - node->left->height);
-	else if (node->right && node->left == NULL)
+	else if (node->right && node->left == nullptr)
 		return (node->right->height);
-	else if (node->left && node->right == NULL)
+	else if (node->left && node->right == nullptr)
 		return (-node->left->height);
 	return (0);
 }
@@ -125,45 +89,42 @@ _Node * insertNodeAVL(_Node * &root, int data)
 		root = newNode(data);
 		return (root);
 	}
+	// case1: the data will be inserted into the left child
 	else if (data < root->data)
 	{
 		root->left = insertNodeAVL(root->left, data);
 		root->left->parent = root;
 	}
+	// case2: the data will be inserted into the right child
 	else if (data > root->data)
 	{
 		root->right = insertNodeAVL(root->right, data);
 		root->right->parent = root;
 	}
+	// Update the height of the node
 	root->height = 1 + std::max(nodeHeight(root->right), nodeHeight(root->left));
-	std::cout << "Height: " << root->height << std::endl;
+	std::cout << "Height: " << root->height << nodeHeight(root->left) << std::endl;
 	int bf = balanceFactor(root);
 	std::cout << "Balance factor before balancing = [ " << std::setw(2) << bf << " ] " << std::endl;
-	if (bf < -1)
+	// Left
+	if (bf < -1 && data < root->left->data)
+		root = rightRotate(root);
+	// Right
+	else if (bf > 1 && data > root->right->data)
+		root = leftRotate(root);
+	// Left Right
+	else if (bf < -1 && data > root->left->data)
 	{
-		// Left Right
-		if (data > root->left->data)
-		{
-			// the node added into the right of root
-			root->left = leftRotation(root->left);
-			root = rightRotation(root);
-		}
-		// Left
-		else
-			root = rightRotation(root);
+		// the node added into the right of root
+		root->left = leftRotate(root->left);
+		root = rightRotate(root);
 	}
-	else if (bf > 1)
+	// Right Left
+	else if (bf > 1 && data < root->right->data)
 	{
-		// Right Left
-		if (data < root->right->data)
-		{
-			// the node added into the left of root
-			root->right = rightRotation(root->right);
-			root = leftRotation(root);
-		}
-		// Right
-		else
-			root = leftRotation(root);
+		// the node added into the left of root
+		root->right = rightRotate(root->right);
+		root = leftRotate(root);
 	}
 	bf = balanceFactor(root);
 	std::cout << "Balance factor after balancing = [ " << std::setw(2) << bf << " ] " << std::endl;
@@ -172,9 +133,9 @@ _Node * insertNodeAVL(_Node * &root, int data)
 	/*
 	if (searchIterative(root, data))
 		return root;
-	_Node *y = NULL;
+	_Node *y = nullptr;
 	_Node *x = root;
-	while (x != NULL)
+	while (x != nullptr)
 	{
 		y = x;
 		if (data < x->data)
@@ -223,8 +184,8 @@ _Node * treePre(_Node * x)
 
 _Node * deleteNodeAVL(_Node * root, int data)
 {
-	_Node *tmp = NULL;
-	_Node *_node = NULL;
+	_Node *tmp = nullptr;
+	_Node *_node = nullptr;
 	if (!root || !(_node = searchIterative(root, data)))
 		return (root);
 	if (_node->data < root->data)
@@ -233,14 +194,14 @@ _Node * deleteNodeAVL(_Node * root, int data)
 		root->right = deleteNodeAVL(root->right, _node->data);
 	else
 	{
-		if (root->left == NULL || root->right == NULL)
+		if (root->left == nullptr || root->right == nullptr)
 		{
 			tmp = (root->right) ? root->right : root->left;
-			if (tmp == NULL)
+			if (tmp == nullptr)
 			{
 				std::cout << "_Content of root1: " << root <<" : "/*<< root->data << " : "<< root->left << " : " << root->right */<< std::endl;
 				tmp = root;
-				root = NULL;
+				root = nullptr;
 				std::cout << "_Content of root1: " << root <<" : "/*<< root->data << " : "<< root->left << " : " << root->right */<< std::endl;
 			}
 			else
@@ -269,7 +230,7 @@ _Node * deleteNodeAVL(_Node * root, int data)
 
 void inorder(_Node *x)
 {
-	if (x != NULL)
+	if (x != nullptr)
 	{
 		inorder(x->left);
 		std::cout << x->data << " ";
@@ -279,7 +240,7 @@ void inorder(_Node *x)
 
 void preorder(_Node *x)
 {
-	if (x != NULL)
+	if (x != nullptr)
 	{
 		std::cout << x->data << " ";
 		preorder(x->left);
@@ -289,7 +250,7 @@ void preorder(_Node *x)
 
 void postorder(_Node *x)
 {
-	if (x != NULL)
+	if (x != nullptr)
 	{
 		postorder(x->left);
 		postorder(x->right);
@@ -299,11 +260,11 @@ void postorder(_Node *x)
 
 int main()
 {
-	_Node *root = NULL;
+	_Node *root = nullptr;
 	int x[10];
 	x[0] = 10;
-	x[1] = 20;
-	x[2] = 30;
+	x[1] = 30;
+	x[2] = 20;
 	x[3] = 40;
 	x[4] = 50;
 	x[5] = 60;
@@ -322,8 +283,8 @@ int main()
 	// 	inorder(root);
 	// std::cout << std::endl;
 	// }
-	// root = deleteNodeAVL(root, x[8]);
-	// inorder(root);
+	root = deleteNodeAVL(root, x[8]);
+	inorder(root);
 	std::cout << "_#_#_#_#_# bf = " << std::setw(2) << balanceFactor(root) << std::endl;
 
 	// std::cout << "_____Root  : " << root->data << " : " << root <<" | " << root->left << " | " << root->right << std::endl;
