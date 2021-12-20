@@ -2,7 +2,8 @@
 # define TREE_HPP
 
 namespace ft {
-	template <class T, class , class Alloc>
+	// Tree class
+	template <class T, class Compare, class Alloc>
 	class Tree
 	{
 	private:
@@ -11,13 +12,14 @@ namespace ft {
 		typedef pointer		value_type*;
 		typedef reference	value_type&;
 		typedef struct node {
-			value_type		data;
+			value_type		key;
+			value_type		value;
 			struct node		*right;
 			struct node		*left;
 			struct node		*parent;
-			size_t			height;
 		} _Node;
 
+		_Node<value_type> *root;
 		pointer root;
 		pointer end;
 
