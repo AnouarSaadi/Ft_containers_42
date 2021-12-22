@@ -164,7 +164,7 @@ namespace ft
 				return (this->size() == 0);
 			}
 			/* reserve */
-			void reserve(size_type n)
+			void reserve(size_type n) // ! use capacity is allocation
 			{
 				pointer _data = this->_vecAlloc.allocate(this->size());
 				for (size_type i = 0; i < size(); i++)
