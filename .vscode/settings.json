@@ -67,6 +67,7 @@
 		"map": "cpp",
 		"__tree": "cpp",
 		"stack": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"__memory": "cpp"
 	}
 }
