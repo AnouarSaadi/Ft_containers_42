@@ -331,7 +331,7 @@ namespace ft {
 						uncle->color = BLACK;
 						uncle->parent->color = RED;
 						this->leftRotate(x->parent);
-						uncle = uncle->parent->right;
+						uncle = x->parent->right;
 					}
 					if (uncle->color == BLACK // case 2: uncle is balck and both children are black too.
 						&& uncle->left->color == BLACK
@@ -340,10 +340,27 @@ namespace ft {
 						uncle->color = RED;
 						x = x->parent;
 					}
-					else  // Add the case 3, 4 handling
-					{ break ;}
+					else // case 3, 4 handling
+					{
+						if (uncle->right->color == BLACK) // case 3
+						{
+							uncle->left->color = BLACK;
+							uncle->color = RED;
+							this->rightRotate(uncle);
+							uncle = x->parent->right;
+						}
+						uncle->color = x->parent->color;
+						x->parent->color = BLACK;
+						uncle->right->color = BLACK;
+						this->leftRotate(x->parent);
+						x = this->_root;
+					}
+				}
+				else {
+					// symmetric
 				}
 			}
+			x->color = BLACK;
 		}
 	};
 }
