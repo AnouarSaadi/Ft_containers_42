@@ -14,12 +14,12 @@ int main()
 	tree.insert(19);
 	tree.insert(8);
 	ft::tree<int>::iterator it = tree.begin();
-	it++;
-	std::cout << *it << std::endl;
-	// for (; it != tree.end(); it++)
-	// {
-	// 	std::cout << *it << std::endl;
-	// }
+	// it++;
+	// std::cout << *it << std::endl;
+	for (; it != tree.end(); it--)
+	{
+		std::cout << *it << std::endl;
+	}
 	(void)it;
 	tree.preorder();
 	std::cout << std::endl;

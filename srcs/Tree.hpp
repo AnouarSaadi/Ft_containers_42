@@ -91,7 +91,6 @@ namespace ft {
 		{
 			tree_iter _tmp = *this;
 			this->_current = _tree->successor(this->_current);
-			std::cout << "++ : " << _current->_data << std::endl;
 			return (_tmp);
 		}
 
@@ -145,7 +144,7 @@ namespace ft {
 	public:
 		tree(): _root(nullptr), _end(nullptr)
 		{
-			_end = this->newnode();
+			_end = this->makenode();
 			this->_root = this->_end;
 		}
 
@@ -170,14 +169,14 @@ namespace ft {
 		{
 			if (this->_root == this->_end)
 			{
-				this->_root = this->newnode(_data);
+				this->_root = this->makenode(_data);
 				_root->_parent = this->_end;
 				this->_end->_left = this->_root;
 				return ;
 			}
 			if (find(_data) != _end)
 				return ;
-			nodePtr _new = this->newnode(_data);
+			nodePtr _new = this->makenode(_data);
 			nodePtr _parentNode = this->_end;
 			nodePtr _y = this->_root;
 			while (_y != this->_end) // find the _new _parent
@@ -283,9 +282,8 @@ namespace ft {
 		{
 			if (_x->_right != this->_end)
 				return (minimum(_x->_right));
-			std::cout << "Successor" << std::endl;
 			nodePtr _y = _x->_parent;
-			while (_y != this->_end)
+			while (_y != this->_end && _x == _y->_right)
 			{
 				_x = _y;
 				_y = _y->_parent;
@@ -298,7 +296,7 @@ namespace ft {
 			if (_x->_left != this->_end)
 				return (maximum(_x->_left));
 			nodePtr _y = _x->_parent;
-			while (_y != this->_end)
+			while (_y != this->_end && _x == _y->_left)
 			{
 				_x = _y;
 				_y = _y->_parent;
@@ -329,7 +327,7 @@ namespace ft {
 
 		private:
 		// New node creation
-		nodePtr newnode(value_type _data = value_type())
+		nodePtr makenode(value_type _data = value_type())
 		{
 			nodePtr _new = _alloc.allocate(1);
 			_new->_data = _data;
