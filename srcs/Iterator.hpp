@@ -66,24 +66,24 @@ namespace ft {
     	typedef typename iterator_traits<Iter>::pointer						pointer;
     	typedef typename iterator_traits<Iter>::reference					reference;
 	private:
-		iterator_type _it;
+		iterator_type current;
 	public:
 		/*		Member functions		*/
-		vector_iter() : _it(nullptr)
+		vector_iter() : current(nullptr)
 		{
 		} // default constructor
-		vector_iter(iterator_type x) : _it(x)
+		vector_iter(iterator_type x) : current(x)
 		{
 		} // param constructor
 		template <class OthIter>
-			vector_iter(const vector_iter<OthIter>& other) : _it(other._it)
+			vector_iter(const vector_iter<OthIter>& other) : current(other.current)
 		{
 		} // copy constructor
 		/* assignment operator */
 		template <class OthIter>
 			vector_iter& operator=(const vector_iter<OthIter>& other)
 		{
-			this->_it = other.base();
+			this->current = other.base();
 			return (*this);
 		}
 		~vector_iter()
@@ -92,7 +92,7 @@ namespace ft {
 		/* operator * */
 		reference operator*() const
 		{
-			return *this->_it;
+			return *this->current;
 		}
 		/* operator -> */
 		pointer operator->() const
@@ -102,43 +102,43 @@ namespace ft {
 		/* operator += ++ */
 		vector_iter operator+(difference_type off) const
 		{
-			return vector_iter(this->_it + off);
+			return vector_iter(this->current + off);
 		}
 		vector_iter & operator+= (difference_type off)
 		{
-			this->_it += off;
+			this->current += off;
 			return (*this);
 		}
 		vector_iter & operator++()
 		{
-			++(this->_it);
+			++(this->current);
 			return (*this);
 		}
 		vector_iter operator++(int)
 		{
 			vector_iter tmp = *this;
-			++(this->_it);
+			++(this->current);
 			return (tmp);
 		}
 		/* operator -= -- */
 		vector_iter operator-(difference_type off) const
 		{
-			return vector_iter(this->_it - off);
+			return vector_iter(this->current - off);
 		}
 		vector_iter & operator-= (difference_type off)
 		{
-			this->_it -= off;
+			this->current -= off;
 			return (*this);
 		}
 		vector_iter & operator--()
 		{
-			--this->_it;
+			--this->current;
 			return (*this);
 		}
 		vector_iter operator--(int)
 		{
 			vector_iter tmp = *this;
-			--this->_it;
+			--this->current;
 			return (tmp);
 		}
 		
@@ -150,7 +150,7 @@ namespace ft {
 		/* base() */
 		iterator_type base() const
 		{
-			return (this->_it);
+			return (this->current);
 		}
 	}; // end vector_iter class
 
@@ -169,9 +169,9 @@ namespace ft {
 	}
 	/* operator + */
 	template <class Iter>
-	vector_iter<Iter> operator+(typename vector_iter<Iter>::difference_type n, const vector_iter<Iter>& _it)
+	vector_iter<Iter> operator+(typename vector_iter<Iter>::difference_type n, const vector_iter<Iter>& current)
 	{
-		return vector_iter<Iter>(_it + n);
+		return vector_iter<Iter>(current + n);
 	}
 	/* operator - */
 	template <class Iter>
@@ -219,69 +219,69 @@ namespace ft {
 		typedef typename iterator_traits<Iter>::reference			reference;
 		typedef typename iterator_traits<Iter>::difference_type		difference_type;	
 	protected:
-		iterator_type _it;
+		iterator_type current;
 	public:
 		/* Member functions */
-		reverse_iterator() : _it(nullptr)
+		reverse_iterator() : current(nullptr)
 		{
 		}
-		reverse_iterator(iterator_type x) : _it(x)
+		reverse_iterator(iterator_type x) : current(x)
 		{
 		}
 		template <class OthIter>
-			reverse_iterator(const reverse_iterator<OthIter>& rev_it) : _it(rev_it.base())
+			reverse_iterator(const reverse_iterator<OthIter>& rev_it) : current(rev_it.base())
 		{
 		}
 		iterator_type base() const
 		{
-			return _it;
+			return current;
 		}
 		reference operator*() const
 		{
-			iterator_type cp = _it;
+			iterator_type cp = current;
 			--cp;
 			return *cp;
 		}
 		// +
 		reverse_iterator operator+(difference_type off) const
 		{
-			return reverse_iterator(_it - off);
+			return reverse_iterator(current - off);
 		}
 		reverse_iterator & operator++()
 		{
-			_it--;
+			current--;
 			return (*this);
 		}
 		reverse_iterator operator++(int)
 		{
 			reverse_iterator tmp = *this;
-			--_it;
+			--current;
 			return tmp;
 		}
 		reverse_iterator & operator+=(difference_type off)
 		{
-			_it -= off;
+			current -= off;
 			return (*this);
 		}
 		// -
 		reverse_iterator operator-(difference_type off) const
 		{
-			return reverse_iterator(_it + off);
+			return reverse_iterator(current + off);
 		}
 		reverse_iterator & operator--()
 		{
-			_it++;
+			current++;
 			return (*this);
 		}
 		reverse_iterator operator--(int)
 		{
 			reverse_iterator tmp = *this;
-			++_it;
+			++current;
 			return tmp;
 		}
 		reverse_iterator& operator-=(difference_type off)
 		{
-			_it += off;
+			current += off;
 			return (*this);
 		}
 		// ->
@@ -344,5 +344,6 @@ namespace ft {
 	{
 		return lhs.base() - rhs.base();
 	}
+	
 }; // end namespace ft
 #endif

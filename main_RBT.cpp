@@ -1,4 +1,5 @@
 #include "Tree.hpp"
+#include <map>
 
 int main()
 {
@@ -12,17 +13,23 @@ int main()
 	tree.insert(20);
 	tree.insert(19);
 	tree.insert(8);
-	tree.inorder();
+	ft::tree<int>::iterator it = tree.end();
+	std::cout << *it << std::endl;
+	(void)it;
+	tree.preorder();
 	std::cout << std::endl;
 	std::cout << "Operation: Deletion" << std::endl;
 	std::cout << std::endl;
+	tree.remove(15);
 	tree.remove(19);
-	tree.inorder();
+	tree.remove(18);
+	tree.remove(8);
+	tree.remove(20);
+	tree.remove(12);
+	tree.preorder();
 	return (0);
-
 	/* find node with data
 	struct ft::node<int>	*n = tree.find(10);
 	std::cout << n->data << std::endl;
 	*/
-
 }
