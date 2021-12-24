@@ -13,8 +13,13 @@ int main()
 	tree.insert(20);
 	tree.insert(19);
 	tree.insert(8);
-	ft::tree<int>::iterator it = tree.end();
+	ft::tree<int>::iterator it = tree.begin();
+	it++;
 	std::cout << *it << std::endl;
+	// for (; it != tree.end(); it++)
+	// {
+	// 	std::cout << *it << std::endl;
+	// }
 	(void)it;
 	tree.preorder();
 	std::cout << std::endl;
@@ -28,6 +33,7 @@ int main()
 	tree.remove(12);
 	tree.preorder();
 	return (0);
+
 	/* find node with data
 	struct ft::node<int>	*n = tree.find(10);
 	std::cout << n->data << std::endl;
