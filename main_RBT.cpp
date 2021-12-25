@@ -13,14 +13,13 @@ int main()
 	tree.insert(20);
 	tree.insert(19);
 	tree.insert(8);
-	ft::tree<int>::iterator it = tree.begin();
-	// it++;
-	// std::cout << *it << std::endl;
-	for (; it != tree.end(); it--)
+	ft::tree<int>::iterator it(tree.begin());
+	for (; it != tree.end(); it++)
 	{
 		std::cout << *it << std::endl;
 	}
-	(void)it;
+	ft::tree<int>::const_iterator _it = tree.begin();
+	std::cout << *_it << std::endl;
 	tree.preorder();
 	std::cout << std::endl;
 	std::cout << "Operation: Deletion" << std::endl;

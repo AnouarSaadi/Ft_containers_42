@@ -1,4 +1,4 @@
-# !/bin/bash
+# !/bin/sh
 
 compile_and_run()
 {

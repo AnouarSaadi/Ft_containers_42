@@ -429,22 +429,22 @@ int main()
 	avlTree tree;
 	tree.root = nullptr;
 	int x[10];
-	x[0] = 10;
-	x[1] = 30;
-	x[2] = 20;
-	x[3] = 40;
-	x[4] = 50;
-	x[5] = 60;
+	x[0] = 5;
+	x[1] = 10;
+	x[2] = 4;
+	x[3] = 2;
+	x[4] = 1;
+	x[5] = 3;
 	x[6] = 95;
 	x[7] = 11;
 	x[8] = 99;
 	x[9] = 97;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 6; i++)
 		tree.root = insertNodeAVL(tree.root, x[i]);
 	inorder(tree.root);
-	deletion(&tree, 50);
+	// deletion(&tree, 50);
 	// std::cout << "Deleleting of 50: Done!" << std::endl;
-	inorder(tree.root);
+	// inorder(tree.root);
 	// root = deletion(root, 97);
 	// root = deleteNodeAVL(root, 30);
 	// root = deleteNodeAVL(root, 20);

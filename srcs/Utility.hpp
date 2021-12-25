@@ -66,6 +66,12 @@ namespace ft {
 	{
 		return !(lhs < rhs);
 	}
+
+	template <class T1, class T2>
+	pair<T1,T2> make_pair(T1 _x, T2 _y)
+	{
+		return pair<T1,T2>(_x, _y);
+	}
 } // end namespace ft
 
 #endif

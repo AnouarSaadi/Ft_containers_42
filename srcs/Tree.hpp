@@ -11,7 +11,7 @@ typedef enum
 	INORDER,
 	PREORDER,
 	POSTORDER
-} TraversType;
+} traversType;
 
 namespace ft {
 
@@ -23,52 +23,50 @@ namespace ft {
 		node	*_left;
 		node	*_parent;
 		bool	_color;
+		node() : _data(), _right(nullptr), _left(nullptr), _parent(nullptr), _color(true)
+		{}
 	};
 
 	// tree iterator
 	template <class Tree, class Iter, class T>
 	class tree_iter : public iterator<std::bidirectional_iterator_tag,
-								typename iterator_traits<Iter>::value_type
-								>
+							typename iterator_traits<T>::value_type>
 	{
 	public:
 		typedef Tree tree;
 		typedef Iter iterator_type;
-		typedef T* pointer;
-		typedef T& reference;
+		typedef typename iterator_traits<T>::pointer pointer;
+		typedef typename iterator_traits<T>::reference reference;
+		typedef std::bidirectional_iterator_tag 	iterator_category;
+		typedef std::ptrdiff_t difference_type;
 
 	private:
 		iterator_type _current;
 		tree _tree;
 
 	public:
-		tree_iter() : _current()
+		tree_iter() : _current(), _tree()
 		{
 		}
 
 		tree_iter(iterator_type _x, tree _tr) : _current(_x), _tree(_tr)
 		{
 		}
-
 		template <class OthTree, class OthIter, class U>
-		tree_iter(const tree_iter<OthTree ,OthIter, U>& _other) : _current(_other._current), _tree(_other._tree)
+		tree_iter(const tree_iter<OthTree, OthIter, U>& _other) : _current(_other.base()), _tree(_other.getTree())
 		{
 		}
+
 		template <class OthTree, class OthIter, class U>
 		tree_iter& operator=(const tree_iter<OthTree, OthIter, U>& _other)
 		{
 			this->_current = _other.base();
-			this->_tree = _other._tree;
+			this->_tree = _other.getTree();
 			return (*this);
 		}
 
 		~tree_iter()
 		{
-		}
-
-		iterator_type base() const
-		{
-			return (this->_current);
 		}
 
 		reference operator*() const
@@ -81,37 +79,47 @@ namespace ft {
 			return &(operator*());
 		}
 
-		tree_iter & operator++() // use successor
+		tree_iter & operator++()
 		{
 			this->_current = _tree->successor(this->_current);
 			return (*this);
 		}
 
-		tree_iter operator++(int) // use successor
+		tree_iter operator++(int)
 		{
-			tree_iter _tmp = *this;
+			tree_iter _tmp(*this);
 			this->_current = _tree->successor(this->_current);
 			return (_tmp);
 		}
 
-		tree_iter & operator--() // use predecessor
+		tree_iter & operator--()
 		{
 			this->_current = _tree->predecessor(this->_current);
 			return (*this);
 		}
 
-		tree_iter operator--(int) // use predecessor
+		tree_iter operator--(int)
 		{
-			tree_iter _tmp = *this;
+			tree_iter _tmp(*this);
 			this->_current = _tree->predecessor(this->_current);
 			return (_tmp);
+		}
+
+		iterator_type base() const
+		{
+			return (this->_current);
+		}
+
+		tree getTree() const
+		{
+			return (this->_tree);
 		}
 	};
 
 	template <class Tree, class Iter, class T>
   	bool operator==(const tree_iter<Tree, Iter, T>& lhs, const tree_iter<Tree, Iter, T>& rhs)
 	{
-		return (lhs.base() == rhs.base());
+		return (lhs.base() == rhs.base() && lhs.getTree() == rhs.getTree());
 	}
 	template <class Tree, class Iter, class T>
 	bool operator!=(const tree_iter<Tree, Iter, T>& lhs, const tree_iter<Tree, Iter, T>& rhs)
@@ -124,15 +132,20 @@ namespace ft {
 	class tree
 	{
 	public:
-		typedef T						value_type;
-		typedef value_type*				pointer;
-		typedef value_type&				reference;
-		typedef struct node<value_type>	node;
-		typedef node*					nodePtr;
-		typedef Compare					compare;
-		typedef tree*					treePtr;
+		typedef T								value_type;
+		typedef typename Alloc::pointer			pointer;
+		typedef typename Alloc::const_pointer	const_pointer;
+		typedef typename Alloc::reference		reference;
+		typedef typename Alloc::const_reference	const_reference;
+		typedef struct node<value_type>			node;
+		typedef node*							nodePtr;
+		typedef Compare							compare;
+		typedef tree*							treePtr;
 		typedef typename Alloc::template rebind<node>::other	allocate_type;
-		typedef tree_iter<treePtr, nodePtr, value_type> iterator;
+		typedef tree_iter<treePtr, nodePtr, pointer> iterator;
+		typedef tree_iter<treePtr, nodePtr, const_pointer> const_iterator;
+		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 	private:
 		nodePtr	_root;
@@ -142,17 +155,38 @@ namespace ft {
 		compare _comp;
 
 	public:
-		tree(): _root(nullptr), _end(nullptr)
+		tree(): _root(), _end(), _alloc(), _comp()
 		{
 			_end = this->makenode();
 			this->_root = this->_end;
 		}
 
+		tree(const tree& _oth) : _root(), _end(), _alloc(), _comp()
+		{
+			*this = _oth;
+		}
+
 		~tree()
 		{
+			this->clear();
 			_alloc.destroy(this->_end);
 			_alloc.deallocate(this->_end, 1);
 		}
+
+		void swap(const tree& _x)
+		{
+			std::swap(this->_root, _x._root);
+			std::swap(this._end, _x._end);
+			std::swap(this->_alloc , _x._alloc);
+			std::swap(this->_comp, _x._comp);
+		}
+
+		void clear()
+		{
+			if (this->_root != this->_end)
+				this->destroy(this->_root);
+		}
+
 		// Search operation
 		nodePtr find(value_type _data)
 		{
@@ -190,7 +224,7 @@ namespace ft {
 			else
 				_parentNode->_right = _new;
 			_new->_color = RED;
-			this->insertHelp(_new);
+			this->treeBalanceAfterInsert(_new);
 		}
 		// Delete operation
 		// case 1: has no child: delete the node
@@ -249,7 +283,7 @@ namespace ft {
 				_alloc.deallocate(_del, 1);
 			}
 			if (_col == BLACK)
-				this->removeHelp(_x);	
+				this->treeBalanceAfterRemove(_x);
 		}
 
 		// Iterators
@@ -262,6 +296,43 @@ namespace ft {
 		{
 			return (iterator(this->_end, this));
 		}
+
+		const_iterator begin() const
+		{
+			return (const_iterator(this->minimum(this->_root), this));
+		}
+		
+		const_iterator end() const
+		{
+			return (const_iterator(this->_end, this));
+		}
+
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(this->end());
+		}
+		
+
+		const_reverse_iterator rbegin() const
+		{
+			return (const_reverse_iterator(this->end()));
+		}
+		
+		reverse_iterator rend()
+		{
+			return (reverse_iterator(this->begin()));
+		}
+
+		const_reverse_iterator rend() const
+		{
+			return (const_reverse_iterator(this->begin()));
+		}
+
+		nodePtr& getEndNode()
+		{
+			return this->_end;
+		} 
+
 
 		// Minimum
 		nodePtr minimum(nodePtr _x)
@@ -339,7 +410,7 @@ namespace ft {
 		}
 
 		// Insertion operation: rebalancing function
-		void insertHelp(nodePtr _new)
+		void treeBalanceAfterInsert(nodePtr _new)
 		{
 			while (_new->_parent->_color == RED)
 			{
@@ -438,7 +509,7 @@ namespace ft {
 		}
 
 		// Inorder Travers
-		void traversalHelp(nodePtr _x, TraversType _type)
+		void traversalHelp(nodePtr _x, traversType _type)
 		{
 			if (_x != this->_end && _type == INORDER)
 			{
@@ -469,6 +540,17 @@ namespace ft {
 			}
 		}
 
+		void destroy(nodePtr _x)
+		{
+			if (_x != this->_end)
+			{
+				destroy(_x->_left);
+				destroy(_x->_right);
+				this->_alloc.destroy(_x);
+				this->_alloc.deallocate(_x, 1);
+			}
+		}
+
 		// shift function for shifting two nodes
 		void shift(nodePtr _u, nodePtr _v)
 		{
@@ -482,7 +564,7 @@ namespace ft {
 		}
 
 		// Deletion operation: rebalacing
-		void removeHelp(nodePtr _x)
+		void treeBalanceAfterRemove(nodePtr _x)
 		{
 			while (_x != this->_root && _x->_color == BLACK)
 			{
