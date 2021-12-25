@@ -64,8 +64,7 @@ namespace ft {
 		{
 			for (InputIterator it = first; it != last; ++it) // ! need to check
 			{
-				_tree.insert(it);
-				_size++;
+				this->insert(*it);
 			}
 		}
 
@@ -118,6 +117,17 @@ namespace ft {
 				this->_tree.clear();
 				this->_size = 0;
 			}
+		}
+
+		pair<iterator,bool> insert (const value_type& val)
+		{
+			this->_tree.insert(val);
+			_size++;
+		}
+
+		iterator insert (iterator position, const value_type& val)
+		{
+			
 		}
 
 
