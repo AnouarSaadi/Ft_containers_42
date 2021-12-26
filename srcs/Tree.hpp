@@ -3,6 +3,8 @@
 # include <memory>
 # include <iostream>
 # include "Iterator.hpp"
+# include "Utility.hpp"
+
 
 # define BLACK 1
 # define RED 0
@@ -23,7 +25,7 @@ namespace ft {
 		node	*_left;
 		node	*_parent;
 		bool	_color;
-		node() : _data(), _right(nullptr), _left(nullptr), _parent(nullptr), _color(true)
+		node(T data, node *end) : _data(data), _right(end), _left(end), _parent(end), _color(true)
 		{}
 	};
 
@@ -128,7 +130,7 @@ namespace ft {
 	}
 
 	// Template class tree
-	template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
+	template <class T, class Compare, class Alloc>
 	class tree
 	{
 	public:
@@ -155,7 +157,7 @@ namespace ft {
 		compare _comp;
 
 	public:
-		tree(): _root(), _end(), _alloc(), _comp()
+		tree(compare comp): _root(), _end(), _alloc(), _comp(comp)
 		{
 			_end = this->makenode();
 			this->_root = this->_end;
@@ -176,7 +178,7 @@ namespace ft {
 		void swap(const tree& _x)
 		{
 			std::swap(this->_root, _x._root);
-			std::swap(this._end, _x._end);
+			std::swap(this->_end, _x._end);
 			std::swap(this->_alloc , _x._alloc);
 			std::swap(this->_comp, _x._comp);
 		}
@@ -188,13 +190,13 @@ namespace ft {
 		}
 
 		// Search operation
-		nodePtr find(value_type _data)
+		nodePtr find(const value_type& data)
 		{
 			nodePtr _current = this->_root;
 			while (_current != this->_end) {
-				if (_current->_data == _data)
+				if (_current->_data.first == data.first)
 					break;
-				_current = _comp(_current->_data, _data) ? _current->_right : _current->_left;
+				_current = _comp(_current->_data, data) ? _current->_right : _current->_left;
 			}
 			return (_current);
 		}
@@ -227,11 +229,6 @@ namespace ft {
 			this->treeBalanceAfterInsert(_new);
 		}
 		// Delete operation
-		// case 1: has no child: delete the node
-		// case 2: has one child: replace the node by his child
-		// case 3: has two child: -find the smallest node in _right subtree
-								//   -replace the smallest node by his _right child
-								//   -replace the node by smallest node
 		void remove(value_type _data = value_type())
 		{
 			nodePtr _del;
@@ -401,11 +398,8 @@ namespace ft {
 		nodePtr makenode(value_type _data = value_type())
 		{
 			nodePtr _new = _alloc.allocate(1);
-			_new->_data = _data;
-			_new->_right = this->_end;
-			_new->_left = this->_end;
-			_new->_parent = this->_end;
-			_new->_color = BLACK;
+			_alloc.construct(_new, _data, _end);
+			std::cout << _new->_data.first << std::endl;
 			return (_new);
 		}
 
@@ -420,7 +414,6 @@ namespace ft {
 					nodePtr _sibling = _new->_parent->_parent->_right; // _sibling of _new
 					if (_sibling->_color == RED) // case 1: _sibling is also red  as _parent and _new
 					{
-						// std::cout << "case1: The _sibling of new node is also red  as _parent and new node" << std::endl;
 						_new->_parent->_color = BLACK;
 						_sibling->_color = BLACK;
 						_new->_parent->_parent->_color = RED;

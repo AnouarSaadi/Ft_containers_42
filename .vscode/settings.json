@@ -68,6 +68,7 @@
 		"__tree": "cpp",
 		"stack": "cpp",
 		"iomanip": "cpp",
-		"__memory": "cpp"
+		"__memory": "cpp",
+		"__cxx_version": "cpp"
 	}
 }
