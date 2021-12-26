@@ -54,8 +54,9 @@ namespace ft {
 		tree_iter(iterator_type _x, tree _tr) : _current(_x), _tree(_tr)
 		{
 		}
+		
 		template <class OthTree, class OthIter, class U>
-		tree_iter(const tree_iter<OthTree, OthIter, U>& _other) : _current(_other.base()), _tree(_other.getTree())
+		tree_iter(const tree_iter<OthTree, OthIter, U>& _other) : _current(_other._current), _tree(_other._tree)
 		{
 		}
 
@@ -332,14 +333,14 @@ namespace ft {
 
 
 		// Minimum
-		nodePtr minimum(nodePtr _x)
+		nodePtr minimum(nodePtr _x) const
 		{
 			while (_x->_left != this->_end)
 				_x = _x->_left;
 			return (_x);
 		}
 		// Maximum
-		nodePtr maximum(nodePtr _x)
+		nodePtr maximum(nodePtr _x) const
 		{
 			while (_x->_right != this->_end)
 				_x = _x->_right;
@@ -399,7 +400,6 @@ namespace ft {
 		{
 			nodePtr _new = _alloc.allocate(1);
 			_alloc.construct(_new, _data, _end);
-			std::cout << _new->_data.first << std::endl;
 			return (_new);
 		}
 

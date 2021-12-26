@@ -1,10 +1,11 @@
 #ifndef MAP_HPP
 # define MAP_HPP
 
-# include <functional>
-# include <memory>
-# include "Utility.hpp"
-# include "Tree.hpp"
+# include <functional> // 
+# include <memory> // std::allocator
+# include "Utility.hpp" // ft::pair
+# include "Tree.hpp" // Red Black tree
+# include "Type_traits.hpp" // enable_if is_integral
 
 namespace ft {
 	template < class Key,                                     // map::key_type
@@ -66,15 +67,14 @@ namespace ft {
        		const key_compare& comp = key_compare(),
        		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)), _size(0), _alloc(alloc), _comp(comp)
 		{
-			for (InputIterator it = first; it != last; ++it) // ! need to check
-			{
+			for (InputIterator it = first; it != last; ++it)
 				this->insert(*it);
-			}
 		}
 
-		map (const map& _m)
+		map (const map& _m) : _tree(value_compare(_m._comp)), _size(_m._size), _alloc(_m._alloc), _comp(_m._comp)
 		{
 			*this = _m;
+			std::cout << "here" << std::endl;
 		}
 
 		map& operator=(const map& _m)
@@ -82,9 +82,12 @@ namespace ft {
 			if (this != &_m)
 			{
 				this->clear();
+				this->_comp = _m._comp;
+				this->_alloc = _m._alloc;
+				this->insert(_m.begin(), _m.end());
 				this->_size = _m._size;
-				// this->insert(_m.begin(), _m.end());
 			}
+			return *this;
 		}
 
 		/* begin */
@@ -141,15 +144,11 @@ namespace ft {
 
 		mapped_type& operator[] (const key_type& _k)
 		{
-			value_type _x = make_pair(_k, mapped_type());
-			nodePtr _y = this->_tree.find(_x);
-			if (_y == this->_tree.getEndNode())
-			{
-				this->insert(_x);
-				_y = this->_tree.find(_x);
-				return (_y->_data.second);
-			}
-			return (_y->_data.second);
+			iterator _f = this->find(_k);
+			if (_f != this->end())
+				return ((*_f).second);
+			this->insert(make_pair(_k, mapped_type()));
+			return (*this->find(_k)).second;
 		}
 
 		void clear()
@@ -175,14 +174,53 @@ namespace ft {
 
 		iterator insert (iterator position, const value_type& val)
 		{
-			(void)position;
-			(void)val;
+			position = this->find(val.first);
+			if (position != this->end())
+				return (position);
+			this->insert(val);
+			return (this->find(val.first));
+		}
+		
+		template <class InputIterator>
+  		void insert (InputIterator first, InputIterator last,
+			typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
+		{
+			for (; first != last; ++first)
+				this->insert(*first);
+		}
+
+		void erase (iterator position)
+		{
+			if (this->find((*position).first) != this->end())
+			{
+				this->_tree.remove(*position);
+				_size--;
+			}
+		}
+
+		size_type erase (const key_type& k)
+		{
+			iterator _f = this->find(k);
+			if (_f != this->end())
+			{
+				this->erase(_f);
+				return (1);
+			}
+			return (0);
+		}
+
+		void erase (iterator first, iterator last)
+		{
+			while (first != last)
+			{
+				this->erase(first);
+				first++;
+			}
 		}
 
 		iterator find (const key_type& _k)
 		{
 			nodePtr _y = this->_tree.find(make_pair(_k, mapped_type()));
-			// std::cout << "Size: " << _size << " Key:" << _y->_data.first << std::endl;
 			return iterator(_y, &(this->_tree));
 		}
 	};
