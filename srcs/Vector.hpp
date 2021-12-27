@@ -5,7 +5,7 @@
 # include "Iterator.hpp"
 # include "Algorithm.hpp"
 # include "Type_traits.hpp"
-# include <vector> //
+// # include <vector> //
 
 	/*************************** vector: Template class *********************/
 namespace ft

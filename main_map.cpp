@@ -1,5 +1,6 @@
 #include "srcs/Map.hpp"
 #include <map>
+#include <iostream>
 
 #ifndef NS
 # define NS ft
@@ -15,21 +16,21 @@ struct classcomp {
 int main() // ! erase need to check
 {
 	/* Constructors */
+	NS::map<char,int> first;
 
-	NS::map<int,int> first;
+	first['a']=10;
+	first['b']=30;
+	first['c']=50;
+	first['d']=70;
 
-	first[1]=10;
-	first[2]=30;
-	first[3]=50;
-	first[4]=70;
-	NS::map<int,int> second (first.begin(),first.end());
+	NS::map<char,int> second (first.begin(),first.end());
 
-	// NS::map<int,int> third (second);
+	NS::map<char,int> third (second);
 
-	// NS::map<char,int,classcomp> fourth;                 // class as Compare
+	NS::map<char,int,classcomp> fourth;                 // class as Compare
 
-	// bool(*fn_pt)(char,char) = fncomp;
-	// NS::map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
+	bool(*fn_pt)(char,char) = fncomp;
+	NS::map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
 
 	/* Capacity */
 	NS::map<char,int> _mymap;
@@ -37,12 +38,23 @@ int main() // ! erase need to check
 	_mymap['a']=10;
 	_mymap['b']=20;
 	_mymap['c']=30;
+	NS::map<char,int>::iterator _i =  _mymap.begin();
+	_mymap.erase(_mymap.begin());
+	// _mymap.erase(_mymap.begin());
+	// _mymap.erase(_mymap.begin());
+	// _mymap.erase(_mymap.begin());
+	_i =  _mymap.begin();
+	// _i++;
+	std::cout << "Begin: " << _i->first << " Size: " << _mymap.size() << std::endl;
 
-	while (!_mymap.empty())
-	{
-		std::cout << _mymap.begin()->first << " => " << _mymap.begin()->second << '\n';
-		_mymap.erase(_mymap.begin());
-	}
+	exit(0);
+
+	// while (!_mymap.empty())
+	// {
+	// 	std::cout << _mymap.begin()->first << " => " << _mymap.begin()->second << '\n';
+	// 	_mymap.erase(_mymap.begin());
+		
+	// }
 
 	// std::cout << "mymap.size() is " << _mymap.size() << '\n';
 
@@ -79,29 +91,73 @@ int main() // ! erase need to check
 	std::cout << it->first << " => " << it->second << '\n';
 
 	/* erase */
+	NS::map<char,int> mymaperase;
+	NS::map<char,int>::iterator it2;
+
+	// insert some values:
+	mymaperase['a']=10;
+	mymaperase['b']=20;
+	mymaperase['c']=30;
+	mymaperase['d']=40;
+	mymaperase['e']=50;
+	mymaperase['f']=60;
+
+	it2=mymaperase.find('b');
+	mymaperase.erase (it2);                   // erasing by iterator
+
+	mymaperase.erase ('c');                  // erasing by key
+	it2=mymaperase.find ('e');
+	mymaperase.erase ( it2, mymaperase.end() );    // erasing by range
+	// show content:
+	for (it2=mymaperase.begin(); it2!=mymaperase.end(); ++it2)
+	std::cout << it2->first << " => " << it2->second << '\n';
+	/* swap */
+	NS::map<char,int> foo,bar;
+
+	foo['x']=100;
+	foo['y']=200;
+
+	bar['a']=11;
+	bar['b']=22;
+	bar['c']=33;
+
+	foo.swap(bar);
+
+	std::cout << "foo contains:\n";
+	for (NS::map<char,int>::iterator _it=foo.begin(); _it!=foo.end(); ++_it)
+	std::cout << _it->first << " => " << _it->second << '\n';
+
+	std::cout << "bar contains:\n";
+	for (NS::map<char,int>::iterator it1=bar.begin(); it1!=bar.end(); ++it1)
+	std::cout << it1->first << " => " << it1->second << '\n';
+
+	// /* key_compare */
+	mymap.clear();
+
+	// NS::map<char,int>::key_compare mycomp = mymap.key_comp();
+
+	mymap['a']=100;
+	mymap['b']=200;
+	mymap['c']=300;
+	mymap['d']=400;
+	mymap['e']=500;
+
+	std::cout << "mymap contains:\n";
+
+	NS::map<char, int>::reverse_iterator rev_it = mymap.rbegin();
+	char highest = rev_it->first;     // key value of last element
+	std::cout << "highest: " << highest << std::endl;
+		rev_it++;
+	highest = rev_it->first;     // key value of last element
+	std::cout << "highest: " << highest << std::endl;
+
+	while (rev_it != mymap.rend())
 	{
-		NS::map<char,int> mymaperase;
-		NS::map<char,int>::iterator it;
-
-		// insert some values:
-		mymaperase['a']=10;
-		mymaperase['b']=20;
-		mymaperase['c']=30;
-		mymaperase['d']=40;
-		mymaperase['e']=50;
-		mymaperase['f']=60;
-
-		it=mymaperase.find('b');
-		mymaperase.erase (it);                   // erasing by iterator
-
-		mymaperase.erase ('c');                  // erasing by key
-
-		it=mymaperase.find ('e');
-		mymaperase.erase ( it, mymaperase.end() );    // erasing by range
-		// show content:
-		for (it=mymaperase.begin(); it!=mymaperase.end(); ++it)
-		std::cout << it->first << " => " << it->second << '\n';
+		std::cout << rev_it->first << " => " << rev_it->second << '\n';
+		rev_it++;
 	}
+
+	std::cout << '\n';
 
 	return 0;
 }

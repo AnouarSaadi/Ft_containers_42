@@ -217,7 +217,7 @@ namespace ft {
 		typedef Iter												iterator_type;
 		typedef typename iterator_traits<Iter>::pointer				pointer;
 		typedef typename iterator_traits<Iter>::reference			reference;
-		typedef typename iterator_traits<Iter>::difference_type		difference_type;	
+		typedef typename iterator_traits<Iter>::difference_type		difference_type;
 	protected:
 		iterator_type _current;
 	public:

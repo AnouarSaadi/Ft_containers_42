@@ -1,19 +1,15 @@
 #ifndef TREE_HPP
 # define TREE_HPP
+
 # include <memory>
 # include <iostream>
 # include "Iterator.hpp"
 # include "Utility.hpp"
-
+# include <functional> // 
+# include <algorithm>
 
 # define BLACK 1
 # define RED 0
-typedef enum 
-{
-	INORDER,
-	PREORDER,
-	POSTORDER
-} traversType;
 
 namespace ft {
 
@@ -25,46 +21,46 @@ namespace ft {
 		node	*_left;
 		node	*_parent;
 		bool	_color;
-		node(T data, node *end) : _data(data), _right(end), _left(end), _parent(end), _color(true)
+		node() : _data(), _right(nullptr), _left(nullptr), _parent(nullptr), _color(BLACK) {}
+		node(T data) : _data(data), _right(nullptr), _left(nullptr), _parent(nullptr), _color(BLACK)
 		{}
 	};
 
 	// tree iterator
-	template <class Tree, class Iter, class T>
+	template <class Iter, class T>
 	class tree_iter : public iterator<std::bidirectional_iterator_tag,
 							typename iterator_traits<T>::value_type>
 	{
 	public:
-		typedef Tree tree;
 		typedef Iter iterator_type;
 		typedef typename iterator_traits<T>::pointer pointer;
 		typedef typename iterator_traits<T>::reference reference;
 		typedef std::bidirectional_iterator_tag 	iterator_category;
 		typedef std::ptrdiff_t difference_type;
+		typedef Iter nodePtr;
 
 	private:
 		iterator_type _current;
-		tree _tree;
+
 
 	public:
-		tree_iter() : _current(), _tree()
+		tree_iter() : _current()
 		{
 		}
 
-		tree_iter(iterator_type _x, tree _tr) : _current(_x), _tree(_tr)
+		tree_iter(iterator_type _x) : _current(_x)
 		{
 		}
 		
-		template <class OthTree, class OthIter, class U>
-		tree_iter(const tree_iter<OthTree, OthIter, U>& _other) : _current(_other._current), _tree(_other._tree)
+		template <class OthIter, class U>
+		tree_iter(const tree_iter<OthIter, U>& _other) : _current(_other.base())
 		{
 		}
 
-		template <class OthTree, class OthIter, class U>
-		tree_iter& operator=(const tree_iter<OthTree, OthIter, U>& _other)
+		template <class OthIter, class U>
+		tree_iter& operator=(const tree_iter<OthIter, U>& _other)
 		{
 			this->_current = _other.base();
-			this->_tree = _other.getTree();
 			return (*this);
 		}
 
@@ -84,27 +80,27 @@ namespace ft {
 
 		tree_iter & operator++()
 		{
-			this->_current = _tree->successor(this->_current);
+			this->_current = successor(this->_current);
 			return (*this);
 		}
 
 		tree_iter operator++(int)
 		{
 			tree_iter _tmp(*this);
-			this->_current = _tree->successor(this->_current);
+			this->_current = successor(this->_current);
 			return (_tmp);
 		}
 
 		tree_iter & operator--()
 		{
-			this->_current = _tree->predecessor(this->_current);
+			this->_current = predecessor(this->_current);
 			return (*this);
 		}
 
 		tree_iter operator--(int)
 		{
 			tree_iter _tmp(*this);
-			this->_current = _tree->predecessor(this->_current);
+			this->_current = predecessor(this->_current);
 			return (_tmp);
 		}
 
@@ -113,19 +109,56 @@ namespace ft {
 			return (this->_current);
 		}
 
-		tree getTree() const
+	private:
+		iterator_type minimum(iterator_type _x) const
 		{
-			return (this->_tree);
+			while (_x->_left != nullptr)
+				_x = _x->_left;
+			return (_x);
 		}
+		// Maximum
+		iterator_type maximum(iterator_type _x) const
+		{
+			while (_x->_right != nullptr)
+				_x = _x->_right;
+			return (_x);
+		}
+		// Successor
+		iterator_type successor(iterator_type _x)
+		{
+			if (_x->_right != nullptr)
+				return (minimum(_x->_right));
+			iterator_type _y = _x->_parent;
+			while (_x == _y->_right)
+			{
+				_x = _y;
+				_y = _y->_parent;
+			}
+			return (_y);
+		}
+		// Predecessor
+		iterator_type predecessor(iterator_type _x)
+		{
+			if (_x->_left != nullptr)
+				return (maximum(_x->_left));
+			iterator_type _y = _x->_parent;
+			while (_x == _y->_left)
+			{
+				_x = _y;
+				_y = _y->_parent;
+			}
+			return (_y);
+		}
+
 	};
 
-	template <class Tree, class Iter, class T>
-  	bool operator==(const tree_iter<Tree, Iter, T>& lhs, const tree_iter<Tree, Iter, T>& rhs)
+	template <class Iter, class T>
+  	bool operator==(const tree_iter<Iter, T>& lhs, const tree_iter<Iter, T>& rhs)
 	{
-		return (lhs.base() == rhs.base() && lhs.getTree() == rhs.getTree());
+		return (lhs.base() == rhs.base());
 	}
-	template <class Tree, class Iter, class T>
-	bool operator!=(const tree_iter<Tree, Iter, T>& lhs, const tree_iter<Tree, Iter, T>& rhs)
+	template <class Iter, class T>
+	bool operator!=(const tree_iter<Iter, T>& lhs, const tree_iter<Iter, T>& rhs)
 	{
 		return !(lhs == rhs);
 	}
@@ -145,10 +178,6 @@ namespace ft {
 		typedef Compare							compare;
 		typedef tree*							treePtr;
 		typedef typename Alloc::template rebind<node>::other	allocate_type;
-		typedef tree_iter<treePtr, nodePtr, pointer> iterator;
-		typedef tree_iter<treePtr, nodePtr, const_pointer> const_iterator;
-		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
-		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 	private:
 		nodePtr	_root;
@@ -176,8 +205,9 @@ namespace ft {
 			_alloc.deallocate(this->_end, 1);
 		}
 
-		void swap(const tree& _x)
+		void swap(tree& _x)
 		{
+
 			std::swap(this->_root, _x._root);
 			std::swap(this->_end, _x._end);
 			std::swap(this->_alloc , _x._alloc);
@@ -186,16 +216,17 @@ namespace ft {
 
 		void clear()
 		{
-			if (this->_root != this->_end)
+			if (this->_root != nullptr)
 				this->destroy(this->_root);
+			this->_root = this->_end;
 		}
 
 		// Search operation
 		nodePtr find(const value_type& data)
 		{
 			nodePtr _current = this->_root;
-			while (_current != this->_end) {
-				if (_current->_data.first == data.first)
+			while (_current != nullptr) {
+				if (!_comp(_current->_data, data) && !_comp(data, _current->_data))
 					break;
 				_current = _comp(_current->_data, data) ? _current->_right : _current->_left;
 			}
@@ -211,12 +242,12 @@ namespace ft {
 				this->_end->_left = this->_root;
 				return ;
 			}
-			if (find(_data) != _end)
+			if (find(_data) != nullptr)
 				return ;
 			nodePtr _new = this->makenode(_data);
-			nodePtr _parentNode = this->_end;
+			nodePtr _parentNode = nullptr;
 			nodePtr _y = this->_root;
-			while (_y != this->_end) // find the _new _parent
+			while (_y != nullptr) // find the _new _parent
 			{
 				_parentNode = _y;
 				_y = (_comp(_new->_data, _y->_data)) ? _y->_left : _y->_right; // must be replaced by Compare
@@ -230,29 +261,34 @@ namespace ft {
 			this->treeBalanceAfterInsert(_new);
 		}
 		// Delete operation
-		void remove(value_type _data = value_type())
+		void erase(value_type _data = value_type())
 		{
 			nodePtr _del;
 			nodePtr _x;
-			if (!this->_root || (_del = this->find(_data)) == this->_end)
+			if (!this->_root || (_del = this->find(_data)) == nullptr)
 				return ;
 			nodePtr _y = _del;
 			bool _col = _y->_color; // store the original _color of node to be delete
-			if (_del->_left == this->_end)
+			if (_del->_left == nullptr)
 			{
 				// std::cout << "case1: has a _right child or no child" << std::endl;
 				_x = _del->_right;
 				this->shift(_del, _del->_right);
 				_alloc.destroy(_del);
+				std::cout << "Double free 1" <<_del->_data.first<< std::endl;
 				_alloc.deallocate(_del, 1);
+				std::cout << "Double free 12" << std::endl;
 			}
-			else if (_del->_right == this->_end)
+			else if (_del->_right == nullptr)
 			{
 				// std::cout << "case1: has a _left child" << std::endl;
+
 				_x = _del->_left;
 				this->shift(_del, _del->_left);
 				_alloc.destroy(_del);
+				std::cout << "Double free2" << std::endl;
 				_alloc.deallocate(_del, 1);
+				std::cout << "Double free22" << std::endl;
 			}
 			else
 			{
@@ -280,76 +316,58 @@ namespace ft {
 				_alloc.destroy(_del);
 				_alloc.deallocate(_del, 1);
 			}
-			if (_col == BLACK)
+			if (_col == BLACK && _x)
 				this->treeBalanceAfterRemove(_x);
 		}
 
 		// Iterators
-		iterator begin()
+		nodePtr begin()
 		{
-			return (iterator(this->minimum(this->_root), this));
+			return this->minimum(this->_root);
 		}
 
-		iterator end()
-		{
-			return (iterator(this->_end, this));
-		}
-
-		const_iterator begin() const
-		{
-			return (const_iterator(this->minimum(this->_root), this));
-		}
-		
-		const_iterator end() const
-		{
-			return (const_iterator(this->_end, this));
-		}
-
-		reverse_iterator rbegin()
-		{
-			return reverse_iterator(this->end());
-		}
-		
-
-		const_reverse_iterator rbegin() const
-		{
-			return (const_reverse_iterator(this->end()));
-		}
-		
-		reverse_iterator rend()
-		{
-			return (reverse_iterator(this->begin()));
-		}
-
-		const_reverse_iterator rend() const
-		{
-			return (const_reverse_iterator(this->begin()));
-		}
-
-		nodePtr& getEndNode()
+		nodePtr end()
 		{
 			return this->_end;
-		} 
+		}
 
+		nodePtr begin() const
+		{
+			return this->minimum(this->_root);
+		}
+		
+		nodePtr end() const
+		{
+			return this->_end;
+		}
 
+		nodePtr rbegin()
+		{
+			return this->maximum(this->_root);
+		}
+
+		nodePtr rend()
+		{
+			return this->minimum(this->_root);
+		}
 		// Minimum
 		nodePtr minimum(nodePtr _x) const
 		{
-			while (_x->_left != this->_end)
+			while (_x->_left != nullptr)
 				_x = _x->_left;
 			return (_x);
 		}
 		// Maximum
 		nodePtr maximum(nodePtr _x) const
 		{
-			while (_x->_right != this->_end)
+			while (_x->_right != nullptr)
 				_x = _x->_right;
 			return (_x);
 		}
 		// Successor
 		nodePtr successor(nodePtr _x)
 		{
-			if (_x->_right != this->_end)
+			if (_x->_right != nullptr)
 				return (minimum(_x->_right));
 			nodePtr _y = _x->_parent;
 			while (_y != this->_end && _x == _y->_right)
@@ -362,7 +380,7 @@ namespace ft {
 		// Predecessor
 		nodePtr predecessor(nodePtr _x)
 		{
-			if (_x->_left != this->_end)
+			if (_x->_left != nullptr)
 				return (maximum(_x->_left));
 			nodePtr _y = _x->_parent;
 			while (_y != this->_end && _x == _y->_left)
@@ -373,33 +391,15 @@ namespace ft {
 			return (_y);
 		}
 
-		// Inorder Traversal
-		void inorder()
-		{
-			if (this->_root != this->_end)
-				this->traversalHelp(this->_root, INORDER);
-		}
-
-		// Preorder Traversal
-		void preorder()
-		{
-			if (this->_root != this->_end)
-				this->traversalHelp(this->_root, PREORDER);
-		}
-
-		// Postorder Traversal
-		void postorder()
-		{
-			if (this->_root != this->_end)
-				this->traversalHelp(this->_root, POSTORDER);
-		}
-
 		private:
 		// New node creation
 		nodePtr makenode(value_type _data = value_type())
 		{
 			nodePtr _new = _alloc.allocate(1);
-			_alloc.construct(_new, _data, _end);
+			_alloc.construct(_new, _data);
+			// _new->_left = end;
+			// _new->_right = end;
+			// _new->_parent = end;
 			return (_new);
 		}
 
@@ -412,7 +412,7 @@ namespace ft {
 				{
 					// std::cout << "The _parent of new node is a _left child" << std::endl;
 					nodePtr _sibling = _new->_parent->_parent->_right; // _sibling of _new
-					if (_sibling->_color == RED) // case 1: _sibling is also red  as _parent and _new
+					if (_sibling && _sibling->_color == RED) // case 1: _sibling is also red  as _parent and _new
 					{
 						_new->_parent->_color = BLACK;
 						_sibling->_color = BLACK;
@@ -440,7 +440,7 @@ namespace ft {
 				{
 					// std::cout << "The _parent of new node is a _right child" << std::endl;
 					nodePtr _sibling = _new->_parent->_parent->_left;
-					if (_sibling->_color == RED)
+					if (_sibling && _sibling->_color == RED)
 					{
 						_new->_parent->_color = BLACK;
 						_sibling->_color = BLACK;
@@ -459,6 +459,7 @@ namespace ft {
 						this->leftRotate(_new->_parent->_parent);
 						break ;
 					}
+				std::cout << "Rebalancing" << std::endl;
 				}
 			}
 			this->_root->_color = BLACK;
@@ -467,13 +468,13 @@ namespace ft {
 		// Rotation functions
 		void leftRotate(nodePtr _x)
 		{
-			// std::cout << "---> _Left Rotate: " << _x << std::endl;
+			std::cout << "---> _Left Rotate: " << _x << std::endl;
 			nodePtr _y = _x->_right;
 			_x->_right = _y->_left;
-			if (_y->_left != this->_end)
+			if (_y->_left != nullptr)
 				_y->_left->_parent = _x;
 			_y->_parent = _x->_parent;
-			if (_x->_parent == this->_end) // _x is _x
+			if (_x->_parent == nullptr) // _x is _x
 				this->_root = _y;
 			else if (_x == _x->_parent->_left) // _x is _left child
 				_x->_parent->_left = _y;
@@ -485,13 +486,13 @@ namespace ft {
 
 		void rightRotate(nodePtr _x)
 		{
-			// std::cout << "---> _Right Rotate: " << _x << std::endl;
+			std::cout << "---> _Right Rotate: " << _x << std::endl;
 			nodePtr _y = _x->_left;
 			_x->_left = _y->_right;
-			if (_y->_right != this->_end)
+			if (_y->_right != nullptr)
 				_y->_right->_parent = _x;
 			_y->_parent = _x->_parent;
-			if (_x->_parent == this->_end) // _x is _x
+			if (_x->_parent == nullptr) // _x is _x
 				this->_root = _y;
 			else if (_x == _x->_parent->_right) // _x is _right child
 				_x->_parent->_right = _y;
@@ -501,41 +502,9 @@ namespace ft {
 			_x->_parent = _y; 
 		}
 
-		// Inorder Travers
-		void traversalHelp(nodePtr _x, traversType _type)
-		{
-			if (_x != this->_end && _type == INORDER)
-			{
-				traversalHelp(_x->_left, INORDER);
-				std::cout << std::endl;
-				std::cout <<  "Node: " <<_x << " Color: " << _x->_color << std::endl;
-				(_x->_left != this->_end) ? std::cout << "\tLeft Child: " << _x->_left << " Color: " << _x->_left->_color << std::endl : std::cout <<  "\tLeft Child: NIL"  << " Color: " << _x->_left->_color << std::endl;
-				(_x->_right != this->_end) ? std::cout << "\t\tRight Child: "  << _x->_right << " Color: " << _x->_right->_color << std::endl : std::cout<<  "\t\tRight Child: NIL"  << " Color: " << _x->_right->_color << std::endl;
-				traversalHelp(_x->_right, INORDER);
-			}
-			if (_x != this->_end && _type == PREORDER)
-			{
-				std::cout << std::endl;
-				std::cout <<  "Node: " <<_x << " Color: " << _x->_color << std::endl;
-				(_x->_left != this->_end) ? std::cout << "\tLeft Child: " << _x->_left << " Color: " << _x->_left->_color << std::endl : std::cout <<  "\tLeft Child: NIL"  << " Color: " << _x->_left->_color << std::endl;
-				(_x->_right != this->_end) ? std::cout << "\t\tRight Child: " <<_x->_right << " Color: " << _x->_right->_color << std::endl : std::cout<<  "\t\tRight Child: NIL"  << " Color: " << _x->_right->_color << std::endl;
-				traversalHelp(_x->_left, PREORDER);
-				traversalHelp(_x->_right, PREORDER);
-			}
-			if (_x != this->_end && _type == POSTORDER)
-			{
-				traversalHelp(_x->_left, POSTORDER);
-				traversalHelp(_x->_right, POSTORDER);
-				std::cout << std::endl;
-				std::cout <<  "Node: " << _x  << " Color: " << _x->_color << std::endl;
-				(_x->_left != this->_end) ? std::cout << "\tLeft Child: " << _x->_left << " Color: " << _x->_left->_color << std::endl : std::cout <<  "\tLeft Child: NIL"  << " Color: " << _x->_left->_color << std::endl;
-				(_x->_right != this->_end) ? std::cout << "\t\tRight Child: " << _x->_right << " Color: " << _x->_right->_color << std::endl : std::cout<<  "\t\tRight Child: NIL"  << " Color: " << _x->_right->_color << std::endl;
-			}
-		}
-
 		void destroy(nodePtr _x)
 		{
-			if (_x != this->_end)
+			if (_x != nullptr)
 			{
 				destroy(_x->_left);
 				destroy(_x->_right);
@@ -547,13 +516,14 @@ namespace ft {
 		// shift function for shifting two nodes
 		void shift(nodePtr _u, nodePtr _v)
 		{
-			if (_u->_parent == this->_end) // _u is root
+			if (_u->_parent == nullptr) // _u is root
 				this->_root = _v;
 			else if (_u == _u->_parent->_left) // _u is _left child
 				_u->_parent->_left = _v;
 			else // _u is _right child
 				_u->_parent->_right = _v;
-			_v->_parent = _u->_parent;
+			if (_v != nullptr)
+				_v->_parent = _u->_parent;
 		}
 
 		// Deletion operation: rebalacing
@@ -561,18 +531,19 @@ namespace ft {
 		{
 			while (_x != this->_root && _x->_color == BLACK)
 			{
-				if (_x == _x->_parent->_left) // the node is a _left child
+				std::cout << "Rebalancing" << std::endl;
+				if (_x && _x == _x->_parent->_left) // the node is a _left child
 				{
 					// std::cout << "case1: the node is a _left child" << std::endl;
 					nodePtr _sibling = _x->_parent->_right;
-					if (_sibling->_color == RED) // case 1: _sibling is Red.
+					if (_sibling && _sibling->_color == RED) // case 1: _sibling is Red.
 					{
 						_sibling->_color = BLACK;
 						_x->_parent->_color = RED;
 						this->leftRotate(_x->_parent);
 						_sibling = _x->_parent->_right;
 					}
-					if (_sibling->_color == BLACK // case 2: _sibling is balck and both children are black too.
+					if (_sibling && _sibling->_color == BLACK // case 2: _sibling is balck and both children are black too.
 						&& _sibling->_left->_color == BLACK
 						&& _sibling->_right->_color == BLACK)
 					{
@@ -600,14 +571,14 @@ namespace ft {
 					// symmetric
 					// std::cout << "case1: the node is a _right child" << std::endl;
 					nodePtr _sibling = _x->_parent->_left;
-					if (_sibling->_color == RED)
+					if (_sibling && _sibling->_color == RED)
 					{
 						_sibling->_color = BLACK;
 						_x->_parent->_color = RED;
 						this->rightRotate(_x->_parent);
 						_sibling = _x->_parent->_left;
 					}
-					if (_sibling->_color == BLACK
+					if (_sibling && _sibling->_color == BLACK
 						&& _sibling->_right->_color == BLACK
 						&& _sibling->_left->_color == BLACK)
 					{

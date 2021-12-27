@@ -41,13 +41,13 @@ namespace ft {
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
 		typedef typename ft::tree<value_type, value_compare, allocator_type> tree;
-		typedef typename tree::iterator iterator;
-		typedef typename tree::const_iterator const_iterator;
-		typedef typename tree::reverse_iterator reverse_iterator;
-		typedef typename tree::const_reverse_iterator const_reverse_iterator;
-		typedef typename iterator_traits<iterator>::difference_type difference_type;
 		typedef typename ft::node<value_type> node;
 		typedef node* nodePtr;
+		typedef tree_iter<nodePtr, pointer> iterator;
+		typedef tree_iter<nodePtr, const_pointer> const_iterator;
+		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef typename iterator_traits<iterator>::difference_type difference_type;
 		typedef size_t	size_type;
 
 	private:
@@ -70,11 +70,10 @@ namespace ft {
 			for (InputIterator it = first; it != last; ++it)
 				this->insert(*it);
 		}
-
-		map (const map& _m) : _tree(value_compare(_m._comp)), _size(_m._size), _alloc(_m._alloc), _comp(_m._comp)
+		
+		map (const map& _m) : _tree(value_compare(_m._comp)), _size(0), _alloc(_m._alloc), _comp(_m._comp)
 		{
 			*this = _m;
-			std::cout << "here" << std::endl;
 		}
 
 		map& operator=(const map& _m)
@@ -82,49 +81,56 @@ namespace ft {
 			if (this != &_m)
 			{
 				this->clear();
-				this->_comp = _m._comp;
 				this->_alloc = _m._alloc;
+				this->_comp = _m._comp;
 				this->insert(_m.begin(), _m.end());
 				this->_size = _m._size;
 			}
 			return *this;
 		}
 
+		~map()
+		{
+		}
+
 		/* begin */
 		iterator begin()
 		{
-			return _tree.begin();
+			return iterator(_tree.begin());
 		}
 		const_iterator begin() const
 		{
-			return _tree.begin();
+			return const_iterator(_tree.begin());
 		}
-		/* end */
+
 		iterator end()
 		{
-			return _tree.end();
+			return iterator(_tree.end());
 		}
+
 		const_iterator end() const
 		{
-			return _tree.end();
+			return const_iterator(_tree.end());
 		}
-		/* rbegin */
+
 		reverse_iterator rbegin()
 		{
-			return _tree.rbegin();
+			return reverse_iterator(iterator(_tree.rbegin()));
 		}
+		
 		const_reverse_iterator rbegin() const
 		{
-			return _tree.rbegin();
+			return (const_reverse_iterator(this->end()));
 		}
-		/* rend */
+
 		reverse_iterator rend()
 		{
-			return _tree.rend();
+			return (reverse_iterator(iterator(_tree.rend())));
 		}
+		
 		const_reverse_iterator rend() const
 		{
-			return _tree.rend();
+			return (const_reverse_iterator(this->begin()));
 		}
 
 		bool empty() const
@@ -153,7 +159,7 @@ namespace ft {
 
 		void clear()
 		{
-			if (this->_size)
+			if (!empty())
 			{
 				this->_tree.clear();
 				this->_size = 0;
@@ -193,7 +199,7 @@ namespace ft {
 		{
 			if (this->find((*position).first) != this->end())
 			{
-				this->_tree.remove(*position);
+				this->_tree.erase(*position);
 				_size--;
 			}
 		}
@@ -212,16 +218,28 @@ namespace ft {
 		void erase (iterator first, iterator last)
 		{
 			while (first != last)
-			{
-				this->erase(first);
-				first++;
-			}
+				this->erase(first++);
 		}
 
 		iterator find (const key_type& _k)
 		{
 			nodePtr _y = this->_tree.find(make_pair(_k, mapped_type()));
-			return iterator(_y, &(this->_tree));
+			if (_y == nullptr)
+				return this->end();
+			return iterator(_y);
+		}
+
+		void swap (map& _x)
+		{
+			_tree.swap(_x._tree);
+			std::swap(this->_size, _x._size);
+			std::swap(this->_comp, _x._comp);
+			std::swap(this->_alloc, _x._alloc);
+		}
+
+		key_compare key_comp() const
+		{
+			return this->_comp;
 		}
 	};
 } // end namespace ft
