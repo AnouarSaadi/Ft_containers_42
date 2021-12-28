@@ -16,45 +16,37 @@ struct classcomp {
 int main() // ! erase need to check
 {
 	/* Constructors */
-	NS::map<char,int> first;
+	// #ifdef CONS
+		NS::map<char,int> first;
 
-	first['a']=10;
-	first['b']=30;
-	first['c']=50;
-	first['d']=70;
+		first['a']=10;
+		first['b']=30;
+		first['c']=50;
+		first['d']=70;
 
-	NS::map<char,int> second (first.begin(),first.end());
+		NS::map<char,int> second (first.begin(),first.end());
 
-	NS::map<char,int> third (second);
+		NS::map<char,int> third (second);
 
-	NS::map<char,int,classcomp> fourth;                 // class as Compare
+		NS::map<char,int,classcomp> fourth;                 // class as Compare
 
-	bool(*fn_pt)(char,char) = fncomp;
-	NS::map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
-
+		bool(*fn_pt)(char,char) = fncomp;
+		NS::map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
+	// #endif
 	/* Capacity */
 	NS::map<char,int> _mymap;
 
-	_mymap['a']=10;
-	_mymap['b']=20;
-	_mymap['c']=30;
-	NS::map<char,int>::iterator _i =  _mymap.begin();
-	_mymap.erase(_mymap.begin());
-	// _mymap.erase(_mymap.begin());
-	// _mymap.erase(_mymap.begin());
-	// _mymap.erase(_mymap.begin());
-	_i =  _mymap.begin();
-	// _i++;
-	std::cout << "Begin: " << _i->first << " Size: " << _mymap.size() << std::endl;
+	_mymap['a']= 10;
+	_mymap['b']= 20;
+	_mymap['c']= 30;
+	_mymap['c']= 30;
 
-	exit(0);
-
-	// while (!_mymap.empty())
-	// {
-	// 	std::cout << _mymap.begin()->first << " => " << _mymap.begin()->second << '\n';
-	// 	_mymap.erase(_mymap.begin());
+	while (!_mymap.empty())
+	{
+		std::cout << _mymap.begin()->first << " => " << _mymap.begin()->second << " " << _mymap.size() << '\n';
+		_mymap.erase(_mymap.begin());
 		
-	// }
+	}
 
 	// std::cout << "mymap.size() is " << _mymap.size() << '\n';
 
@@ -134,30 +126,58 @@ int main() // ! erase need to check
 	// /* key_compare */
 	mymap.clear();
 
-	// NS::map<char,int>::key_compare mycomp = mymap.key_comp();
+//   NS::map<char,int>::key_compare mycomp = mymap.key_comp();
 
-	mymap['a']=100;
-	mymap['b']=200;
-	mymap['c']=300;
-	mymap['d']=400;
-	mymap['e']=500;
+  mymap['a']=100;
+  mymap['b']=200;
+  mymap['c']=300;
 
-	std::cout << "mymap contains:\n";
+  std::cout << "mymap contains:\n";
 
-	NS::map<char, int>::reverse_iterator rev_it = mymap.rbegin();
-	char highest = rev_it->first;     // key value of last element
-	std::cout << "highest: " << highest << std::endl;
-		rev_it++;
-	highest = rev_it->first;     // key value of last element
-	std::cout << "highest: " << highest << std::endl;
+  NS::pair<char, int> highest = *mymap.rbegin();     // key value of last element
 
-	while (rev_it != mymap.rend())
-	{
-		std::cout << rev_it->first << " => " << rev_it->second << '\n';
-		rev_it++;
-	}
+  NS::map<char,int>::iterator _it = mymap.begin();
+  do {
+    std::cout << _it->first << " => " << _it->second << '\n';
+  } while ( mymap.value_comp()(*_it++, highest) );
 
 	std::cout << '\n';
+
+	NS::map<char,int> mycmmmp;
+	char c;
+
+	mycmmmp ['a']=101;
+	mycmmmp ['c']=202;
+	mycmmmp ['f']=303;
+
+	for (c='a'; c<'h'; c++)	
+	{
+	std::cout << c;
+	if (mycmmmp.count(c)>0)
+		std::cout << " is an element of mymap.\n";
+	else 
+		std::cout << " is not an element of mymap.\n";
+	}
+
+	NS::map<char,int> mapbound;
+	NS::map<char,int>::iterator itlow,itup;
+
+	mapbound['a']=20;
+	// mapbound['b']=40;
+	mapbound['c']=60;
+	mapbound['d']=80;
+	mapbound['e']=100;
+
+	itlow=mapbound.lower_bound ('b');  // itlow points to b
+	std::cout << "lower_bound: " << itlow->first << std::endl;
+	itup=mapbound.upper_bound ('d');   // itup points to e (not d!)
+	std::cout << "upper_bound: " << itup->first << std::endl;
+	
+	mapbound.erase(itlow,itup);        // erases [itlow,itup)
+
+	// print content:
+	for (NS::map<char,int>::iterator it=mapbound.begin(); it!=mapbound.end(); ++it)
+	std::cout << it->first << " => " << it->second << '\n';
 
 	return 0;
 }
