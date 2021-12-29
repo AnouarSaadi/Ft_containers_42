@@ -52,26 +52,25 @@ namespace ft {
 
 	private:
 		tree _tree;
-		size_type _size;
 
 		allocator_type _alloc;
 		key_compare _comp;
 
 	public:
 		explicit map (const key_compare& comp = key_compare(),
-              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp)), _size(0), _alloc(alloc), _comp(comp)
+              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp)), _alloc(alloc), _comp(comp)
 		{
 		}
 		template <class InputIterator>
   		map (InputIterator first, InputIterator last,
        		const key_compare& comp = key_compare(),
-       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)), _size(0), _alloc(alloc), _comp(comp)
+       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)),  _alloc(alloc), _comp(comp)
 		{
 			for (InputIterator it = first; it != last; ++it)
 				this->insert(*it);
 		}
 		
-		map (const map& _m) : _tree(value_compare(_m._comp)), _size(0), _alloc(_m._alloc), _comp(_m._comp)
+		map (const map& _m) : _tree(value_compare(_m._comp)),  _alloc(_m._alloc), _comp(_m._comp)
 		{
 			*this = _m;
 		}
@@ -84,7 +83,6 @@ namespace ft {
 				this->_alloc = _m._alloc;
 				this->_comp = _m._comp;
 				this->insert(_m.begin(), _m.end());
-				this->_size = _m._size;
 			}
 			return *this;
 		}
@@ -135,17 +133,17 @@ namespace ft {
 
 		bool empty() const
 		{
-			return _size == 0;
+			return this->size() == 0;
 		}
 
 		size_type size() const
 		{
-			return _size;
+			return _tree.size();
 		}
 
 		size_type max_size() const
 		{
-			return _alloc.max_size();
+			return _tree.max_size();
 		}
 
 		mapped_type& operator[] (const key_type& _k)
@@ -161,7 +159,6 @@ namespace ft {
 			if (!empty())
 			{
 				this->_tree.clear();
-				this->_size = 0;
 			}
 		}
 
@@ -171,7 +168,6 @@ namespace ft {
 			if (_f == this->end())
 			{
 				this->_tree.insert(val);
-				this->_size++;
 				_f = this->find(val.first);
 				return pair<iterator,bool>(_f, true);
 			}
@@ -200,7 +196,6 @@ namespace ft {
 			if (this->find((*position).first) != this->end())
 			{
 				this->_tree.erase(*position);
-				_size--;
 			}
 		}
 
@@ -242,7 +237,6 @@ namespace ft {
 		void swap (map& _x)
 		{
 			_tree.swap(_x._tree);
-			std::swap(this->_size, _x._size);
 			std::swap(this->_comp, _x._comp);
 			std::swap(this->_alloc, _x._alloc);
 		}
@@ -282,14 +276,14 @@ namespace ft {
 			return _tree.upper_bound(make_pair(_k, mapped_type()));
 		}
 
-		pair<const_iterator,const_iterator> equal_range (const key_type& k) const
+		pair<const_iterator,const_iterator> equal_range (const key_type& _k) const
 		{
-
+			return pair<const_iterator,const_iterator>(lower_bound(_k), upper_bound(_k));
 		}
 
-		pair<iterator,iterator> equal_range (const key_type& k)
+		pair<iterator,iterator> equal_range (const key_type& _k)
 		{
-
+			return pair<iterator,iterator>(lower_bound(_k), upper_bound(_k));
 		}
 
 		allocator_type get_allocator() const

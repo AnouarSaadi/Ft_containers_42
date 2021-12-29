@@ -76,7 +76,7 @@ namespace ft {
 		{
 		} // param constructor
 		template <class OthIter>
-			vector_iter(const vector_iter<OthIter>& other) : _current(other._current)
+			vector_iter(const vector_iter<OthIter>& other) : _current(other.base())
 		{
 		} // copy constructor
 		/* assignment operator */

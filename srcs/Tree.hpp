@@ -41,7 +41,6 @@ namespace ft {
 	private:
 		iterator_type _current;
 
-
 	public:
 		tree_iter() : _current()
 		{
@@ -93,7 +92,6 @@ namespace ft {
 		tree_iter & operator--()
 		{
 			this->_current = predecessor(this->_current);
-			// this->_current
 			return (*this);
 		}
 
@@ -181,6 +179,7 @@ namespace ft {
 		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef typename Alloc::template rebind<node>::other	allocate_type;
+		typedef size_t	size_type;
 
 	private:
 		node_pointer	_root;
@@ -188,14 +187,15 @@ namespace ft {
 
 		allocate_type _alloc;
 		compare _comp;
+		size_type _size;
 
 	public:
-		tree(compare comp): _root(nullptr), _end(), _alloc(), _comp(comp)
+		tree(compare comp): _root(nullptr), _end(), _alloc(), _comp(comp), _size(0)
 		{
 			_end = this->makenode();
 		}
 
-		tree(const tree& _oth) : _root(), _end(), _alloc(), _comp()
+		tree(const tree& _oth) : _root(), _end(), _alloc(), _comp(), _size(0)
 		{
 			*this = _oth;
 		}
@@ -207,30 +207,44 @@ namespace ft {
 			_alloc.deallocate(this->_end, 1);
 		}
 
-		void swap(tree& _x)
+		void swap(tree& _tr)
 		{
 
-			std::swap(this->_root, _x._root);
-			std::swap(this->_end, _x._end);
-			std::swap(this->_alloc , _x._alloc);
-			std::swap(this->_comp, _x._comp);
+			std::swap(this->_root, _tr._root);
+			std::swap(this->_end, _tr._end);
+			std::swap(this->_alloc , _tr._alloc);
+			std::swap(this->_comp, _tr._comp);
 		}
 
 		void clear()
 		{
-			if (this->_root != nullptr)
-				this->destroy(this->_root);
+			this->destroy(this->_root);
 			this->_root = nullptr;
+			this->_size = 0;
+		}
+
+		size_type size() const
+		{
+			return this->_size;
+		}
+
+		size_type max_size() const
+		{
+			return _alloc.max_size();
 		}
 
 		iterator begin()
 		{
-			return iterator(this->minimum(this->_root));
+			if (this->_root != nullptr)
+				return iterator(this->minimum(this->_root));
+			return iterator(this->_end);
 		}
 		
 		const_iterator begin() const
 		{
-			return const_iterator(this->minimum(this->_root));
+			if (this->_root != nullptr)
+				return const_iterator(this->minimum(this->_root));
+			return const_iterator(this->_end);
 		}
 
 		iterator end()
@@ -351,6 +365,7 @@ namespace ft {
 				this->_root = this->makenode(_data);
 				_root->_parent = this->_end;
 				this->_end->_left = this->_root;
+				_size++;
 				return ;
 			}
 			this->_end->_left = nullptr;
@@ -374,6 +389,7 @@ namespace ft {
 			this->treeBalanceAfterInsert(_new);
 			this->_end->_left = this->_root;
 			this->_root->_parent = this->_end;
+			_size++;
 		}
 		// Delete operation
 		void erase(value_type _data = value_type())
@@ -434,6 +450,7 @@ namespace ft {
 				this->_end->_left = this->_root;
 				this->_root->_parent = this->_end;
 			}
+			_size--;
 		}
 
 		// Minimum
@@ -608,8 +625,7 @@ namespace ft {
 		{
 			while (_x != this->_root && _x->_color == BLACK)
 			{
-				std::cout << "Rebalancing" << std::endl;
-				if (_x && _x == _x->_parent->_left) // the node is a _left child
+				if (_x && _x == _x->_parent->_left)
 				{
 					// std::cout << "case1: the node is a _left child" << std::endl;
 					node_pointer _sibling = _x->_parent->_right;
