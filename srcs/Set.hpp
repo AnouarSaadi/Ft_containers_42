@@ -8,7 +8,7 @@
 # include "Type_traits.hpp" // enable_if is_integral
 
 namespace ft {
-template < class T,                               // set::key_type/value_type
+	template < class T,                               // set::key_type/value_type
 			class Compare = std::less<T>,         // set::key_compare/value_compare
 			class Alloc = std::allocator<T>    	 // set::allocator_type
 			>
@@ -18,7 +18,7 @@ template < class T,                               // set::key_type/value_type
 		typedef T key_type;
 		typedef T value_type;
 		typedef Compare key_compare;
-		typedef Compare va_compare;
+		typedef Compare value_compare;
 
 		typedef Alloc allocator_type;
 		typedef typename allocator_type::reference reference;
@@ -37,26 +37,25 @@ template < class T,                               // set::key_type/value_type
 
 	private:
 		tree _tree;
-		size_type _size;
 
 		allocator_type _alloc;
 		key_compare _comp;
 
 	public:
 		explicit set (const key_compare& comp = key_compare(),
-              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp)), _size(0), _alloc(alloc), _comp(comp)
+              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp)),  _alloc(alloc), _comp(comp)
 		{
 		}
 		template <class InputIterator>
   		set (InputIterator first, InputIterator last,
        		const key_compare& comp = key_compare(),
-       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)), _size(0), _alloc(alloc), _comp(comp)
+       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)), _alloc(alloc), _comp(comp)
 		{
 			for (InputIterator it = first; it != last; ++it)
 				this->insert(*it);
 		}
 		
-		set (const set& _s) : _tree(value_compare(_s._comp)), _size(0), _alloc(_s._alloc), _comp(_s._comp)
+		set (const set& _s) : _tree(value_compare(_s._comp)),  _alloc(_s._alloc), _comp(_s._comp)
 		{
 			*this = _s;
 		}
@@ -69,7 +68,6 @@ template < class T,                               // set::key_type/value_type
 				this->_alloc = _s._alloc;
 				this->_comp = _s._comp;
 				this->insert(_s.begin(), _s.end());
-				this->_size = _s._size;
 			}
 			return *this;
 		}
@@ -120,26 +118,23 @@ template < class T,                               // set::key_type/value_type
 
 		bool empty() const
 		{
-			return _size == 0;
+			return size() == 0;
 		}
 
 		size_type size() const
 		{
-			return _size;
+			return _tree.size();
 		}
 
 		size_type max_size() const
 		{
-			return _alloc.max_size();
+			return _tree.max_size();
 		}
 
 		void clear()
 		{
 			if (!empty())
-			{
 				this->_tree.clear();
-				this->_size = 0;
-			}
 		}
 
 		pair<iterator,bool> insert (const value_type& _val)
@@ -148,7 +143,6 @@ template < class T,                               // set::key_type/value_type
 			if (_f == this->end())
 			{
 				this->_tree.insert(_val);
-				this->_size++;
 				_f = this->find(_val);
 				return pair<iterator,bool>(_f, true);
 			}
@@ -174,11 +168,8 @@ template < class T,                               // set::key_type/value_type
 
 		void erase (iterator position)
 		{
-			if (this->find((*position).first) != this->end())
-			{
+			if (this->find(*position) != this->end())
 				this->_tree.erase(*position);
-				_size--;
-			}
 		}
 
 		size_type erase (const value_type& _val)
@@ -209,7 +200,6 @@ template < class T,                               // set::key_type/value_type
 		void swap (set& _s)
 		{
 			_tree.swap(_s._tree);
-			std::swap(this->_size, _s._size);
 			std::swap(this->_comp, _s._comp);
 			std::swap(this->_alloc, _s._alloc);
 		}
@@ -224,7 +214,7 @@ template < class T,                               // set::key_type/value_type
 			return this->_comp;
 		}
 
-		size_type count (const valu_type& _val) const
+		size_type count (const value_type& _val) const
 		{
 			return (this->find(_val) != this->end());
 		}

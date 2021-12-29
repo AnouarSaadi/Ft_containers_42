@@ -157,9 +157,7 @@ namespace ft {
 		void clear()
 		{
 			if (!empty())
-			{
 				this->_tree.clear();
-			}
 		}
 
 		pair<iterator,bool> insert (const value_type& val)
@@ -194,9 +192,7 @@ namespace ft {
 		void erase (iterator position)
 		{
 			if (this->find((*position).first) != this->end())
-			{
 				this->_tree.erase(*position);
-			}
 		}
 
 		size_type erase (const key_type& _k)
@@ -213,9 +209,7 @@ namespace ft {
 		void erase (iterator first, iterator last)
 		{
 			while (first != last)
-			{
 				this->erase(first++);
-			}
 		}
 
 		iterator find (const key_type& _k)

@@ -5,7 +5,7 @@
 # include <iostream>
 # include "Iterator.hpp"
 # include "Utility.hpp"
-# include <functional> // 
+# include <functional>
 # include <algorithm>
 
 # define BLACK 1
@@ -22,8 +22,7 @@ namespace ft {
 		node	*_parent;
 		bool	_color;
 		node() : _data(), _right(nullptr), _left(nullptr), _parent(nullptr), _color(BLACK) {}
-		node(T data) : _data(data), _right(nullptr), _left(nullptr), _parent(nullptr), _color(BLACK)
-		{}
+		node(T data) : _data(data), _right(nullptr), _left(nullptr), _parent(nullptr), _color(BLACK) {}
 	};
 
 	// tree iterator
@@ -173,7 +172,7 @@ namespace ft {
 		typedef typename Alloc::const_reference	const_reference;
 		typedef struct node<value_type>			node;
 		typedef node*							node_pointer;
-		typedef Compare							compare;
+		typedef Compare							value_compare;
 		typedef tree_iter<node_pointer, pointer> iterator;
 		typedef tree_iter<node_pointer, const_pointer> const_iterator;
 		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
@@ -186,18 +185,30 @@ namespace ft {
 		node_pointer	_end;
 
 		allocate_type _alloc;
-		compare _comp;
+		value_compare _comp;
 		size_type _size;
 
 	public:
-		tree(compare comp): _root(nullptr), _end(), _alloc(), _comp(comp), _size(0)
+		tree(value_compare comp): _root(nullptr), _end(), _alloc(), _comp(comp), _size(0)
 		{
 			_end = this->makenode();
 		}
 
-		tree(const tree& _oth) : _root(), _end(), _alloc(), _comp(), _size(0)
+		tree(const tree& _tr) : _root(), _end(), _alloc(), _comp(), _size(0)
 		{
-			*this = _oth;
+			*this = _tr;
+		}
+
+		tree& operator=(tree& _tr)
+		{
+			if (this != &_tr)
+			{
+				this->clear();
+				value_comp() = _tr.value_comp();
+				iterator _tb = _tr.begin();
+				while (_tb != _tr.end())
+					insert(*_tb++);
+			}
 		}
 
 		~tree()
@@ -214,6 +225,7 @@ namespace ft {
 			std::swap(this->_end, _tr._end);
 			std::swap(this->_alloc , _tr._alloc);
 			std::swap(this->_comp, _tr._comp);
+			std::swap(this->_size, _tr._size);
 		}
 
 		void clear()
@@ -287,6 +299,11 @@ namespace ft {
 				_current = _comp(_current->_data, data) ? _current->_right : _current->_left;
 			}
 			return _current;
+		}
+
+		value_compare value_comp() const
+		{
+			return this->_comp;
 		}
 
 		iterator lower_bound (const value_type& _value)
