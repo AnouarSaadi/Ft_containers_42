@@ -1,17 +1,16 @@
 #ifndef SET_HPP
 # define SET_HPP
 
-# include <functional>
-# include <memory> // std::allocator
-# include "Utility.hpp" // ft::pair
-# include "Tree.hpp" // Red Black tree
-# include "Type_traits.hpp" // enable_if is_integral
+# include <memory>
+# include "Utility.hpp"
+# include "Tree.hpp"
+# include "Type_traits.hpp"
 
 namespace ft {
-	template < class T,                               // set::key_type/value_type
-			class Compare = std::less<T>,         // set::key_compare/value_compare
-			class Alloc = std::allocator<T>    	 // set::allocator_type
-			>
+	template < class T,
+				class Compare = std::less<T>,
+				class Alloc = std::allocator<T>
+				>
 	class set
 	{	
 	public:
@@ -28,8 +27,8 @@ namespace ft {
 		typedef typename ft::tree<value_type, value_compare, allocator_type> tree;
 		typedef typename ft::node<value_type> node;
 		typedef node* node_pointer;
-		typedef tree_iter<node_pointer, pointer> iterator;
-		typedef tree_iter<node_pointer, const_pointer> const_iterator;
+		typedef tree_iterator<node_pointer, pointer> iterator;
+		typedef tree_iterator<node_pointer, const_pointer> const_iterator;
 		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
@@ -43,19 +42,18 @@ namespace ft {
 
 	public:
 		explicit set (const key_compare& comp = key_compare(),
-              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp)),  _alloc(alloc), _comp(comp)
+              const allocator_type& alloc = allocator_type()) : _tree(value_compare(comp), alloc),  _alloc(alloc), _comp(comp)
 		{
 		}
 		template <class InputIterator>
   		set (InputIterator first, InputIterator last,
        		const key_compare& comp = key_compare(),
-       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp)), _alloc(alloc), _comp(comp)
+       		const allocator_type& alloc = allocator_type()): _tree(value_compare(comp), alloc), _alloc(alloc), _comp(comp)
 		{
-			for (InputIterator it = first; it != last; ++it)
-				this->insert(*it);
+			this->insert(first, last);
 		}
 		
-		set (const set& _s) : _tree(value_compare(_s._comp)),  _alloc(_s._alloc), _comp(_s._comp)
+		set (const set& _s) : _tree(value_compare(_s._comp), _s._alloc),  _alloc(_s._alloc), _comp(_s._comp)
 		{
 			*this = _s;
 		}
@@ -76,7 +74,6 @@ namespace ft {
 		{
 		}
 
-		/* begin */
 		iterator begin()
 		{
 			return iterator(_tree.begin());

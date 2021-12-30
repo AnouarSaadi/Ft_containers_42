@@ -72,6 +72,6 @@ namespace ft {
 	{
 		return pair<T1,T2>(_x, _y);
 	}
-} // end namespace ft
+}
 
 #endif

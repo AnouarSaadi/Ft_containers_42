@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asaadi <asaadi@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/11 13:10:11 by obouykou          #+#    #+#             */
-/*   Updated: 2021/12/29 23:58:09 by asaadi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <iostream>
 #include <cmath>
 
@@ -113,13 +101,6 @@ void print_namespace(std::set<T> const &st)
 	st.empty();
 	std::cout << "\nNAMESPACE : std" << std::endl;
 }
-
-// template <typename T, typename U>
-// void print_namespace(std::map<T, U> const &mp)
-// {
-// 	mp.empty();
-// 	std::cout << "\nNAMESPACE : std" << std::endl;
-// }
 
 template <typename T, typename U>
 void print_map(NS::map<T, U> &mp, char const *label)
@@ -898,7 +879,7 @@ int main(void)
 	std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of map tests >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
 			  << std::endl;
 	// end of map tests
-		// set tests
+		// set tests2
 	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< set tests >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
 			  << std::endl;
 	NS::set<int> setGolbal;
@@ -1228,8 +1209,6 @@ int main(void)
 	// end of set tests
 
 	std::cout << "end of program" << std::endl;
-		exit(1);
 	return 0;
 }
-
-}
+	}
