@@ -188,12 +188,12 @@ namespace ft {
 		size_type _size;
 
 	public:
-		tree(value_compare comp, allocator_type alloc): _root(nullptr), _end(), _alloc(alloc), _comp(comp), _size(0)
+		tree(value_compare _comp, allocator_type _alloc): _root(nullptr), _end(), _alloc(_alloc), _comp(_comp), _size(0)
 		{
 			_end = this->makenode();
 		}
 
-		tree(const tree& _tr) : _root(nullptr), _end(), _alloc(_tr.alloc), _comp(), _size(0)
+		tree(const tree& _tr) : _root(nullptr), _end(), _alloc(_tr._alloc), _comp(), _size(0)
 		{
 			*this = _tr;
 		}
@@ -384,10 +384,10 @@ namespace ft {
 				this->_size++;
 				return ;
 			}
-			this->_end->_left = nullptr;
-			_root->_parent = nullptr;
 			if (find(_data) != nullptr)
 				return ;
+			this->_end->_left = nullptr;
+			_root->_parent = nullptr;
 			node_pointer _new_node = this->makenode(_data);
 			node_pointer _parent_ = nullptr;
 			node_pointer _node_r = this->_root;
@@ -413,10 +413,10 @@ namespace ft {
 		{
 			node_pointer _del_node;
 			node_pointer _node_x;
-			this->_end->_left = nullptr;
-			this->_root->_parent = nullptr;
 			if (!this->_root || (_del_node = this->find(_data)) == nullptr)
 				return ;
+			this->_end->_left = nullptr;
+			this->_root->_parent = nullptr;
 			node_pointer _node_y = _del_node;
 			bool _deleted_col = _node_y->_color;
 			if (_del_node->_left == nullptr)

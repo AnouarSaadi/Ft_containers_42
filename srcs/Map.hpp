@@ -141,7 +141,7 @@ namespace ft {
 
 		size_type max_size() const
 		{
-			return _tree.max_size();
+			return (std::min<size_type>(this->_alloc.max_size(), std::numeric_limits<difference_type>::max()));
 		}
 
 		mapped_type& operator[] (const key_type& _k)

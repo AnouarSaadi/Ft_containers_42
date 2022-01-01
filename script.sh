@@ -54,21 +54,4 @@ if ! compile_and_run ft "$tests"; then
 	exit 2
 fi
 
-differ="$(diff ft_out std_out)"
-
-
-if [ "$differ" != "" ] ; then
-	printf "\n           ################## FAILURE :( ##################\n\n"
-	diff ft_out std_out > differrence.txt
-	echo "################# Check differrence.txt to see diff output #################"
-	echo
-	exit 3
-else
-	printf "\n ############### SUCCESS ;) ###############\n\n"
-fi
-
-if [ $# -eq 2 ] && [ "$1" = "-rm" ]; then
-	/bin/rm -rf ft_obj std_obj ft_out std_out differrence.txt > /dev/null 2>&1
-fi
-
 exit 0

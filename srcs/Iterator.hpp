@@ -96,13 +96,13 @@ namespace ft {
 			return &(operator*());
 		}
 		
-		vector_iterator operator+(difference_type off) const
+		vector_iterator operator+(difference_type _off) const
 		{
-			return vector_iterator(this->_current + off);
+			return vector_iterator(this->_current + _off);
 		}
-		vector_iterator & operator+= (difference_type off)
+		vector_iterator & operator+= (difference_type _off)
 		{
-			this->_current += off;
+			this->_current += _off;
 			return (*this);
 		}
 		vector_iterator & operator++()
@@ -117,13 +117,13 @@ namespace ft {
 			return (_tmp);
 		}
 		
-		vector_iterator operator-(difference_type off) const
+		vector_iterator operator-(difference_type _off) const
 		{
-			return vector_iterator(this->_current - off);
+			return vector_iterator(this->_current - _off);
 		}
-		vector_iterator & operator-= (difference_type off)
+		vector_iterator & operator-= (difference_type _off)
 		{
-			this->_current -= off;
+			this->_current -= _off;
 			return (*this);
 		}
 		vector_iterator & operator--()
@@ -138,9 +138,9 @@ namespace ft {
 			return (_tmp);
 		}
 		
-		reference operator[] (difference_type idx) const
+		reference operator[] (difference_type _idx) const
 		{
-			return *(*this + idx);
+			return *(*this + _idx);
 		}
 		
 		iterator_type base() const
@@ -150,14 +150,14 @@ namespace ft {
 	};
 
 	template <class Iter>
-  	bool operator==(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+  	bool operator==(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return lhs.base() == rhs.base();
+		return _lhs.base() == _rhs.base();
 	}
 	template <class Iter>
-  	bool operator!=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+  	bool operator!=(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return !(lhs == rhs);
+		return !(_lhs == _rhs);
 	}
 	template <class Iter>
 	vector_iterator<Iter> operator+(typename vector_iterator<Iter>::difference_type n, const vector_iterator<Iter>& _current)
@@ -165,29 +165,29 @@ namespace ft {
 		return vector_iterator<Iter>(_current + n);
 	}
 	template <class Iter>
-	typename vector_iterator<Iter>::difference_type operator-(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	typename vector_iterator<Iter>::difference_type operator-(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return lhs.base() - rhs.base();
+		return _lhs.base() - _rhs.base();
 	}
 	template <class Iter>
-	bool operator<(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	bool operator<(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return lhs.base() < rhs.base();
+		return _lhs.base() < _rhs.base();
 	}
 	template <class Iter>
-	bool operator>(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	bool operator>(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return lhs.base() > rhs.base();
+		return _lhs.base() > _rhs.base();
 	}
 	template <class Iter>
-	bool operator<=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	bool operator<=(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return !(lhs > rhs);
+		return !(_lhs > _rhs);
 	}
 	template <class Iter>
-	bool operator>=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	bool operator>=(const vector_iterator<Iter>& _lhs, const vector_iterator<Iter>& _rhs)
 	{
-		return !(lhs < rhs);
+		return !(_lhs < _rhs);
 	}
 
 	/* reverse iterator class */
@@ -273,47 +273,47 @@ namespace ft {
 			return &(operator*());
 		}
 
-		reference operator[](difference_type idx) const
+		reference operator[](difference_type _idx) const
 		{
-			return *(*this + idx);
+			return *(*this + _idx);
 		}
 	};
 
 	template <class Iter>
-  		bool operator==(const reverse_iterator<Iter>& lhs,
-		  	const reverse_iterator<Iter>& rhs)
+  		bool operator==(const reverse_iterator<Iter>& _lhs,
+		  	const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() == rhs.base();
+		return _lhs.base() == _rhs.base();
 	}
 	template <class Iter>
-  		bool operator!=(const reverse_iterator<Iter>& lhs,
-		  	const reverse_iterator<Iter>& rhs)
+  		bool operator!=(const reverse_iterator<Iter>& _lhs,
+		  	const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() != rhs.base();
+		return _lhs.base() != _rhs.base();
 	}
 	template <class Iter>
-  		bool operator<(const reverse_iterator<Iter>& lhs,
-		  	const reverse_iterator<Iter>& rhs)
+  		bool operator<(const reverse_iterator<Iter>& _lhs,
+		  	const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() > rhs.base();
+		return _lhs.base() > _rhs.base();
 	}
 	template <class Iter>
-  		bool operator<=(const reverse_iterator<Iter>& lhs,
-		  	const reverse_iterator<Iter>& rhs)
+  		bool operator<=(const reverse_iterator<Iter>& _lhs,
+		  	const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() >= rhs.base();
+		return _lhs.base() >= _rhs.base();
 	}
 	template <class Iter>
-		bool operator>(const reverse_iterator<Iter>& lhs,
-			const reverse_iterator<Iter>& rhs)
+		bool operator>(const reverse_iterator<Iter>& _lhs,
+			const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() < rhs.base();
+		return _lhs.base() < _rhs.base();
 	}
 	template <class Iter>
-		bool operator>=(const reverse_iterator<Iter>& lhs,
-			const reverse_iterator<Iter>& rhs)
+		bool operator>=(const reverse_iterator<Iter>& _lhs,
+			const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() <= rhs.base();
+		return _lhs.base() <= _rhs.base();
 	}
 	template <class Iter>
 		reverse_iterator<Iter> operator+(typename reverse_iterator<Iter>::difference_type _n,
@@ -322,10 +322,10 @@ namespace ft {
 		return reverse_iterator<Iter>(rev_it - _n);
 	}
 	template <class Iter>
-		typename reverse_iterator<Iter>::difference_type operator-(const reverse_iterator<Iter>& lhs,
-			const reverse_iterator<Iter>& rhs)
+		typename reverse_iterator<Iter>::difference_type operator-(const reverse_iterator<Iter>& _lhs,
+			const reverse_iterator<Iter>& _rhs)
 	{
-		return lhs.base() - rhs.base();
+		return _lhs.base() - _rhs.base();
 	}
 	
 };

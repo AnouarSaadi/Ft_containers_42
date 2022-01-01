@@ -5,6 +5,7 @@
 #include "Iterator.hpp"
 #include "Algorithm.hpp"
 #include "Type_traits.hpp"
+#include <algorithm>
 
 namespace ft
 {
@@ -34,22 +35,22 @@ namespace ft
 
 	public:
 		/* default */
-		vector(const allocator_type &alloc = allocator_type()) : _data(nullptr), _size(0), _capacity(0), _alloc(alloc)
+		vector(const allocator_type &_alloc = allocator_type()) : _data(nullptr), _size(0), _capacity(0), _alloc(_alloc)
 		{
 		}
 		/* fill */
-		vector(size_type _n, const value_type &val = value_type(),
-			   const allocator_type &alloc = allocator_type()) : _data(nullptr), _size(0), _capacity(0), _alloc(alloc)
+		vector(size_type _n, const value_type &_val = value_type(),
+			   const allocator_type &_alloc = allocator_type()) : _data(nullptr), _size(0), _capacity(0), _alloc(_alloc)
 		{
-			this->assign(_n, val);
+			this->assign(_n, _val);
 		}
 		/* range */
 		template <class InputIterator>
-		vector(InputIterator first, InputIterator last,
-			   const allocator_type &alloc = allocator_type(),
-			   typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) : _data(nullptr), _size(0), _capacity(0), _alloc(alloc)
+		vector(InputIterator _first, InputIterator _last,
+			   const allocator_type &_alloc = allocator_type(),
+			   typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) : _data(nullptr), _size(0), _capacity(0), _alloc(_alloc)
 		{
-			this->assign(first, last);
+			this->assign(_first, _last);
 		}
 		/* copy */
 		vector(const vector &_v) : _data(nullptr), _size(0),
@@ -127,10 +128,10 @@ namespace ft
 		/* max size */
 		size_type max_size() const
 		{
-			return (this->_alloc.max_size());
+			return (std::min<size_type>(this->_alloc.max_size(), std::numeric_limits<difference_type>::max()));
 		}
 		/* resize */
-		void resize(size_type _n, value_type val = value_type())
+		void resize(size_type _n, value_type _val = value_type())
 		{
 			size_type _sz = size();
 			if (_sz > _n)
@@ -144,7 +145,7 @@ namespace ft
 				this->reserve(_n);
 				this->_size = _n;
 				for (size_type _i = _sz; _i < _n; _i++)
-					this->_alloc.construct(&this->_data[_i], val);
+					this->_alloc.construct(&this->_data[_i], _val);
 			}
 		}
 		/* capacity */
@@ -164,14 +165,14 @@ namespace ft
 			{
 				size_type capacity = this->_capacity;
 				this->_capacity = (this->_capacity * 2 >= _n) ? this->_capacity * 2 : _n;
-				pointer save_data = this->_alloc.allocate(this->_capacity);
+				pointer _save_data = this->_alloc.allocate(this->_capacity);
 				for (size_type _i = 0; _i < size(); _i++)
-					this->_alloc.construct(&save_data[_i], this->_data[_i]);
+					this->_alloc.construct(&_save_data[_i], this->_data[_i]);
 				if (this->_size)
 					this->_alloc.destroy(this->_data);
 				if (this->_capacity)
 					this->_alloc.deallocate(this->_data, capacity);
-				this->_data = save_data;
+				this->_data = _save_data;
 			}
 		}
 		
@@ -183,6 +184,8 @@ namespace ft
 		/* at */
 		reference at(size_type _n)
 		{
+			if (_size - _n < 0)
+				throw std::out_of_range("vector");
 			return (this->_data[_n]);
 		}
 		const_reference at(size_type _n) const
@@ -210,34 +213,34 @@ namespace ft
 		/*********************** Modifiers **********************/
 		/* assign */
 		/* fill */
-		void assign(size_type _n, const value_type &val)
+		void assign(size_type _n, const value_type &_val)
 		{
 			if (_n <= 0)
 				return;
 			this->reserve(_n);
 			this->_size = _n;
 			for (size_type _i = 0; _i < _n; ++_i)
-				this->_alloc.construct(&this->_data[_i], val);
+				this->_alloc.construct(&this->_data[_i], _val);
 		}
 		/* range */
 		template <class InputIterator>
-		void assign(InputIterator first, InputIterator last,
+		void assign(InputIterator _first, InputIterator _last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 		{
-			difference_type rngLen = last - first;
-			if (rngLen <= 0)
+			difference_type _rngLen = _last - _first;
+			if (_rngLen <= 0)
 				return;
-			this->reserve(rngLen);
-			this->_size = rngLen;
+			this->reserve(_rngLen);
+			this->_size = _rngLen;
 			size_type _i = 0;
-			for (InputIterator it = first; it != last; ++it)
+			for (InputIterator it = _first; it != _last; ++it)
 				this->_alloc.construct(&this->_data[_i++], *it);
 		}
 		/* push_back */
-		void push_back(const value_type &val)
+		void push_back(const value_type &_val)
 		{
 			this->reserve(this->_size + 1);
-			this->_alloc.construct(&this->_data[this->_size++], val);
+			this->_alloc.construct(&this->_data[this->_size++], _val);
 		}
 		/* pop_back */
 		void pop_back()
@@ -247,7 +250,7 @@ namespace ft
 		}
 
 		/* insert */
-		iterator insert(iterator position, const value_type &val)
+		iterator insert(iterator position, const value_type &_val)
 		{
 			difference_type _idx = position - begin();
 			if (_idx < 0)
@@ -259,14 +262,14 @@ namespace ft
 			{
 				if (_i == _idx)
 				{
-					this->_alloc.construct(&this->_data[_i], val);
+					this->_alloc.construct(&this->_data[_i], _val);
 					break;
 				}
 				this->_alloc.construct(&this->_data[_i], this->_data[_i - 1]);
 			}
 			return (iterator(this->_data + _idx));
 		}
-		void insert(iterator position, size_type _n, const value_type &val)
+		void insert(iterator position, size_type _n, const value_type &_val)
 		{
 			if (_n <= 0)
 				return;
@@ -280,7 +283,7 @@ namespace ft
 			{
 				if (_i == (_idx + (difference_type)_n) - 1)
 				{
-					_alloc.construct(&this->_data[_i], val);
+					_alloc.construct(&this->_data[_i], _val);
 					_n--;
 				}
 				else
@@ -290,25 +293,25 @@ namespace ft
 			}
 		}
 		template <class InputIterator>
-		void insert(iterator position, InputIterator first, InputIterator last,
+		void insert(iterator position, InputIterator _first, InputIterator _last,
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 		{
 			difference_type _idx = position - begin();
-			difference_type rngLen = last - first;
-			if (rngLen <= 0)
+			difference_type _rngLen = _last - _first;
+			if (_rngLen <= 0)
 				return;
-			this->reserve(size() + rngLen);
-			this->_size += rngLen;
+			this->reserve(size() + _rngLen);
+			this->_size += _rngLen;
 			difference_type _i = size();
 			while (--_i >= 0)
 			{
-				if (_i == _idx + rngLen - 1)
+				if (_i == _idx + _rngLen - 1)
 				{
-					_alloc.construct(&_data[_i], *--last);
-					rngLen--;
+					_alloc.construct(&_data[_i], *--_last);
+					_rngLen--;
 				}
 				else
-					_alloc.construct(&_data[_i], _data[_i - rngLen]);
+					_alloc.construct(&_data[_i], _data[_i - _rngLen]);
 				if (_i == _idx)
 					break;
 			}
@@ -330,26 +333,26 @@ namespace ft
 			_size--;
 			return (iterator(this->_data + _idx));
 		}
-		iterator erase(iterator first, iterator last)
+		iterator erase(iterator _first, iterator _last)
 		{
-			difference_type _idx = first - begin();
-			if ((last - first) <= 0)
+			difference_type _idx = _first - begin();
+			if ((_last - _first) <= 0)
 				throw std::out_of_range("vector");
-			size_type rngLen = 0;
+			size_type _rngLen = 0;
 			size_type _i = 0, _j = 0;
 			while (_i < size())
 			{
 				if (_i == (size_type)_idx)
 				{
-					for (; first != last; first++)
+					for (; _first != _last; _first++)
 					{
 						this->_alloc.destroy(&this->_data[_i++]);
-						rngLen++;
+						_rngLen++;
 					}
 				}
 				this->_alloc.construct(&this->_data[_j++], this->_data[_i++]);
 			}
-			this->_size -= rngLen;
+			this->_size -= _rngLen;
 			return (iterator(this->_data + _idx));
 		}
 		/* swap */
